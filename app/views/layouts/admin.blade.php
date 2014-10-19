@@ -1,0 +1,10 @@
+<html>
+	<head>
+		@yield('head')
+	</head>
+    <body>
+        <div>
+            @yield('content')
+        </div>
+    </body>
+</html>
