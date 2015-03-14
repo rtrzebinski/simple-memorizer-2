@@ -1,17 +1,6 @@
 <?php
 
-namespace Admin;
-
-use BaseController;
-use View;
-use Input;
-use Auth;
-use Redirect;
-use Validator;
-use Illuminate\Support\MessageBag;
-use Lang;
-
-class UserController extends BaseController {
+class Admin_UserController extends BaseController {
 
 	/**
 	 * Show overview page.
@@ -21,7 +10,7 @@ class UserController extends BaseController {
 			$this->viewData['user'] = Auth::user();
 			return View::make('admin.user.overview', $this->viewData);
 		} else {
-			return Redirect::action('Admin\UserController@getLogin');
+			return Redirect::action('Admin_UserController@getLogin');
 		}
 	}
 
@@ -30,7 +19,7 @@ class UserController extends BaseController {
 	 */
 	public function getLogin() {
 		if (Auth::check()) {
-			return Redirect::action('Admin\UserController@getOverview');
+			return Redirect::action('Admin_UserController@getOverview');
 		} else {
 			return View::make('admin.user.login');
 		}
@@ -60,7 +49,7 @@ class UserController extends BaseController {
 
 		// try to log in
 		if (Auth::attempt(array('email' => $email, 'password' => $password))) {
-			return Redirect::action('Admin\UserController@getOverview');
+			return Redirect::action('Admin_UserController@getOverview');
 		} else {
 			$messageBag = new MessageBag();
 			$messageBag->add(null, Lang::get('messages.admin.bad_login'));
@@ -74,7 +63,7 @@ class UserController extends BaseController {
 	 */
 	public function getLogout() {
 		Auth::logout();
-		return Redirect::action('Admin\UserController@getLogin');
+		return Redirect::action('Admin_UserController@getLogin');
 	}
 
 }

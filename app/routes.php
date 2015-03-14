@@ -11,14 +11,12 @@
   |
  */
 
-Route::get('/', function()
+Route::get('/', function() 
 {
 	return View::make('hello');
 });
 
-Route::group(array('namespace' => 'Admin'), function() {
-	Route::get('/admin/overview', array('uses' => 'UserController@getOverview'));
-	Route::get('/admin/user/login', array('uses' => 'UserController@getLogin'));
-	Route::post('/admin/user/login', array('uses' => 'UserController@postLogin'));
-	Route::get('/admin/user/logout', array('uses' => 'UserController@getLogout'));
-});
+Route::get('/admin/overview', array('uses' => 'Admin_UserController@getOverview'));
+Route::get('/admin/user/login', array('uses' => 'Admin_UserController@getLogin'));
+Route::post('/admin/user/login', array('uses' => 'Admin_UserController@postLogin'));
+Route::get('/admin/user/logout', array('uses' => 'Admin_UserController@getLogout'));
