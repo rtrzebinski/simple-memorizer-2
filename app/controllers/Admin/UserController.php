@@ -5,11 +5,15 @@ class Admin_UserController extends BaseController {
 	/**
 	 * Show overview page.
 	 */
-	public function getOverview() {
-		if (Auth::check()) {
+	public function getOverview()
+	{
+		if (Auth::check())
+		{
 			$this->viewData['user'] = Auth::user();
 			return View::make('admin.user.overview', $this->viewData);
-		} else {
+		}
+		else
+		{
 			return Redirect::action('Admin_UserController@getLogin');
 		}
 	}
@@ -17,10 +21,14 @@ class Admin_UserController extends BaseController {
 	/**
 	 * Show login page.
 	 */
-	public function getLogin() {
-		if (Auth::check()) {
+	public function getLogin()
+	{
+		if (Auth::check())
+		{
 			return Redirect::action('Admin_UserController@getOverview');
-		} else {
+		}
+		else
+		{
 			return View::make('admin.user.login');
 		}
 	}
@@ -28,7 +36,8 @@ class Admin_UserController extends BaseController {
 	/**
 	 * Check auth credentials, redirect back to login, or to overview.
 	 */
-	public function postLogin() {
+	public function postLogin()
+	{
 		$email = Input::get('email');
 		$password = Input::get('password');
 
@@ -43,14 +52,18 @@ class Admin_UserController extends BaseController {
 				)
 		);
 
-		if ($validator->fails()) {
+		if ($validator->fails())
+		{
 			return View::make('admin.user.login')->withErrors($validator);
 		}
 
 		// try to log in
-		if (Auth::attempt(array('email' => $email, 'password' => $password))) {
+		if (Auth::attempt(array('email' => $email, 'password' => $password)))
+		{
 			return Redirect::action('Admin_UserController@getOverview');
-		} else {
+		}
+		else
+		{
 			$messageBag = new MessageBag();
 			$messageBag->add(null, Lang::get('messages.admin.bad_login'));
 			$this->viewData['email'] = $email;
@@ -61,7 +74,8 @@ class Admin_UserController extends BaseController {
 	/**
 	 * Logout user, and redirect to login page.
 	 */
-	public function getLogout() {
+	public function getLogout()
+	{
 		Auth::logout();
 		return Redirect::action('Admin_UserController@getLogin');
 	}
