@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\MessageBag;
+
 class Admin_UserController extends BaseController {
 
 	/**
