@@ -14,7 +14,7 @@ class Admin_UserController extends BaseController {
 		}
 		else
 		{
-			return Redirect::action('Admin_UserController@getLogin');
+			return Redirect::route('admin_user_login');
 		}
 	}
 
@@ -25,7 +25,7 @@ class Admin_UserController extends BaseController {
 	{
 		if (Auth::check())
 		{
-			return Redirect::action('Admin_UserController@getOverview');
+			return Redirect::route('admin_overview');
 		}
 		else
 		{
@@ -60,7 +60,7 @@ class Admin_UserController extends BaseController {
 		// try to log in
 		if (Auth::attempt(array('email' => $email, 'password' => $password)))
 		{
-			return Redirect::action('Admin_UserController@getOverview');
+			return Redirect::route('admin_overview');
 		}
 		else
 		{
@@ -78,7 +78,7 @@ class Admin_UserController extends BaseController {
 	public function getLogout()
 	{
 		Auth::logout();
-		return Redirect::action('Admin_UserController@getLogin');
+		return Redirect::route('admin_user_login');
 	}
 
 }
