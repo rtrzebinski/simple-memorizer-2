@@ -1,6 +1,6 @@
 <?php
 
-class Tests_Controllers_Admin_UserController extends TestCase {
+class Tests_Controllers_Admin_UserControllerTest extends TestCase {
 
 	public function testGetOverview_user_logged_in()
 	{
