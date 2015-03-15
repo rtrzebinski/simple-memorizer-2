@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\MessageBag;
-
 class Admin_UserController extends BaseController {
 
 	/**
@@ -66,10 +64,11 @@ class Admin_UserController extends BaseController {
 		}
 		else
 		{
-			$messageBag = new MessageBag();
-			$messageBag->add(null, Lang::get('messages.admin.bad_login'));
 			$this->viewData['email'] = $email;
-			return View::make('admin.user.login', $this->viewData)->withErrors($messageBag);
+			$errors = $this->createErrors([
+				Lang::get('messages.admin.bad_login')
+			]);
+			return View::make('admin.user.login', $this->viewData)->withErrors($errors);
 		}
 	}
 
