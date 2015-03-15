@@ -39,7 +39,10 @@ class Admin_UserController extends BaseController {
 	public function postLogin()
 	{
 		// try to log in
-		if (Auth::attempt(array('email' => Input::get('email'), 'password' => Input::get('password'))))
+		if (Auth::attempt([
+				'email' => Input::get('email'),
+				'password' => Input::get('password')
+				], Input::get('remember_me')))
 		{
 			return Redirect::route('admin_overview');
 		}
@@ -61,5 +64,5 @@ class Admin_UserController extends BaseController {
 		Auth::logout();
 		return Redirect::route('admin_user_login');
 	}
-	
+
 }

@@ -34,4 +34,12 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 		dd($this->client->getResponse()->getContent());
 	}
 
+	public function trueFalseProvider()
+	{
+		return [
+			[true],
+			[false]
+		];
+	}
+
 }
