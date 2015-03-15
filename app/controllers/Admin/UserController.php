@@ -38,33 +38,14 @@ class Admin_UserController extends BaseController {
 	 */
 	public function postLogin()
 	{
-		$email = Input::get('email');
-		$password = Input::get('password');
-
-		// input validation
-		$validator = Validator::make(
-				array(
-				'email' => $email,
-				'password' => $password
-				), array(
-				'email' => 'required|email',
-				'password' => 'required'
-				)
-		);
-
-		if ($validator->fails())
-		{
-			return View::make('admin.user.login')->withErrors($validator);
-		}
-
 		// try to log in
-		if (Auth::attempt(array('email' => $email, 'password' => $password)))
+		if (Auth::attempt(array('email' => Input::get('email'), 'password' => Input::get('password'))))
 		{
 			return Redirect::route('admin_overview');
 		}
 		else
 		{
-			$this->viewData['email'] = $email;
+			$this->viewData['email'] = Input::get('email');
 			$errors = $this->createErrors([
 				Lang::get('messages.admin.bad_login')
 			]);
@@ -80,5 +61,5 @@ class Admin_UserController extends BaseController {
 		Auth::logout();
 		return Redirect::route('admin_user_login');
 	}
-
+	
 }
