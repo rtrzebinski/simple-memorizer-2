@@ -11,13 +11,11 @@ class CreateUsers extends Migration {
 	 */
 	public function up() {
 		Schema::create('users', function(Blueprint $table) {
-			$table->engine = 'InnoDB';
 			$table->increments('id');
-			$table->string('name', 128)->nullable();
-			$table->string('email', 256);
+			$table->string('name')->nullable();
+			$table->string('email');
 			$table->unique('email');
-			$table->string('password', 256);
-			// remember token is nullable by default
+			$table->string('password');
 			$table->rememberToken();
 			$table->timestamps();
 		});
