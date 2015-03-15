@@ -16,7 +16,7 @@ Route::get('/', function()
 	return View::make('hello');
 });
 
-Route::get('/admin/overview', array('uses' => 'Admin_UserController@getOverview'));
-Route::get('/admin/user/login', array('uses' => 'Admin_UserController@getLogin'));
-Route::post('/admin/user/login', array('uses' => 'Admin_UserController@postLogin'));
-Route::get('/admin/user/logout', array('uses' => 'Admin_UserController@getLogout'));
+Route::get('/admin/overview', ['as' => 'admin_overview', 'uses' => 'Admin_UserController@getOverview']);
+Route::get('/admin/user/login', ['as' => 'admin_user_login', 'uses' => 'Admin_UserController@getLogin']);
+Route::post('/admin/user/login', ['as' => 'admin_user_login', 'uses' => 'Admin_UserController@postLogin']);
+Route::get('/admin/user/logout', ['as' => 'admin_user_logout', 'uses' => 'Admin_UserController@getLogout']);
