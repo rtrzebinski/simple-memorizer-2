@@ -17,12 +17,20 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	}
 
 	/**
+	 * @return string
+	 */
+	protected function createRandomEmailAddress()
+	{
+		return uniqid() . '@blackhole.io';
+	}
+
+	/**
 	 * @return User
 	 */
 	protected function createUser()
 	{
 		$user = App::make('User');
-		$user->email = uniqid() . '@blackhole.io';
+		$user->email = $this->createRandomEmailAddress();
 		$user->password = Hash::make($user->email);
 		$user->name = 'test';
 		$user->save();
