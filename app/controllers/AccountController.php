@@ -3,57 +3,17 @@
 class AccountController extends BaseController {
 
 	/**
-	 * Show login page.
+	 * Show signup form.
 	 */
-	public function getLogin()
-	{
-		return View::make('user.login');
-	}
-
-	/**
-	 * Check auth credentials, redirect back to login, or to overview.
-	 */
-	public function postLogin()
-	{
-		// try to log in
-		if (Auth::attempt([
-				'email' => Input::get('email'),
-				'password' => Input::get('password')
-				], Input::get('remember_me')))
-		{
-			return Redirect::route('overview');
-		}
-		else
-		{
-			$this->viewData['email'] = Input::get('email');
-			$errors = $this->createErrors([
-				Lang::get('messages.bad_login')
-			]);
-			return View::make('user.login', $this->viewData)->withErrors($errors);
-		}
-	}
-
-	/**
-	 * Logout user, and redirect to login page.
-	 */
-	public function getLogout()
-	{
-		Auth::logout();
-		return Redirect::route('login');
-	}
-
-	/**
-	 * Show signup form
-	 */
-	public function getSignup()
+	public function signup()
 	{
 		return View::make('user.signup');
 	}
 
 	/**
-	 * Create new user
+	 * Create new user.
 	 */
-	public function postSignup()
+	public function doSignup()
 	{
 		$email = Input::get('email');
 		$password = Input::get('password');
@@ -80,6 +40,46 @@ class AccountController extends BaseController {
 
 		Auth::login($user);
 		return Redirect::route('overview');
+	}
+
+	/**
+	 * Show login form.
+	 */
+	public function login()
+	{
+		return View::make('user.login');
+	}
+
+	/**
+	 * Login user.
+	 */
+	public function doLogin()
+	{
+		// try to log in
+		if (Auth::attempt([
+				'email' => Input::get('email'),
+				'password' => Input::get('password')
+				], Input::get('remember_me')))
+		{
+			return Redirect::route('overview');
+		}
+		else
+		{
+			$this->viewData['email'] = Input::get('email');
+			$errors = $this->createErrors([
+				Lang::get('messages.bad_login')
+			]);
+			return View::make('user.login', $this->viewData)->withErrors($errors);
+		}
+	}
+
+	/**
+	 * Logout user.
+	 */
+	public function logout()
+	{
+		Auth::logout();
+		return Redirect::route('login');
 	}
 
 }

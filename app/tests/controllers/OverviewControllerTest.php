@@ -2,7 +2,7 @@
 
 class OverviewControllerTest extends TestCase {
 
-	public function testGetOverview()
+	public function testOverview()
 	{
 		$user = $this->createUser();
 		$this->be($user);

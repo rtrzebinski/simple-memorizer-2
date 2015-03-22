@@ -2,7 +2,7 @@
 
 class Controllers_AccountControllerTest extends TestCase {
 
-	public function testGetLogin()
+	public function testLogin()
 	{
 		View::shouldReceive('make')->with('user.login');
 
@@ -15,7 +15,7 @@ class Controllers_AccountControllerTest extends TestCase {
 	 * @dataProvider trueFalseProvider
 	 * @param bool $rememberMe
 	 */
-	public function testPostLogin_ok($rememberMe)
+	public function testDoLogin($rememberMe)
 	{
 		$user = $this->createUser();
 		$data = [
@@ -35,7 +35,7 @@ class Controllers_AccountControllerTest extends TestCase {
 		$this->assertEquals($rememberMe, (bool) $rememberToken);
 	}
 
-	public function testPostLogin_fail()
+	public function testDoLogin_bad_credentials()
 	{
 		$user = $this->createUser();
 		$data = [
@@ -49,7 +49,7 @@ class Controllers_AccountControllerTest extends TestCase {
 		$this->assertFalse(Auth::check());
 	}
 
-	public function testGetLogout()
+	public function testLogout()
 	{
 		$user = $this->createUser();
 		$this->be($user);
@@ -60,7 +60,7 @@ class Controllers_AccountControllerTest extends TestCase {
 		$this->assertFalse(Auth::check());
 	}
 
-	public function testGetSignup()
+	public function testSignup()
 	{
 		View::shouldReceive('make')->with('user.signup')->once();
 
@@ -69,32 +69,7 @@ class Controllers_AccountControllerTest extends TestCase {
 		$this->assertResponseOk();
 	}
 
-	public function testPostSignup_validation_error_provider()
-	{
-		return [
-			['', ''],
-			['foo@bar.com', ''],
-			['foo', '']
-		];
-	}
-
-	/**
-	 * @dataProvider testPostSignup_validation_error_provider
-	 */
-	public function testPostSignup_validation_error($email, $password)
-	{
-		$data = [
-			'email' => $email,
-			'password' => $password
-		];
-
-		$this->route('POST', 'signup', $data);
-
-		$this->assertViewHas('errors');
-		$this->assertFalse(Auth::check());
-	}
-
-	public function testPostSignup_ok()
+	public function testDoSignup()
 	{
 		$data = [
 			'email' => $this->createRandomEmailAddress(),
@@ -105,6 +80,31 @@ class Controllers_AccountControllerTest extends TestCase {
 
 		$this->assertRedirectedToRoute('overview');
 		$this->assertTrue(Auth::check());
+	}
+
+	public function testDoSignup_validation_error_provider()
+	{
+		return [
+			['', ''],
+			['foo@bar.com', ''],
+			['foo', '']
+		];
+	}
+
+	/**
+	 * @dataProvider testDoSignup_validation_error_provider
+	 */
+	public function testDoSignup_validation_error($email, $password)
+	{
+		$data = [
+			'email' => $email,
+			'password' => $password
+		];
+
+		$this->route('POST', 'signup', $data);
+
+		$this->assertViewHas('errors');
+		$this->assertFalse(Auth::check());
 	}
 
 }

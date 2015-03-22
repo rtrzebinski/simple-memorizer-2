@@ -12,13 +12,13 @@
  */
 
 Route::group(array('before' => 'guest'), function() {
-	Route::get('/signup', ['as' => 'signup', 'uses' => 'AccountController@getSignup']);
-	Route::post('/signup', ['as' => 'signup', 'uses' => 'AccountController@postSignup']);
-	Route::get('/login', ['as' => 'login', 'uses' => 'AccountController@getLogin']);
-	Route::post('/login', ['as' => 'login', 'uses' => 'AccountController@postLogin']);
+	Route::get('/signup', ['as' => 'signup', 'uses' => 'AccountController@signup']);
+	Route::post('/signup', ['as' => 'signup', 'uses' => 'AccountController@doSignup']);
+	Route::get('/login', ['as' => 'login', 'uses' => 'AccountController@login']);
+	Route::post('/login', ['as' => 'login', 'uses' => 'AccountController@doLogin']);
 });
 
 Route::group(array('before' => 'auth'), function() {
-	Route::get('/', ['as' => 'overview', 'uses' => 'OverviewController@getOverview']);
-	Route::get('/logout', ['as' => 'logout', 'uses' => 'AccountController@getLogout']);
+	Route::get('/', ['as' => 'overview', 'uses' => 'OverviewController@overview']);
+	Route::get('/logout', ['as' => 'logout', 'uses' => 'AccountController@logout']);
 });
