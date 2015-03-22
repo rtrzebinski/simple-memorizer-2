@@ -14,9 +14,9 @@
 Route::group(array('before' => 'guest'), function() {
 	Route::get('/', ['as' => 'landing', 'uses' => 'MainController@landing']);
 	Route::get('/signup', ['as' => 'signup', 'uses' => 'AccountController@signup']);
-	Route::post('/signup', ['as' => 'signup', 'uses' => 'AccountController@doSignup']);
+	Route::post('/signup', ['as' => 'signup', 'uses' => 'AccountController@doSignup', 'before' => 'csrf']);
 	Route::get('/login', ['as' => 'login', 'uses' => 'AccountController@login']);
-	Route::post('/login', ['as' => 'login', 'uses' => 'AccountController@doLogin']);
+	Route::post('/login', ['as' => 'login', 'uses' => 'AccountController@doLogin', 'before' => 'csrf']);
 });
 
 Route::group(array('before' => 'auth'), function() {
