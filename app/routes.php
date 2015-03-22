@@ -17,6 +17,8 @@ Route::get('/', function()
 });
 
 Route::get('/admin/overview', ['as' => 'admin_overview', 'uses' => 'Admin_UserController@getOverview']);
+Route::get('/admin/user/signup', ['as' => 'admin_user_signup', 'uses' => 'Admin_UserController@getSignup']);
+Route::post('/admin/user/signup', ['as' => 'admin_user_signup', 'uses' => 'Admin_UserController@postSignup']);
 Route::get('/admin/user/login', ['as' => 'admin_user_login', 'uses' => 'Admin_UserController@getLogin']);
 Route::post('/admin/user/login', ['as' => 'admin_user_login', 'uses' => 'Admin_UserController@postLogin']);
 Route::get('/admin/user/logout', ['as' => 'admin_user_logout', 'uses' => 'Admin_UserController@getLogout']);

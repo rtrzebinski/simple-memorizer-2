@@ -65,4 +65,45 @@ class Admin_UserController extends BaseController {
 		return Redirect::route('admin_user_login');
 	}
 
+	public function getSignup()
+	{
+		if (Auth::check())
+		{
+			return Redirect::route('admin_overview');
+		}
+		else
+		{
+			return View::make('admin.user.signup');
+		}
+	}
+
+	public function postSignup()
+	{
+		$email = Input::get('email');
+		$password = Input::get('password');
+
+		$validator = Validator::make(
+				array(
+				'email' => $email,
+				'password' => $password
+				), array(
+				'email' => 'required|email',
+				'password' => 'required'
+				)
+		);
+
+		if ($validator->fails())
+		{
+			return View::make('admin.user.signup')->withErrors($validator);
+		}
+
+		$user = App::make('User');
+		$user->email = $email;
+		$user->password = Hash::make($password);
+		$user->save();
+
+		Auth::login($user);
+		return Redirect::route('admin_overview');
+	}
+
 }
