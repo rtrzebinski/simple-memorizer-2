@@ -4,6 +4,8 @@ class Controllers_AccountControllerTest extends TestCase {
 
 	public function testGetLogin()
 	{
+		View::shouldReceive('make')->with('user.login')->once();
+
 		$this->route('GET', 'login');
 
 		$this->assertResponseOk();
@@ -58,6 +60,15 @@ class Controllers_AccountControllerTest extends TestCase {
 		$this->assertFalse(Auth::check());
 	}
 
+	public function testGetSignup()
+	{
+		View::shouldReceive('make')->with('user.signup')->once();
+
+		$this->route('GET', 'signup');
+
+		$this->assertResponseOk();
+	}
+
 	public function testGetSignup_user_logged_in()
 	{
 		$user = $this->createUser();
@@ -66,15 +77,6 @@ class Controllers_AccountControllerTest extends TestCase {
 		$this->route('GET', 'signup');
 
 		$this->assertRedirectedToRoute('overview');
-	}
-
-	public function testGetSignup_user_not_logged_in()
-	{
-		View::shouldReceive('make')->with('user.signup')->once();
-
-		$this->route('GET', 'signup');
-
-		$this->assertResponseOk();
 	}
 
 	public function testPostSignup_validation_error_provider()
