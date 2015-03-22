@@ -56,7 +56,7 @@ class Controllers_AccountControllerTest extends TestCase {
 
 		$this->route('GET', 'logout');
 
-		$this->assertRedirectedToRoute('login');
+		$this->assertRedirectedToRoute('landing');
 		$this->assertFalse(Auth::check());
 	}
 
