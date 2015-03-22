@@ -11,14 +11,9 @@
   |
  */
 
-Route::get('/', function() 
-{
-	return View::make('hello');
-});
-
-Route::get('/overview', ['as' => 'overview', 'uses' => 'OverviewController@getOverview']);
-Route::get('/user/signup', ['as' => 'user_signup', 'uses' => 'AccountController@getSignup']);
-Route::post('/user/signup', ['as' => 'user_signup', 'uses' => 'AccountController@postSignup']);
-Route::get('/user/login', ['as' => 'user_login', 'uses' => 'AccountController@getLogin']);
-Route::post('/user/login', ['as' => 'user_login', 'uses' => 'AccountController@postLogin']);
-Route::get('/user/logout', ['as' => 'user_logout', 'uses' => 'AccountController@getLogout']);
+Route::get('/', ['as' => 'overview', 'uses' => 'OverviewController@getOverview']);
+Route::get('/signup', ['as' => 'signup', 'uses' => 'AccountController@getSignup']);
+Route::post('/signup', ['as' => 'signup', 'uses' => 'AccountController@postSignup']);
+Route::get('/login', ['as' => 'login', 'uses' => 'AccountController@getLogin']);
+Route::post('/login', ['as' => 'login', 'uses' => 'AccountController@postLogin']);
+Route::get('/logout', ['as' => 'logout', 'uses' => 'AccountController@getLogout']);

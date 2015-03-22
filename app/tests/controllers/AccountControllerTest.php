@@ -4,7 +4,7 @@ class Controllers_AccountControllerTest extends TestCase {
 
 	public function testGetLogin()
 	{
-		$this->route('GET', 'user_login');
+		$this->route('GET', 'login');
 
 		$this->assertResponseOk();
 	}
@@ -22,7 +22,7 @@ class Controllers_AccountControllerTest extends TestCase {
 			'remember_me' => $rememberMe
 		];
 
-		$this->route('POST', 'user_login', $data);
+		$this->route('POST', 'login', $data);
 
 		// check auth
 		$this->assertRedirectedToRoute('overview');
@@ -41,7 +41,7 @@ class Controllers_AccountControllerTest extends TestCase {
 			'password' => uniqid()
 		];
 
-		$this->route('POST', 'user_login', $data);
+		$this->route('POST', 'login', $data);
 
 		$this->assertViewHas('errors');
 		$this->assertFalse(Auth::check());
@@ -52,9 +52,9 @@ class Controllers_AccountControllerTest extends TestCase {
 		$user = $this->createUser();
 		$this->be($user);
 
-		$this->route('GET', 'user_logout');
+		$this->route('GET', 'logout');
 
-		$this->assertRedirectedToRoute('user_login');
+		$this->assertRedirectedToRoute('login');
 		$this->assertFalse(Auth::check());
 	}
 
@@ -63,7 +63,7 @@ class Controllers_AccountControllerTest extends TestCase {
 		$user = $this->createUser();
 		$this->be($user);
 
-		$this->route('GET', 'user_signup');
+		$this->route('GET', 'signup');
 
 		$this->assertRedirectedToRoute('overview');
 	}
@@ -72,7 +72,7 @@ class Controllers_AccountControllerTest extends TestCase {
 	{
 		View::shouldReceive('make')->with('user.signup')->once();
 
-		$this->route('GET', 'user_signup');
+		$this->route('GET', 'signup');
 
 		$this->assertResponseOk();
 	}
@@ -96,7 +96,7 @@ class Controllers_AccountControllerTest extends TestCase {
 			'password' => $password
 		];
 
-		$this->route('POST', 'user_signup', $data);
+		$this->route('POST', 'signup', $data);
 
 		$this->assertViewHas('errors');
 		$this->assertFalse(Auth::check());
@@ -109,7 +109,7 @@ class Controllers_AccountControllerTest extends TestCase {
 			'password' => uniqid()
 		];
 
-		$this->route('POST', 'user_signup', $data);
+		$this->route('POST', 'signup', $data);
 
 		$this->assertRedirectedToRoute('overview');
 		$this->assertTrue(Auth::check());

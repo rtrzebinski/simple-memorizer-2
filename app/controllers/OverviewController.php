@@ -14,7 +14,7 @@ class OverviewController extends BaseController {
 		}
 		else
 		{
-			return Redirect::route('user_login');
+			return Redirect::route('login');
 		}
 	}
 

@@ -16,7 +16,7 @@ class OverviewControllerTest extends TestCase {
 	{
 		$this->route('GET', 'overview');
 
-		$this->assertRedirectedToRoute('user_login');
+		$this->assertRedirectedToRoute('login');
 	}
 
 }
