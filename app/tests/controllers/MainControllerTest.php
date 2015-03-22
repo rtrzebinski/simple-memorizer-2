@@ -11,4 +11,10 @@ class MainControllerTest extends TestCase {
 		$this->route('GET', 'overview');
 	}
 
+	public function testLanding()
+	{
+		View::shouldReceive('make')->with('landing')->once();
+		$this->route('GET', 'landing');
+	}
+
 }

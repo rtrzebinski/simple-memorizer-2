@@ -12,6 +12,7 @@
  */
 
 Route::group(array('before' => 'guest'), function() {
+	Route::get('/', ['as' => 'landing', 'uses' => 'MainController@landing']);
 	Route::get('/signup', ['as' => 'signup', 'uses' => 'AccountController@signup']);
 	Route::post('/signup', ['as' => 'signup', 'uses' => 'AccountController@doSignup']);
 	Route::get('/login', ['as' => 'login', 'uses' => 'AccountController@login']);
@@ -19,6 +20,6 @@ Route::group(array('before' => 'guest'), function() {
 });
 
 Route::group(array('before' => 'auth'), function() {
-	Route::get('/', ['as' => 'overview', 'uses' => 'MainController@overview']);
+	Route::get('/overview', ['as' => 'overview', 'uses' => 'MainController@overview']);
 	Route::get('/logout', ['as' => 'logout', 'uses' => 'AccountController@logout']);
 });

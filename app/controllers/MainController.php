@@ -11,4 +11,12 @@ class MainController extends BaseController {
 		return View::make('overview', $this->viewData);
 	}
 
+	/**
+	 * Show landing page
+	 */
+	public function landing()
+	{
+		return View::make('landing');
+	}
+
 }
