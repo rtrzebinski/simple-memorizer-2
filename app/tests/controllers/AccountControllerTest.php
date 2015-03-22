@@ -1,27 +1,10 @@
 <?php
 
-class Tests_Controllers_Admin_UserControllerTest extends TestCase {
-
-	public function testGetOverview_user_logged_in()
-	{
-		$user = $this->createUser();
-		$this->be($user);
-
-		$this->route('GET', 'admin_overview');
-
-		$this->assertViewHas('user');
-	}
-
-	public function testGetOverview_user_not_logged_in()
-	{
-		$this->route('GET', 'admin_overview');
-
-		$this->assertRedirectedToRoute('admin_user_login');
-	}
+class Controllers_AccountControllerTest extends TestCase {
 
 	public function testGetLogin()
 	{
-		$this->route('GET', 'admin_user_login');
+		$this->route('GET', 'user_login');
 
 		$this->assertResponseOk();
 	}
@@ -39,10 +22,10 @@ class Tests_Controllers_Admin_UserControllerTest extends TestCase {
 			'remember_me' => $rememberMe
 		];
 
-		$this->route('POST', 'admin_user_login', $data);
+		$this->route('POST', 'user_login', $data);
 
 		// check auth
-		$this->assertRedirectedToRoute('admin_overview');
+		$this->assertRedirectedToRoute('overview');
 		$this->assertTrue(Auth::check());
 
 		// check remember token
@@ -58,7 +41,7 @@ class Tests_Controllers_Admin_UserControllerTest extends TestCase {
 			'password' => uniqid()
 		];
 
-		$this->route('POST', 'admin_user_login', $data);
+		$this->route('POST', 'user_login', $data);
 
 		$this->assertViewHas('errors');
 		$this->assertFalse(Auth::check());
@@ -69,9 +52,9 @@ class Tests_Controllers_Admin_UserControllerTest extends TestCase {
 		$user = $this->createUser();
 		$this->be($user);
 
-		$this->route('GET', 'admin_user_logout');
+		$this->route('GET', 'user_logout');
 
-		$this->assertRedirectedToRoute('admin_user_login');
+		$this->assertRedirectedToRoute('user_login');
 		$this->assertFalse(Auth::check());
 	}
 
@@ -80,16 +63,16 @@ class Tests_Controllers_Admin_UserControllerTest extends TestCase {
 		$user = $this->createUser();
 		$this->be($user);
 
-		$this->route('GET', 'admin_user_signup');
+		$this->route('GET', 'user_signup');
 
-		$this->assertRedirectedToRoute('admin_overview');
+		$this->assertRedirectedToRoute('overview');
 	}
 
 	public function testGetSignup_user_not_logged_in()
 	{
-		View::shouldReceive('make')->with('admin.user.signup')->once();
+		View::shouldReceive('make')->with('user.signup')->once();
 
-		$this->route('GET', 'admin_user_signup');
+		$this->route('GET', 'user_signup');
 
 		$this->assertResponseOk();
 	}
@@ -113,7 +96,7 @@ class Tests_Controllers_Admin_UserControllerTest extends TestCase {
 			'password' => $password
 		];
 
-		$this->route('POST', 'admin_user_signup', $data);
+		$this->route('POST', 'user_signup', $data);
 
 		$this->assertViewHas('errors');
 		$this->assertFalse(Auth::check());
@@ -126,9 +109,9 @@ class Tests_Controllers_Admin_UserControllerTest extends TestCase {
 			'password' => uniqid()
 		];
 
-		$this->route('POST', 'admin_user_signup', $data);
+		$this->route('POST', 'user_signup', $data);
 
-		$this->assertRedirectedToRoute('admin_overview');
+		$this->assertRedirectedToRoute('overview');
 		$this->assertTrue(Auth::check());
 	}
 

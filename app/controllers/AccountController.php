@@ -1,22 +1,6 @@
 <?php
 
-class Admin_UserController extends BaseController {
-
-	/**
-	 * Show overview page.
-	 */
-	public function getOverview()
-	{
-		if (Auth::check())
-		{
-			$this->viewData['user'] = Auth::user();
-			return View::make('admin.user.overview', $this->viewData);
-		}
-		else
-		{
-			return Redirect::route('admin_user_login');
-		}
-	}
+class AccountController extends BaseController {
 
 	/**
 	 * Show login page.
@@ -25,11 +9,11 @@ class Admin_UserController extends BaseController {
 	{
 		if (Auth::check())
 		{
-			return Redirect::route('admin_overview');
+			return Redirect::route('overview');
 		}
 		else
 		{
-			return View::make('admin.user.login');
+			return View::make('user.login');
 		}
 	}
 
@@ -44,15 +28,15 @@ class Admin_UserController extends BaseController {
 				'password' => Input::get('password')
 				], Input::get('remember_me')))
 		{
-			return Redirect::route('admin_overview');
+			return Redirect::route('overview');
 		}
 		else
 		{
 			$this->viewData['email'] = Input::get('email');
 			$errors = $this->createErrors([
-				Lang::get('messages.admin.bad_login')
+				Lang::get('messages.bad_login')
 			]);
-			return View::make('admin.user.login', $this->viewData)->withErrors($errors);
+			return View::make('user.login', $this->viewData)->withErrors($errors);
 		}
 	}
 
@@ -62,21 +46,27 @@ class Admin_UserController extends BaseController {
 	public function getLogout()
 	{
 		Auth::logout();
-		return Redirect::route('admin_user_login');
+		return Redirect::route('user_login');
 	}
 
+	/**
+	 * Show signup form
+	 */
 	public function getSignup()
 	{
 		if (Auth::check())
 		{
-			return Redirect::route('admin_overview');
+			return Redirect::route('overview');
 		}
 		else
 		{
-			return View::make('admin.user.signup');
+			return View::make('user.signup');
 		}
 	}
 
+	/**
+	 * Create new user
+	 */
 	public function postSignup()
 	{
 		$email = Input::get('email');
@@ -94,7 +84,7 @@ class Admin_UserController extends BaseController {
 
 		if ($validator->fails())
 		{
-			return View::make('admin.user.signup')->withErrors($validator);
+			return View::make('user.signup')->withErrors($validator);
 		}
 
 		$user = App::make('User');
@@ -103,7 +93,7 @@ class Admin_UserController extends BaseController {
 		$user->save();
 
 		Auth::login($user);
-		return Redirect::route('admin_overview');
+		return Redirect::route('overview');
 	}
 
 }
