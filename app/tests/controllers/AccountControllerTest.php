@@ -2,13 +2,30 @@
 
 class Controllers_AccountControllerTest extends TestCase {
 
+	public function setUp()
+	{
+		parent::setUp();
+		Route::enableFilters();
+	}
+
 	public function testGetLogin()
 	{
-		View::shouldReceive('make')->with('user.login')->once();
+		View::shouldReceive('make')->with('user.login');
 
 		$this->route('GET', 'login');
 
 		$this->assertResponseOk();
+	}
+
+	public function testGetLogin_user_logged_in()
+	{
+		$user = $this->createUser();
+		$this->be($user);
+
+		$this->route('GET', 'login');
+
+		$this->assertRedirectedToRoute('overview');
+		$this->assertTrue(Auth::check());
 	}
 
 	/**

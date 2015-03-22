@@ -7,14 +7,7 @@ class AccountController extends BaseController {
 	 */
 	public function getLogin()
 	{
-		if (Auth::check())
-		{
-			return Redirect::route('overview');
-		}
-		else
-		{
-			return View::make('user.login');
-		}
+		return View::make('user.login');
 	}
 
 	/**
@@ -54,14 +47,7 @@ class AccountController extends BaseController {
 	 */
 	public function getSignup()
 	{
-		if (Auth::check())
-		{
-			return Redirect::route('overview');
-		}
-		else
-		{
-			return View::make('user.signup');
-		}
+		return View::make('user.signup');
 	}
 
 	/**
