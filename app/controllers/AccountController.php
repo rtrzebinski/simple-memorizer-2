@@ -23,7 +23,7 @@ class AccountController extends BaseController {
 				'email' => $email,
 				'password' => $password
 				), array(
-				'email' => 'required|email',
+				'email' => 'required|email|unique:users,email',
 				'password' => 'required'
 				)
 		);
