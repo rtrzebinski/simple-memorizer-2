@@ -1,6 +1,6 @@
 <?php
 
-class OverviewController extends BaseController {
+class MainController extends BaseController {
 
 	/**
 	 * Show overview page

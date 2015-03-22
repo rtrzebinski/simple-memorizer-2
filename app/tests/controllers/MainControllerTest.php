@@ -1,6 +1,6 @@
 <?php
 
-class OverviewControllerTest extends TestCase {
+class MainControllerTest extends TestCase {
 
 	public function testOverview()
 	{

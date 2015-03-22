@@ -19,6 +19,6 @@ Route::group(array('before' => 'guest'), function() {
 });
 
 Route::group(array('before' => 'auth'), function() {
-	Route::get('/', ['as' => 'overview', 'uses' => 'OverviewController@overview']);
+	Route::get('/', ['as' => 'overview', 'uses' => 'MainController@overview']);
 	Route::get('/logout', ['as' => 'logout', 'uses' => 'AccountController@logout']);
 });
