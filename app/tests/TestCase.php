@@ -37,6 +37,30 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 		return $user;
 	}
 
+	/**
+	 * @return Question
+	 */
+	protected function createQuestion()
+	{
+		$question = App::make('Question');
+		$question->save();
+		return $question;
+	}
+
+	/**
+	 * @param int $userId
+	 * @param int $questionId
+	 * @return User_Question
+	 */
+	protected function createUserQuestion($userId = null, $questionId = null)
+	{
+		$userQuestion = App::make('User_Question');
+		$userQuestion->user_id = $userId ? : $this->createUser()->id;
+		$userQuestion->question_id = $questionId ? : $this->createQuestion()->id;
+		$userQuestion->save();
+		return $userQuestion;
+	}
+
 	protected function dumpResponseContent()
 	{
 		dd($this->client->getResponse()->getContent());
