@@ -74,4 +74,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 		];
 	}
 
+	public function refresh(\Illuminate\Database\Eloquent\Model &$object)
+	{
+		$object = App::make(get_class($object))->find($object->id);
+	}
+
 }

@@ -37,7 +37,7 @@ class QuestionTest extends TestCase {
 		$userQuestion = new User_Question();
 		$userQuestion->number_of_good_answers = $goodAnswers;
 		$userQuestion->number_of_bad_answers = $badAnswers;
-		$this->assertEquals($percentOfGoodAnswers, $userQuestion->percentOfGoodAnswers());
+		$this->assertEquals($percentOfGoodAnswers, $userQuestion->calculatePercentOfGoodAnswers());
 	}
 
 	public function testUserRelation()
@@ -50,6 +50,30 @@ class QuestionTest extends TestCase {
 	{
 		$userQuestion = $this->createUserQuestion();
 		$this->assertInstanceOf('Question', $userQuestion->question);
+	}
+
+	public function testIncreaseNumberOfGoodAnswers()
+	{
+		$userQuestion = $this->createUserQuestion();
+		$userQuestion->increaseNumberOfGoodAnswers();
+		$this->assertEquals(1, $userQuestion->number_of_good_answers);
+		$this->assertEquals(100, $userQuestion->percent_of_good_answers);
+		$this->refresh($userQuestion);
+		$this->assertEquals(1, $userQuestion->number_of_good_answers);
+		$this->assertEquals(100, $userQuestion->percent_of_good_answers);
+	}
+
+	public function testIncreaseNumberOfBadAnswers()
+	{
+		$userQuestion = $this->createUserQuestion();
+		$userQuestion->number_of_good_answers = 1;
+		$userQuestion->save();
+		$userQuestion->increaseNumberOfBadAnswers();
+		$this->assertEquals(1, $userQuestion->number_of_bad_answers);
+		$this->assertEquals(50, $userQuestion->percent_of_good_answers);
+		$this->refresh($userQuestion);
+		$this->assertEquals(1, $userQuestion->number_of_bad_answers);
+		$this->assertEquals(50, $userQuestion->percent_of_good_answers);
 	}
 
 }
