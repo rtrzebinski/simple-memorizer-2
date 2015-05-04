@@ -44,14 +44,18 @@ class User_Question extends \Illuminate\Database\Eloquent\Model {
 
 	public function increaseNumberOfGoodAnswers()
 	{
-		$this->increaseField('number_of_good_answers');
-		$this->updatePercentOfGoodAnswers();
+		DB::transaction(function() {
+			$this->increaseField('number_of_good_answers');
+			$this->updatePercentOfGoodAnswers();
+		});
 	}
 
 	public function increaseNumberOfBadAnswers()
 	{
-		$this->increaseField('number_of_bad_answers');
-		$this->updatePercentOfGoodAnswers();
+		DB::transaction(function() {
+			$this->increaseField('number_of_bad_answers');
+			$this->updatePercentOfGoodAnswers();
+		});
 	}
 
 	public function user()
