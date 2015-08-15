@@ -4,20 +4,39 @@ class QuestionsControllerTest extends TestCase {
 
 	public function testListAction()
 	{
-		$user = $this->createUser();
+		// log in user
+		$user = new User();
+		$user->id = 1;
 		$this->be($user);
-		$question = $this->createQuestion();
+
+		// create user question
+		$question = new Question();
 		$question->question = uniqid();
 		$question->answer = uniqid();
-		$question->save();
-		$userQuestion = $this->createUserQuestion($user->id, $question->id);
+		$userQuestion = new User_Question();
+		$userQuestion->question()->associate($question);
 
+		// create user question repository mock
+		$repository = $this->createMock('UserQuestionRepository', ['collection']);
+
+		// mock collection() method
+		$repository->
+			expects($this->once())->
+			method('collection')->
+			with($user->id, 1, 0, 'id', 'ASC')->
+			willReturn([$userQuestion]);
+
+		// bind mock object to UserQuestionRepository
+		App::instance('UserQuestionRepository', $repository);
+
+		// call route
 		$responseContent = $this->route('POST', 'list_questions', [
 				'jtSorting' => 'id ASC',
 				'jtStartIndex' => '0',
 				'jtPageSize' => 1
 			])->getContent();
 
+		// check http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
 		$this->assertEquals($userQuestion->id, $data->Records[0]->id);
@@ -28,40 +47,81 @@ class QuestionsControllerTest extends TestCase {
 
 	public function testDeleteAction()
 	{
-		$user = $this->createUser();
+		// log in user
+		$user = new User();
+		$user->id = 1;
 		$this->be($user);
-		$question = $this->createQuestion();
-		$question->question = uniqid();
-		$question->answer = uniqid();
-		$question->save();
-		$userQuestion = $this->createUserQuestion($user->id, $question->id);
 
+		// mock question, expect delete() to be called on it
+		$question = $this->createMock('Question', ['delete']);
+		$question->expects($this->once())->method('delete');
+
+		$userQuestion = new User_Question();
+		$userQuestion->question()->associate($question);
+		$userQuestion->user_id = $user->id;
+
+		// create user question repository mock
+		$repository = $this->createMock('UserQuestionRepository', ['find']);
+
+		// mock find() method
+		$repository->
+			expects($this->once())->
+			method('find')->
+			with(1)->
+			willReturn($userQuestion);
+
+		// bind mock object to UserQuestionRepository
+		App::instance('UserQuestionRepository', $repository);
+
+		// call route
 		$responseContent = $this->route('POST', 'delete_questions', [
-				'id' => $userQuestion->id
+				'id' => 1
 			])->getContent();
 
+		// checkj http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
-		$this->assertNull(App::make('User_Question')->find($userQuestion->id));
 	}
 
 	public function testUpdateAction()
 	{
-		$user = $this->createUser();
+		// log in user
+		$user = new User();
+		$user->id = 1;
 		$this->be($user);
+
 		$question = $this->createQuestion();
 		$question->question = uniqid();
 		$question->answer = uniqid();
 		$question->save();
-		$userQuestion = $this->createUserQuestion($user->id, $question->id);
+
+		$userQuestion = new User_Question();
+		$userQuestion->question()->associate($question);
+		$userQuestion->user_id = $user->id;
+
 		$input = [
 			'id' => $userQuestion->id,
 			'question' => uniqid(),
 			'answer' => uniqid()
 		];
 
+		// create user question repository mock
+		$repository = $this->createMock('UserQuestionRepository', ['find']);
+
+		// mock find() method
+		$repository->
+			expects($this->once())->
+			method('find')->
+			with($userQuestion->id)->
+			willReturn($userQuestion);
+
+		// bind mock object to UserQuestionRepository
+		App::instance('UserQuestionRepository', $repository);
+
+		// call route
 		$responseContent = $this->route('POST', 'update_questions', $input)->getContent();
 
+		// check http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
 		$this->refresh($question);
@@ -71,27 +131,45 @@ class QuestionsControllerTest extends TestCase {
 
 	public function testCreateAction()
 	{
-		$user = $this->createUser();
+		// log in user
+		$user = new User();
+		$user->id = 1;
 		$this->be($user);
-		$input = [
-			'question' => uniqid(),
-			'answer' => uniqid()
-		];
 
-		$responseContent = $this->route('POST', 'create_questions', $input)->getContent();
+		$question = uniqid();
+		$answer = uniqid();
 
+		// create user question repository mock
+		$repository = $this->createMock('UserQuestionRepository', ['create']);
+
+		// mock create() method
+		$repository->
+			expects($this->once())->
+			method('create')->
+			with($question, $answer, $user->id)->
+			willReturnCallback(function() {
+				$userQuestion = new User_Question();
+				$userQuestion->id = 1;
+				$userQuestion->percent_of_good_answers = 0;
+				return $userQuestion;
+			});
+
+		// bind mock object to UserQuestionRepository
+		App::instance('UserQuestionRepository', $repository);
+
+		// call route
+		$responseContent = $this->route('POST', 'create_questions', [
+				'question' => $question,
+				'answer' => $answer
+			])->getContent();
+
+		// check http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
-		$question = App::make('Question')->
-			where('question', $input['question'])->
-			where('answer', $input['answer'])->
-			first();
-		$this->assertEquals($input['question'], $question->question);
-		$this->assertEquals($input['answer'], $question->answer);
-		$userQuestion = App::make('User_Question')->
-			where('question_id', $question->id)->
-			first();
-		$this->assertEquals($user->id, $userQuestion->user_id);
+		$this->assertEquals(1, $data->Record->id);
+		$this->assertEquals(0, $data->Record->percent_of_good_answers);
+		$this->assertEquals($question, $data->Record->question);
+		$this->assertEquals($answer, $data->Record->answer);
 	}
 
 }

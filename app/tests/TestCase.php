@@ -79,4 +79,18 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 		$object = App::make(get_class($object))->find($object->id);
 	}
 
+	/**
+	 * Create mock object
+	 * @param string $class
+	 * @param array $methods
+	 * @return object
+	 */
+	protected function createMock($class, array $methods = [])
+	{
+		return $this->
+				getMockBuilder($class)->
+				setMethods($methods)->
+				getMock();
+	}
+
 }

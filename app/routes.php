@@ -23,9 +23,9 @@ Route::group(array('before' => 'auth'), function() {
 	Route::get('/overview', ['as' => 'overview', 'uses' => 'MainController@overview']);
 	Route::get('/logout', ['as' => 'logout', 'uses' => 'AccountController@logout']);
 
-	Route::get('/questions', ['as' => 'questions', 'uses' => 'QuestionsController@index']);
-	Route::post('/questions/list', ['as' => 'list_questions', 'uses' => 'QuestionsController@listAction']);
-	Route::post('/questions/delete', ['as' => 'delete_questions', 'uses' => 'QuestionsController@deleteAction']);
-	Route::post('/questions/update', ['as' => 'update_questions', 'uses' => 'QuestionsController@updateAction']);
-	Route::post('/questions/create', ['as' => 'create_questions', 'uses' => 'QuestionsController@createAction']);
+	Route::get('/questions', ['as' => 'questions', 'uses' => 'UserQuestionsController@index']);
+	Route::post('/questions/list', ['as' => 'list_questions', 'uses' => 'UserQuestionsController@listAction']);
+	Route::post('/questions/delete', ['as' => 'delete_questions', 'uses' => 'UserQuestionsController@deleteAction']);
+	Route::post('/questions/update', ['as' => 'update_questions', 'uses' => 'UserQuestionsController@updateAction']);
+	Route::post('/questions/create', ['as' => 'create_questions', 'uses' => 'UserQuestionsController@createAction']);
 });
