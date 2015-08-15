@@ -50,11 +50,11 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	/**
 	 * @param int $userId
 	 * @param int $questionId
-	 * @return User_Question
+	 * @return UserQuestion
 	 */
 	protected function createUserQuestion($userId = null, $questionId = null)
 	{
-		$userQuestion = App::make('User_Question');
+		$userQuestion = App::make('UserQuestion');
 		$userQuestion->user_id = $userId ? : $this->createUser()->id;
 		$userQuestion->question_id = $questionId ? : $this->createQuestion()->id;
 		$userQuestion->save();

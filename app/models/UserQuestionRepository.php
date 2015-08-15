@@ -5,11 +5,11 @@ class UserQuestionRepository {
 	/**
 	 * Find user question
 	 * @param int $id
-	 * @return User_Question
+	 * @return UserQuestion
 	 */
 	public function find($id)
 	{
-		return App::make('User_Question')->
+		return App::make('UserQuestion')->
 				where('id', $id)->
 				first();
 	}
@@ -19,7 +19,7 @@ class UserQuestionRepository {
 	 * @param string $question
 	 * @param string $answer
 	 * @param int $userId
-	 * @return User_Question
+	 * @return UserQuestion
 	 */
 	public function create($question, $answer, $userId)
 	{
@@ -27,7 +27,7 @@ class UserQuestionRepository {
 		$oQuestion->question = $question;
 		$oQuestion->answer = $answer;
 		$oQuestion->save();
-		$userQuestion = App::make('User_Question');
+		$userQuestion = App::make('UserQuestion');
 		$userQuestion->user_id = $userId;
 		$userQuestion->question_id = $oQuestion->id;
 		$userQuestion->save();
@@ -45,7 +45,7 @@ class UserQuestionRepository {
 	 */
 	public function collection($userId, $take, $skip = 0, $orderByField = 'id', $orderBySort = 'ASC')
 	{
-		return User_Question::with('question')->
+		return UserQuestion::with('question')->
 				where('user_id', '=', $userId)->
 				skip($skip)->
 				take($take)->

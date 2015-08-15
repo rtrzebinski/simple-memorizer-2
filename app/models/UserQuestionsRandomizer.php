@@ -1,10 +1,10 @@
 <?php
 
-class Question_Randomizer {
+class UserQuestionsRandomizer {
 
 	private $userQuestions;
 
-	public function addUserQuestion(User_Question $userQuestion)
+	public function addUserQuestion(UserQuestion $userQuestion)
 	{
 		$this->userQuestions[] = $userQuestion;
 	}
@@ -49,7 +49,7 @@ class Question_Randomizer {
 	 * @return int
 	 * @throws Exception
 	 */
-	private function getPoints(User_Question $userQuestion)
+	private function getPoints(UserQuestion $userQuestion)
 	{
 		$percentOfGoodAnswers = $userQuestion->calculatePercentOfGoodAnswers();
 

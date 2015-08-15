@@ -1,6 +1,6 @@
 <?php
 
-class QuestionsRandomizerTest extends TestCase {
+class UserQuestionsRandomizerTest extends TestCase {
 
 	public function answersProvider()
 	{
@@ -34,10 +34,10 @@ class QuestionsRandomizerTest extends TestCase {
 	 */
 	public function testGetPoints($goodAnswers, $badAnswers, $points)
 	{
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->number_of_good_answers = $goodAnswers;
 		$userQuestion->number_of_bad_answers = $badAnswers;
-		$randomizer = new Question_Randomizer();
+		$randomizer = new UserQuestionsRandomizer();
 
 		$class = new ReflectionClass($randomizer);
 		$pointsReflectionMethod = $class->getMethod('getPoints');
@@ -50,19 +50,19 @@ class QuestionsRandomizerTest extends TestCase {
 	 */
 	public function testGetQuestionsArray()
 	{
-		$randomizer = new Question_Randomizer();
+		$randomizer = new UserQuestionsRandomizer();
 		// this user question will have 10 points (no answers)
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->number_of_good_answers = 0;
 		$userQuestion->number_of_bad_answers = 0;
 		$randomizer->addUserQuestion($userQuestion);
 		// this user question will have 10 points (100% bad answers)
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->number_of_good_answers = 0;
 		$userQuestion->number_of_bad_answers = 1;
 		$randomizer->addUserQuestion($userQuestion);
 		// this user question will have 1 point (100% good answers)
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->number_of_good_answers = 1;
 		$userQuestion->number_of_bad_answers = 0;
 		$randomizer->addUserQuestion($userQuestion);
@@ -79,7 +79,7 @@ class QuestionsRandomizerTest extends TestCase {
 	public function testGetRandomQuestion()
 	{
 		$userQuestion = $this->createUserQuestion();
-		$randomizer = new Question_Randomizer();
+		$randomizer = new UserQuestionsRandomizer();
 		$randomizer->addUserQuestion($userQuestion);
 		$this->assertEquals($userQuestion->question, $randomizer->getRandomQuestion());
 	}

@@ -1,6 +1,6 @@
 <?php
 
-class QuestionTest extends TestCase {
+class UserQuestionTest extends TestCase {
 
 	public function answersProvider()
 	{
@@ -34,7 +34,7 @@ class QuestionTest extends TestCase {
 	 */
 	public function testPercentOfGoodAnswers($goodAnswers, $badAnswers, $percentOfGoodAnswers)
 	{
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->number_of_good_answers = $goodAnswers;
 		$userQuestion->number_of_bad_answers = $badAnswers;
 		$this->assertEquals($percentOfGoodAnswers, $userQuestion->calculatePercentOfGoodAnswers());

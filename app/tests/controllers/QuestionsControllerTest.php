@@ -13,7 +13,7 @@ class QuestionsControllerTest extends TestCase {
 		$question = new Question();
 		$question->question = uniqid();
 		$question->answer = uniqid();
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->question()->associate($question);
 
 		// create user question repository mock
@@ -56,7 +56,7 @@ class QuestionsControllerTest extends TestCase {
 		$question = $this->createMock('Question', ['delete']);
 		$question->expects($this->once())->method('delete');
 
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->question()->associate($question);
 		$userQuestion->user_id = $user->id;
 
@@ -95,7 +95,7 @@ class QuestionsControllerTest extends TestCase {
 		$question->answer = uniqid();
 		$question->save();
 
-		$userQuestion = new User_Question();
+		$userQuestion = new UserQuestion();
 		$userQuestion->question()->associate($question);
 		$userQuestion->user_id = $user->id;
 
@@ -148,7 +148,7 @@ class QuestionsControllerTest extends TestCase {
 			method('create')->
 			with($question, $answer, $user->id)->
 			willReturnCallback(function() {
-				$userQuestion = new User_Question();
+				$userQuestion = new UserQuestion();
 				$userQuestion->id = 1;
 				$userQuestion->percent_of_good_answers = 0;
 				return $userQuestion;

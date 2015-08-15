@@ -1,6 +1,6 @@
 <?php
 
-class User_Question extends \Illuminate\Database\Eloquent\Model {
+class UserQuestion extends \Illuminate\Database\Eloquent\Model {
 
 	public $table = 'user_questions';
 

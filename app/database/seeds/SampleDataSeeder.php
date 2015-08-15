@@ -29,23 +29,23 @@ class SampleDataSeeder extends Seeder {
 				'question' => '5 + 5',
 				'answer' => '10'
 		]);
-		User_Question::create([
+		UserQuestion::create([
 			'user_id' => $user->id,
 			'question_id' => $question1->id
 		]);
-		User_Question::create([
+		UserQuestion::create([
 			'user_id' => $user->id,
 			'question_id' => $question2->id
 		]);
-		User_Question::create([
+		UserQuestion::create([
 			'user_id' => $user->id,
 			'question_id' => $question3->id
 		]);
-		User_Question::create([
+		UserQuestion::create([
 			'user_id' => $user->id,
 			'question_id' => $question4->id
 		]);
-		User_Question::create([
+		UserQuestion::create([
 			'user_id' => $user->id,
 			'question_id' => $question5->id
 		]);

@@ -55,7 +55,7 @@ class UserQuestionsController extends JtableController {
 
 	/**
 	 * jTable deleteAction ajax handler
-	 * Deletes Questions, and User_Question with foreign key
+	 * Deletes Questions, and UserQuestion with foreign key
 	 */
 	public function deleteAction()
 	{
@@ -66,7 +66,7 @@ class UserQuestionsController extends JtableController {
 			return $this->errorResponse("Not found");
 		}
 
-		// foreing key deletes all user_questions when question is deleted
+		// foreing key deletes all UserQuestions when question is deleted
 		$userQuestion->question->delete();
 
 		return $this->successReponse();
