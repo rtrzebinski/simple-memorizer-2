@@ -7,12 +7,17 @@ class OverviewControllerTest extends TestCase {
 	 */
 	public function shouldDisplayOverviewPage()
 	{
-		$user = $this->createUser();
-		$this->be($user);
+		// create unsaved user
+		$user = new User();
 
-		View::shouldReceive('make')->with('overview', ['user' => $user])->once();
+		//mock facades
+		Auth::shouldReceive('user')->once()->andReturn($user);
+		View::shouldReceive('make')->once()->with('overview', ['user' => $user]);
+
+		// call route
 		$this->route('GET', 'overview');
 
+		// assert response ok
 		$this->assertResponseOk();
 	}
 

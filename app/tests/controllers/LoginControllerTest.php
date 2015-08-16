@@ -21,39 +21,48 @@ class LoginControllerTest extends TestCase {
 	 */
 	public function shouldLoginUser($rememberMe)
 	{
-		$user = $this->createUser();
 		$data = [
-			'email' => $user->email,
-			'password' => $user->email,
+			'email' => $this->createRandomEmailAddress(),
+			'password' => uniqid(),
 			'remember_me' => $rememberMe
 		];
 
+		// mock auth facade
+		Auth::shouldReceive('attempt')->once()->with([
+			'email' => $data['email'],
+			'password' => $data['password']
+			], $rememberMe)->andReturn(true);
+
+		// call route
 		$this->route('POST', 'login', $data);
 
-		// check auth
+		// check redirection
 		$this->assertRedirectedToRoute('overview');
-		$this->assertTrue(Auth::check());
-
-		// check remember token
-		$rememberToken = User::where('id', $user->id)->first()->remember_token;
-		$this->assertEquals($rememberMe, (bool) $rememberToken);
 	}
 
 	/**
+	 * @dataProvider trueFalseProvider
 	 * @test
 	 */
-	public function shouldNotLoginUserWithBadCredentials()
+	public function shouldNotLoginUserWithBadCredentials($rememberMe)
 	{
-		$user = $this->createUser();
 		$data = [
-			'email' => $user->email,
-			'password' => uniqid()
+			'email' => $this->createRandomEmailAddress(),
+			'password' => uniqid(),
+			'remember_me' => $rememberMe
 		];
 
+		// mock auth facade
+		Auth::shouldReceive('attempt')->once()->with([
+			'email' => $data['email'],
+			'password' => $data['password']
+			], $rememberMe)->andReturn(false);
+
+		// call route
 		$this->route('POST', 'login', $data);
 
+		// check if view has errors
 		$this->assertViewHas('errors');
-		$this->assertFalse(Auth::check());
 	}
 
 }

@@ -7,13 +7,14 @@ class LogoutControllerTest extends TestCase {
 	 */
 	public function shouldLogoutUser()
 	{
-		$user = $this->createUser();
-		$this->be($user);
+		// mock auth facade
+		Auth::shouldReceive('logout')->once();
 
+		// call route
 		$this->route('GET', 'logout');
 
+		// check redirection
 		$this->assertRedirectedToRoute('landing');
-		$this->assertFalse(Auth::check());
 	}
 
 }

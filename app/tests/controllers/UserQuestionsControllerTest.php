@@ -13,7 +13,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$question->question = uniqid();
 		$question->answer = uniqid();
 		$userQuestion = new UserQuestion();
-		$userQuestion->question()->associate($question);
+		$userQuestion->setRelation('question', $question);
 
 		// create user question repository mock
 		$repository = $this->createRepositoryMock('collection');
@@ -53,7 +53,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$question->expects($this->once())->method('delete');
 
 		$userQuestion = new UserQuestion();
-		$userQuestion->question()->associate($question);
+		$userQuestion->setRelation('question', $question);
 
 		// create user question repository mock
 		$repository = $this->createRepositoryMock('find');
@@ -82,18 +82,30 @@ class UserQuestionsControllerTest extends TestCase {
 	{
 		$this->loginUser();
 
-		$question = $this->createQuestion();
-		$question->question = uniqid();
-		$question->answer = uniqid();
-		$question->save();
+		// new question is anser - to be updated
+		$newQuestion = uniqid();
+		$newAnswer = uniqid();
 
+		// mock question (question object is updated by controller)
+		$questionMock = $this->createMock('Question', [
+			'setAttribute',
+			'save'
+		]);
+		call_user_func_array([$questionMock->expects($this->exactly(2))->method('setAttribute'), 'withConsecutive'], [
+			['question', $newQuestion],
+			['answer', $newAnswer]
+		]);
+		$questionMock->expects($this->once())->method('save');
+
+		// create user question and set question mock as related question
 		$userQuestion = new UserQuestion();
-		$userQuestion->question()->associate($question);
+		$userQuestion->setRelation('question', $questionMock);
 
+		// prepare route input
 		$input = [
 			'id' => $userQuestion->id,
-			'question' => uniqid(),
-			'answer' => uniqid()
+			'question' => $newQuestion,
+			'answer' => $newAnswer
 		];
 
 		// create user question repository mock
@@ -115,9 +127,6 @@ class UserQuestionsControllerTest extends TestCase {
 		// check http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
-		$this->refresh($question);
-		$this->assertEquals($input['question'], $question->question);
-		$this->assertEquals($input['answer'], $question->answer);
 	}
 
 	public function testCreateAction()
