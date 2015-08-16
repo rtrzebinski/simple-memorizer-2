@@ -1,9 +1,20 @@
 <?php
 
+/**
+ * Randomizer of user questions
+ * 
+ * Randomizes questions using ratio of good and bad answers,
+ * so questions with more bad answers are returned more often,
+ * than questions with more good answers
+ */
 class UserQuestionsRandomizer {
 
 	private $userQuestions;
 
+	/**
+	 * Add user question
+	 * @param UserQuestion $userQuestion
+	 */
 	public function addUserQuestion(UserQuestion $userQuestion)
 	{
 		$this->userQuestions[] = $userQuestion;

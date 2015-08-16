@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * UserQuestion repository
+ */
 class UserQuestionRepository {
 
 	/**

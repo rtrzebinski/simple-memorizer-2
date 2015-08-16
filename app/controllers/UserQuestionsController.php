@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * jTable base user questions web interface
+ * 
+ * Allows user to manage question/answer pairs
+ */
 class UserQuestionsController extends JtableController {
 
+	/**
+	 * @var UserQuestionRepository 
+	 */
 	private $repository;
 
 	/**

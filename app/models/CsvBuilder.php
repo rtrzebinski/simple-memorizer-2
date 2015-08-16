@@ -1,12 +1,35 @@
 <?php
 
 /**
- * Builds a csv file from given data.
+ * Builds a CSV file from given data
+ * 
+ * Creates file in temporary folder, so it doesn't have to be manually deleted
  */
 class CsvBuilder {
 
+	/**
+	 * CSV field structure
+	 * 
+	 * For each element:
+	 * key - header line name for field
+	 * value - field name that will be used to extract field data
+	 * 
+	 * @var array
+	 */
 	private $fields = [];
+
+	/**
+	 * Data to be converted into CSV file
+	 * 
+	 * @var mixed Array or Traversable object 
+	 */
 	private $data = [];
+
+	/**
+	 * CSV file handler
+	 * 
+	 * @var resource 
+	 */
 	private $fileHandler;
 
 	/**
@@ -34,7 +57,7 @@ class CsvBuilder {
 	}
 
 	/**
-	 * Set csv header line field.
+	 * Set CSV header line field.
 	 * @param string $header Header line name for field.
 	 * @param string $name Field name that will be used to extract field data from input collection.
 	 * @return \CsvBuilder
@@ -46,7 +69,7 @@ class CsvBuilder {
 	}
 
 	/**
-	 * Set data to be converted into csv file.
+	 * Set data to be converted into CSV file.
 	 * @param $data
 	 * @return \CsvBuilder
 	 */
@@ -75,17 +98,17 @@ class CsvBuilder {
 		// Truncate file before writing to it, so object can be reused for different data sets
 		ftruncate($this->fileHandler, 0);
 
-		// Write csv headers to output stream
+		// Write CSV headers to output stream
 		$this->appendHeader($this->fileHandler);
 
-		//  Write csv data rows to output stream
+		//  Write CSV data rows to output stream
 		$this->appendData($this->fileHandler);
 
 		return $this;
 	}
 
 	/**
-	 * Get csv file path.
+	 * Get generated CSV file path.
 	 */
 	public function getPath()
 	{
@@ -93,7 +116,7 @@ class CsvBuilder {
 	}
 
 	/**
-	 * Write header row into csv file.
+	 * Write header row into CSV file.
 	 */
 	private function appendHeader()
 	{
@@ -101,9 +124,9 @@ class CsvBuilder {
 	}
 
 	/**
-	 * Write data rows to csv file.
+	 * Write data rows to CSV file.
 	 * 
-	 * Iterate over 'data' collection and write needed fields into csv file.
+	 * Iterate over 'data' collection and write needed fields into CSV file.
 	 */
 	private function appendData()
 	{

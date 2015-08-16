@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Common methods used by jTable based web interfaces
+ */
 class JtableController extends BaseController {
 
 	/**
