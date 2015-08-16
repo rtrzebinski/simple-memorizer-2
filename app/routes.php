@@ -12,16 +12,16 @@
  */
 
 Route::group(array('before' => 'guest'), function() {
-	Route::get('/', ['as' => 'landing', 'uses' => 'MainController@landing']);
-	Route::get('/signup', ['as' => 'signup', 'uses' => 'AccountController@signup']);
-	Route::post('/signup', ['as' => 'signup', 'uses' => 'AccountController@doSignup', 'before' => 'csrf']);
-	Route::get('/login', ['as' => 'login', 'uses' => 'AccountController@login']);
-	Route::post('/login', ['as' => 'login', 'uses' => 'AccountController@doLogin', 'before' => 'csrf']);
+	Route::get('/', ['as' => 'landing', 'uses' => 'LandingController@index']);
+	Route::get('/signup', ['as' => 'signup', 'uses' => 'SignupController@index']);
+	Route::post('/signup', ['as' => 'signup', 'uses' => 'SignupController@signup', 'before' => 'csrf']);
+	Route::get('/login', ['as' => 'login', 'uses' => 'LoginController@index']);
+	Route::post('/login', ['as' => 'login', 'uses' => 'LoginController@login', 'before' => 'csrf']);
 });
 
 Route::group(array('before' => 'auth'), function() {
-	Route::get('/overview', ['as' => 'overview', 'uses' => 'MainController@overview']);
-	Route::get('/logout', ['as' => 'logout', 'uses' => 'AccountController@logout']);
+	Route::get('/overview', ['as' => 'overview', 'uses' => 'OverviewController@index']);
+	Route::get('/logout', ['as' => 'logout', 'uses' => 'LogoutController@logout']);
 
 	Route::get('/questions', ['as' => 'questions', 'uses' => 'UserQuestionsController@index']);
 	Route::post('/questions/list', ['as' => 'list_questions', 'uses' => 'UserQuestionsController@listAction']);

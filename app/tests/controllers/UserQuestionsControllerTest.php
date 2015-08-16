@@ -1,6 +1,6 @@
 <?php
 
-class QuestionsControllerTest extends TestCase {
+class UserQuestionsControllerTest extends TestCase {
 
 	public function testListAction()
 	{
