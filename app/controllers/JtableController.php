@@ -1,6 +1,6 @@
 <?php
 
-class JtableController extends Controller {
+class JtableController extends BaseController {
 
 	/**
 	 * Build success JSON response

@@ -28,9 +28,7 @@ class LoginController extends BaseController {
 		else
 		{
 			$this->viewData['email'] = Input::get('email');
-			$errors = $this->createErrors([
-				Lang::get('messages.bad_login')
-			]);
+			$errors = new Illuminate\Support\MessageBag([Lang::get('messages.bad_login')]);
 			return View::make('user.login', $this->viewData)->withErrors($errors);
 		}
 	}
