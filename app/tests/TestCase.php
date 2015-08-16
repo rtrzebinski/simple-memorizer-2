@@ -85,11 +85,12 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	 * @param array $methods
 	 * @return object
 	 */
-	protected function createMock($class, array $methods = [])
+	protected function createMock($class, array $methods = [], array $constructorArgs = [])
 	{
 		return $this->
 				getMockBuilder($class)->
 				setMethods($methods)->
+				setConstructorArgs($constructorArgs)->
 				getMock();
 	}
 

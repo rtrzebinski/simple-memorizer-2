@@ -12,13 +12,10 @@ class UserQuestionsController extends JtableController {
 	 */
 	private $repository;
 
-	/**
-	 * Inject user question repository
-	 * @param UserQuestionRepository $repository
-	 */
-	public function __construct(UserQuestionRepository $repository)
+	public function __construct()
 	{
-		$this->repository = $repository;
+		// create user question repository
+		$this->repository = App::make('UserQuestionRepository', [Auth::user()->id]);
 	}
 
 	/**
@@ -39,10 +36,9 @@ class UserQuestionsController extends JtableController {
 		 * Fetch data
 		 */
 		list($orderByField, $orderBySort) = explode(' ', Input::get('jtSorting'));
-		$userId = Auth::user()->id;
 		$skip = Input::get('jtStartIndex');
 		$take = Input::get('jtPageSize');
-		$collection = $this->repository->collection($userId, $take, $skip, $orderByField, $orderBySort);
+		$collection = $this->repository->collection($take, $skip, $orderByField, $orderBySort);
 
 		/*
 		 * Convert to format expected by jTable
@@ -67,9 +63,10 @@ class UserQuestionsController extends JtableController {
 	 */
 	public function deleteAction()
 	{
+		// will return object only if belongs to currently logged in user
 		$userQuestion = $this->repository->find(Input::get('id'));
 
-		if (!$userQuestion || $userQuestion->user_id != Auth::user()->id)
+		if (!$userQuestion)
 		{
 			return $this->errorResponse("Not found");
 		}
@@ -85,9 +82,10 @@ class UserQuestionsController extends JtableController {
 	 */
 	public function updateAction()
 	{
+		// will return object only if belongs to currently logged in user
 		$userQuestion = $this->repository->find(Input::get('id'));
 
-		if (!$userQuestion || $userQuestion->user_id != Auth::user()->id)
+		if (!$userQuestion)
 		{
 			return $this->errorResponse("Not found");
 		}
@@ -104,7 +102,7 @@ class UserQuestionsController extends JtableController {
 	 */
 	public function createAction()
 	{
-		$userQuestion = $this->repository->create(Input::get('question'), Input::get('answer'), Auth::user()->id);
+		$userQuestion = $this->repository->create(Input::get('question'), Input::get('answer'));
 
 		return $this->successReponse(['Record' => [
 					'id' => $userQuestion->id,

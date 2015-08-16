@@ -2,12 +2,11 @@
 
 class UserQuestionsControllerTest extends TestCase {
 
+	const USER_ID = '1234';
+
 	public function testListAction()
 	{
-		// log in user
-		$user = new User();
-		$user->id = 1;
-		$this->be($user);
+		$this->loginUser();
 
 		// create user question
 		$question = new Question();
@@ -17,13 +16,13 @@ class UserQuestionsControllerTest extends TestCase {
 		$userQuestion->question()->associate($question);
 
 		// create user question repository mock
-		$repository = $this->createMock('UserQuestionRepository', ['collection']);
+		$repository = $this->createRepositoryMock('collection');
 
 		// mock collection() method
 		$repository->
 			expects($this->once())->
 			method('collection')->
-			with($user->id, 1, 0, 'id', 'ASC')->
+			with(1, 0, 'id', 'ASC')->
 			willReturn([$userQuestion]);
 
 		// bind mock object to UserQuestionRepository
@@ -47,10 +46,7 @@ class UserQuestionsControllerTest extends TestCase {
 
 	public function testDeleteAction()
 	{
-		// log in user
-		$user = new User();
-		$user->id = 1;
-		$this->be($user);
+		$this->loginUser();
 
 		// mock question, expect delete() to be called on it
 		$question = $this->createMock('Question', ['delete']);
@@ -58,10 +54,9 @@ class UserQuestionsControllerTest extends TestCase {
 
 		$userQuestion = new UserQuestion();
 		$userQuestion->question()->associate($question);
-		$userQuestion->user_id = $user->id;
 
 		// create user question repository mock
-		$repository = $this->createMock('UserQuestionRepository', ['find']);
+		$repository = $this->createRepositoryMock('find');
 
 		// mock find() method
 		$repository->
@@ -85,10 +80,7 @@ class UserQuestionsControllerTest extends TestCase {
 
 	public function testUpdateAction()
 	{
-		// log in user
-		$user = new User();
-		$user->id = 1;
-		$this->be($user);
+		$this->loginUser();
 
 		$question = $this->createQuestion();
 		$question->question = uniqid();
@@ -97,7 +89,6 @@ class UserQuestionsControllerTest extends TestCase {
 
 		$userQuestion = new UserQuestion();
 		$userQuestion->question()->associate($question);
-		$userQuestion->user_id = $user->id;
 
 		$input = [
 			'id' => $userQuestion->id,
@@ -106,7 +97,7 @@ class UserQuestionsControllerTest extends TestCase {
 		];
 
 		// create user question repository mock
-		$repository = $this->createMock('UserQuestionRepository', ['find']);
+		$repository = $this->createRepositoryMock('find');
 
 		// mock find() method
 		$repository->
@@ -131,22 +122,19 @@ class UserQuestionsControllerTest extends TestCase {
 
 	public function testCreateAction()
 	{
-		// log in user
-		$user = new User();
-		$user->id = 1;
-		$this->be($user);
+		$this->loginUser();
 
 		$question = uniqid();
 		$answer = uniqid();
 
 		// create user question repository mock
-		$repository = $this->createMock('UserQuestionRepository', ['create']);
+		$repository = $this->createRepositoryMock('create');
 
 		// mock create() method
 		$repository->
 			expects($this->once())->
 			method('create')->
-			with($question, $answer, $user->id)->
+			with($question, $answer)->
 			willReturnCallback(function() {
 				$userQuestion = new UserQuestion();
 				$userQuestion->id = 1;
@@ -170,6 +158,18 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->assertEquals(0, $data->Record->percent_of_good_answers);
 		$this->assertEquals($question, $data->Record->question);
 		$this->assertEquals($answer, $data->Record->answer);
+	}
+
+	private function createRepositoryMock($method)
+	{
+		return $this->createMock('UserQuestionRepository', [$method], [self::USER_ID]);
+	}
+
+	private function loginUser()
+	{
+		$user = new User();
+		$user->id = self::USER_ID;
+		$this->be($user);
 	}
 
 }
