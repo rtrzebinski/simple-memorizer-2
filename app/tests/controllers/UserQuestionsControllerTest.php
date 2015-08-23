@@ -2,7 +2,10 @@
 
 class UserQuestionsControllerTest extends TestCase {
 
-	public function testIndex()
+	/**
+	 * @test
+	 */
+	public function shouldDisplayIndexPage()
 	{
 		$this->be(new User());
 		App::instance('UserQuestionRepository', $this->createRepositoryMock());
@@ -10,7 +13,10 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->assertResponseOk();
 	}
 
-	public function testListAction()
+	/**
+	 * @test
+	 */
+	public function shouldReturnUserQuestionsList()
 	{
 		// create user question
 		$question = new Question();
@@ -49,7 +55,10 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->assertEquals(0, $data->Records[0]->percent_of_good_answers);
 	}
 
-	public function testDeleteAction()
+	/**
+	 * @test
+	 */
+	public function shouldDeleteUserQuestion()
 	{
 		// mock question, expect delete() to be called on it
 		$question = $this->createMock('Question', ['delete']);
@@ -81,7 +90,10 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->assertEquals('OK', $data->Result);
 	}
 
-	public function testUpdateAction()
+	/**
+	 * @test
+	 */
+	public function shouldUpdateUserQuestion()
 	{
 		// new question is anser - to be updated
 		$newQuestion = uniqid();
@@ -130,7 +142,10 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->assertEquals('OK', $data->Result);
 	}
 
-	public function testCreateAction()
+	/**
+	 * @test
+	 */
+	public function shouldCreateUserQuestion()
 	{
 		$question = uniqid();
 		$answer = uniqid();

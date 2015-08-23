@@ -47,13 +47,19 @@ class UserQuestionTest extends TestCase {
 		$this->assertEquals($percentOfGoodAnswers, $reflectionMethod->invoke($userQuestion));
 	}
 
-	public function testUserRelation()
+	/**
+	 * @test
+	 */
+	public function shouldDefineUserRelation()
 	{
 		$userQuestion = $this->createUserQuestion();
 		$this->assertInstanceOf('User', $userQuestion->user);
 	}
 
-	public function testQuestionRelation()
+	/**
+	 * @test
+	 */
+	public function shouldDefineQuestionRelation()
 	{
 		$userQuestion = $this->createUserQuestion();
 		$this->assertInstanceOf('Question', $userQuestion->question);
