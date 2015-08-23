@@ -28,4 +28,7 @@ Route::group(array('before' => 'auth'), function() {
 	Route::post('/questions/delete', ['as' => 'delete_questions', 'uses' => 'UserQuestionsController@deleteAction']);
 	Route::post('/questions/update', ['as' => 'update_questions', 'uses' => 'UserQuestionsController@updateAction']);
 	Route::post('/questions/create', ['as' => 'create_questions', 'uses' => 'UserQuestionsController@createAction']);
+
+	Route::get('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@index']);
+	Route::post('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@answer', 'before' => 'csrf']);
 });

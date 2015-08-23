@@ -9,55 +9,68 @@
  */
 class UserQuestionsRandomizer {
 
-	private $userQuestions;
+	private $user;
 
-	/**
-	 * Add user question
-	 * @param UserQuestion $userQuestion
-	 */
-	public function addUserQuestion(UserQuestion $userQuestion)
+	public function __construct(User $user)
 	{
-		$this->userQuestions[] = $userQuestion;
+		$this->user = $user;
 	}
 
 	/**
-	 * Get a random question, from one of attached userQuestions.
+	 * Random user question
+	 * 
 	 * Questions that user knows less have more chance to be returned.
 	 * Questions that user knows more have less chance to be returned.
-	 * @return Question
+	 * 
+	 * @return UserQuestion
 	 */
-	public function getRandomQuestion()
+	public function randomUserQuestion()
 	{
-		$questions = $this->getQuestionsArray();
+		$questions = $this->getUserQuestionsArray();
 		if (count($questions) > 0)
 		{
+			// do randomization
 			shuffle($questions);
 			return $questions[array_rand($questions)];
 		}
 	}
 
 	/**
-	 * Returned array contains questions multiplied by userQuestions points.
+	 * Multiply user questions by points
+	 * 
 	 * @return array
 	 */
-	private function getQuestionsArray()
+	private function getUserQuestionsArray()
 	{
-		$questions = [];
-		foreach ($this->userQuestions as $userQuestion)
+		// extract user questions from injected user
+		$userQuestions = $this->user->userQuestions;
+
+		// return an empty array if user has no questions attached
+		if (!$userQuestions)
+		{
+			return [];
+		}
+
+		$return = [];
+		foreach ($this->user->userQuestions as $userQuestion)
 		{
 			for ($i = $this->getPoints($userQuestion); $i > 0; $i--)
 			{
-				$questions[] = $userQuestion->question;
+				$return[] = $userQuestion;
 			}
 		}
-		return $questions;
+		return $return;
 	}
 
 	/**
+	 * Convert percent of good answers to knowledge points
+	 * 
 	 * Point is an integer value between 1 and 10, it determines if user is familiar with the answer.
+	 * 
 	 * 1 means highest familiarity with the answer.
 	 * 10 means lowest familiarity with the answer.
-	 * @return int
+	 * 
+	 * @return int Number of points
 	 * @throws Exception
 	 */
 	private function getPoints(UserQuestion $userQuestion)

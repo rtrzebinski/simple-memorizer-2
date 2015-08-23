@@ -66,4 +66,30 @@ class UserQuestionRepository {
 				get();
 	}
 
+	/**
+	 * Return random user question
+	 * 
+	 * UserQuestionsRandomizer is used to return less known questions
+	 * more often that better known
+	 * 
+	 * @return UserQuestion
+	 * @throws Exception
+	 */
+	public function randomUserQuestion()
+	{
+		// instantiate user
+		$user = App::make('User')->find($this->userId);
+
+		if (!$user)
+		{
+			throw new Exception('Invalid user id');
+		}
+
+		// instantiate randomizer
+		$randomizer = new UserQuestionsRandomizer($user);
+
+		// return random user question
+		return $randomizer->randomUserQuestion();
+	}
+
 }

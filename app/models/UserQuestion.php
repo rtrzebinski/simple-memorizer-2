@@ -34,6 +34,24 @@ class UserQuestion extends \Illuminate\Database\Eloquent\Model {
 	}
 
 	/**
+	 * Increase number of good or bad answers in both DB and object
+	 * @param bool $isAnswerCorrect
+	 * true = number of good answers increased
+	 * false = number of bad answers increased
+	 */
+	public function increaseNumberOfAnswers($isAnswerCorrect)
+	{
+		if ($isAnswerCorrect)
+		{
+			$this->increaseNumberOfGoodAnswers();
+		}
+		else
+		{
+			$this->increaseNumberOfBadAnswers();
+		}
+	}
+
+	/**
 	 * Increase number of good answer in both DB and object
 	 */
 	public function increaseNumberOfGoodAnswers()

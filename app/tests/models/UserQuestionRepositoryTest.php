@@ -55,4 +55,31 @@ class UserQuestionRepositoryTest extends TestCase {
 		$this->assertEquals(0, $data[0]->percent_of_good_answers);
 	}
 
+	/**
+	 * @test
+	 */
+	public function shouldReturnRandomQuestion()
+	{
+		$userQuestion = $this->createUserQuestion();
+		$repository = new UserQuestionRepository($userQuestion->user->id);
+
+		/*
+		 * ensure that the only existing question is returned
+		 * randomizer is tested separatly, so no need to test randomization here
+		 */
+		$randomUserQuestion = $repository->randomUserQuestion();
+		$this->assertInstanceOf('UserQuestion', $randomUserQuestion);
+		$this->assertEquals($userQuestion->id, $randomUserQuestion->id);
+	}
+
+	/**
+	 * @test
+	 */
+	public function shouldFailToReturnRandomQuestionIfUserDoesNotExist()
+	{
+		$this->setExpectedException('Exception', 'Invalid user id');
+		$repository = new UserQuestionRepository(-1);
+		$repository->randomUserQuestion();
+	}
+
 }

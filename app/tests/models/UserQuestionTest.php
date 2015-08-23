@@ -76,4 +76,30 @@ class UserQuestionTest extends TestCase {
 		$this->assertEquals(50, $userQuestion->percent_of_good_answers);
 	}
 
+	/**
+	 * Test increateNumberOfAnswers(true)
+	 * @test
+	 */
+	public function shouldIncreaseNumberOfGoodAnswers()
+	{
+		$userQuestionMock = $this->getMock('UserQuestion', ['increaseNumberOfGoodAnswers']);
+		$userQuestionMock->expects($this->once())->method('increaseNumberOfGoodAnswers');
+		$this->app->instance('UserQuestion', $userQuestionMock);
+
+		$userQuestionMock->increaseNumberOfAnswers(true);
+	}
+
+	/**
+	 * Test increateNumberOfAnswers(false)
+	 * @test
+	 */
+	public function shouldIncreaseNumberOfBadAnswers()
+	{
+		$userQuestionMock = $this->getMock('UserQuestion', ['increaseNumberOfBadAnswers']);
+		$userQuestionMock->expects($this->once())->method('increaseNumberOfBadAnswers');
+		$this->app->instance('UserQuestion', $userQuestionMock);
+
+		$userQuestionMock->increaseNumberOfAnswers(false);
+	}
+
 }
