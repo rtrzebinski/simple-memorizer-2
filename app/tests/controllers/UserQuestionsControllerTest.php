@@ -2,6 +2,14 @@
 
 class UserQuestionsControllerTest extends TestCase {
 
+	public function testIndex()
+	{
+		$this->be(new User());
+		App::instance('UserQuestionRepository', $this->createRepositoryMock());
+		$this->route('GET', 'questions');
+		$this->assertResponseOk();
+	}
+
 	public function testListAction()
 	{
 		// create user question
@@ -13,7 +21,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$userQuestion->setRelation('question', $question);
 
 		// create user question repository mock
-		$repository = $this->createRepositoryMock('collection');
+		$repository = $this->createRepositoryMock(['collection']);
 
 		// mock collection() method
 		$repository->
@@ -51,7 +59,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$userQuestion->setRelation('question', $question);
 
 		// create user question repository mock
-		$repository = $this->createRepositoryMock('find');
+		$repository = $this->createRepositoryMock(['find']);
 
 		// mock find() method
 		$repository->
@@ -102,7 +110,7 @@ class UserQuestionsControllerTest extends TestCase {
 		];
 
 		// create user question repository mock
-		$repository = $this->createRepositoryMock('find');
+		$repository = $this->createRepositoryMock(['find']);
 
 		// mock find() method
 		$repository->
@@ -128,7 +136,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$answer = uniqid();
 
 		// create user question repository mock
-		$repository = $this->createRepositoryMock('create');
+		$repository = $this->createRepositoryMock(['create']);
 
 		// mock create() method
 		$repository->
@@ -160,10 +168,10 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->assertEquals($answer, $data->Record->answer);
 	}
 
-	private function createRepositoryMock($method)
+	private function createRepositoryMock($method = [])
 	{
 		return $this->getMockBuilder('UserQuestionRepository')->
-				setMethods([$method])->
+				setMethods($method)->
 				disableOriginalConstructor()->
 				getMock();
 	}
