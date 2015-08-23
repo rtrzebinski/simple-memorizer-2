@@ -13,7 +13,7 @@ class UserQuestionRepositoryTest extends TestCase {
 		$user = $this->createUser();
 		$userQuestion = $this->createUserQuestion($user->id);
 
-		$repository = new UserQuestionRepository($user->id);
+		$repository = new UserQuestionRepository($user);
 		$this->assertEquals($userQuestion->id, $repository->find($userQuestion->id)->id);
 	}
 
@@ -26,7 +26,7 @@ class UserQuestionRepositoryTest extends TestCase {
 		$question = uniqid();
 		$answer = uniqid();
 
-		$repository = new UserQuestionRepository($user->id);
+		$repository = new UserQuestionRepository($user);
 		$userQuestion = $repository->create($question, $answer);
 
 		$this->assertEquals($user->id, $userQuestion->user_id);
@@ -46,7 +46,7 @@ class UserQuestionRepositoryTest extends TestCase {
 		$question->save();
 		$userQuestion = $this->createUserQuestion($user->id, $question->id);
 
-		$repository = new UserQuestionRepository($user->id);
+		$repository = new UserQuestionRepository($user);
 		$data = $repository->collection(1);
 
 		$this->assertEquals($userQuestion->id, $data[0]->id);
@@ -61,7 +61,7 @@ class UserQuestionRepositoryTest extends TestCase {
 	public function shouldReturnRandomQuestion()
 	{
 		$userQuestion = $this->createUserQuestion();
-		$repository = new UserQuestionRepository($userQuestion->user->id);
+		$repository = new UserQuestionRepository($userQuestion->user);
 
 		/*
 		 * ensure that the only existing question is returned
@@ -70,16 +70,6 @@ class UserQuestionRepositoryTest extends TestCase {
 		$randomUserQuestion = $repository->randomUserQuestion();
 		$this->assertInstanceOf('UserQuestion', $randomUserQuestion);
 		$this->assertEquals($userQuestion->id, $randomUserQuestion->id);
-	}
-
-	/**
-	 * @test
-	 */
-	public function shouldFailToReturnRandomQuestionIfUserDoesNotExist()
-	{
-		$this->setExpectedException('Exception', 'Invalid user id');
-		$repository = new UserQuestionRepository(-1);
-		$repository->randomUserQuestion();
 	}
 
 }

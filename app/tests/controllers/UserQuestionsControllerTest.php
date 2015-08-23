@@ -2,12 +2,8 @@
 
 class UserQuestionsControllerTest extends TestCase {
 
-	const USER_ID = '1234';
-
 	public function testListAction()
 	{
-		$this->loginUser();
-
 		// create user question
 		$question = new Question();
 		$question->question = uniqid();
@@ -47,8 +43,6 @@ class UserQuestionsControllerTest extends TestCase {
 
 	public function testDeleteAction()
 	{
-		$this->loginUser();
-
 		// mock question, expect delete() to be called on it
 		$question = $this->createMock('Question', ['delete']);
 		$question->expects($this->once())->method('delete');
@@ -81,8 +75,6 @@ class UserQuestionsControllerTest extends TestCase {
 
 	public function testUpdateAction()
 	{
-		$this->loginUser();
-
 		// new question is anser - to be updated
 		$newQuestion = uniqid();
 		$newAnswer = uniqid();
@@ -132,8 +124,6 @@ class UserQuestionsControllerTest extends TestCase {
 
 	public function testCreateAction()
 	{
-		$this->loginUser();
-
 		$question = uniqid();
 		$answer = uniqid();
 
@@ -172,14 +162,10 @@ class UserQuestionsControllerTest extends TestCase {
 
 	private function createRepositoryMock($method)
 	{
-		return $this->createMock('UserQuestionRepository', [$method], [self::USER_ID]);
-	}
-
-	private function loginUser()
-	{
-		$user = new User();
-		$user->id = self::USER_ID;
-		$this->be($user);
+		return $this->getMockBuilder('UserQuestionRepository')->
+				setMethods([$method])->
+				disableOriginalConstructor()->
+				getMock();
 	}
 
 }

@@ -6,14 +6,13 @@
 class UserQuestionRepository {
 
 	/**
-	 * Id of user
-	 * @var int
+	 * @var User
 	 */
-	private $userId;
+	private $user;
 
-	public function __construct($userId)
+	public function __construct(User $user)
 	{
-		$this->userId = $userId;
+		$this->user = $user;
 	}
 
 	/**
@@ -25,7 +24,7 @@ class UserQuestionRepository {
 	{
 		return App::make('UserQuestion')->
 				where('id', $id)->
-				where('user_id', $this->userId)->
+				where('user_id', $this->user->id)->
 				first();
 	}
 
@@ -42,7 +41,7 @@ class UserQuestionRepository {
 		$oQuestion->answer = $answer;
 		$oQuestion->save();
 		$userQuestion = App::make('UserQuestion');
-		$userQuestion->user_id = $this->userId;
+		$userQuestion->user_id = $this->user->id;
 		$userQuestion->question_id = $oQuestion->id;
 		$userQuestion->save();
 		return $userQuestion;
@@ -59,7 +58,7 @@ class UserQuestionRepository {
 	public function collection($take, $skip = 0, $orderByField = 'id', $orderBySort = 'ASC')
 	{
 		return UserQuestion::with('question')->
-				where('user_id', '=', $this->userId)->
+				where('user_id', '=', $this->user->id)->
 				skip($skip)->
 				take($take)->
 				orderBy($orderByField, $orderBySort)->
@@ -77,16 +76,8 @@ class UserQuestionRepository {
 	 */
 	public function randomUserQuestion()
 	{
-		// instantiate user
-		$user = App::make('User')->find($this->userId);
-
-		if (!$user)
-		{
-			throw new Exception('Invalid user id');
-		}
-
 		// instantiate randomizer
-		$randomizer = new UserQuestionsRandomizer($user);
+		$randomizer = new UserQuestionsRandomizer($this->user);
 
 		// return random user question
 		return $randomizer->randomUserQuestion();

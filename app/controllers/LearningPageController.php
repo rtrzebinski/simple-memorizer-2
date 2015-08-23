@@ -10,10 +10,9 @@ class LearningPageController extends BaseController {
 	 */
 	private $repository;
 
-	public function __construct()
+	public function __construct(UserQuestionRepository $repository)
 	{
-		// create user question repository
-		$this->repository = App::make('UserQuestionRepository', [Auth::user()->id]);
+		$this->repository = $repository;
 	}
 
 	/**
