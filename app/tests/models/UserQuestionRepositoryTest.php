@@ -5,6 +5,8 @@
  */
 class UserQuestionRepositoryTest extends TestCase {
 
+	use DatabaseTestHelper;
+
 	/**
 	 * @test
 	 */
@@ -41,8 +43,6 @@ class UserQuestionRepositoryTest extends TestCase {
 	{
 		$user = $this->createUser();
 		$question = $this->createQuestion();
-		$question->question = uniqid();
-		$question->answer = uniqid();
 		$question->save();
 		$userQuestion = $this->createUserQuestion($user->id, $question->id);
 

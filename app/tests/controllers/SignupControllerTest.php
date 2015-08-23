@@ -20,12 +20,12 @@ class SignupControllerTest extends TestCase {
 	public function shouldSignupUser()
 	{
 		$data = [
-			'email' => $this->createRandomEmailAddress(),
+			'email' => $this->randomEmailAddress(),
 			'password' => uniqid()
 		];
 
 		// mock User model
-		$userMock = $this->createMock('User', [
+		$userMock = $this->getMock('User', [
 			'setAttribute',
 			'save'
 		]);

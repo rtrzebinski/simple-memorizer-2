@@ -22,7 +22,7 @@ class LoginControllerTest extends TestCase {
 	public function shouldLoginUser($rememberMe)
 	{
 		$data = [
-			'email' => $this->createRandomEmailAddress(),
+			'email' => $this->randomEmailAddress(),
 			'password' => uniqid(),
 			'remember_me' => $rememberMe
 		];
@@ -47,7 +47,7 @@ class LoginControllerTest extends TestCase {
 	public function shouldNotLoginUserWithBadCredentials($rememberMe)
 	{
 		$data = [
-			'email' => $this->createRandomEmailAddress(),
+			'email' => $this->randomEmailAddress(),
 			'password' => uniqid(),
 			'remember_me' => $rememberMe
 		];
@@ -63,6 +63,14 @@ class LoginControllerTest extends TestCase {
 
 		// check if view has errors
 		$this->assertViewHas('errors');
+	}
+
+	public function trueFalseProvider()
+	{
+		return [
+			[true],
+			[false]
+		];
 	}
 
 }

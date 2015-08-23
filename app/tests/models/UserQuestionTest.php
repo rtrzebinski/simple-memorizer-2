@@ -2,6 +2,8 @@
 
 class UserQuestionTest extends TestCase {
 
+	use DatabaseTestHelper;
+
 	public function answersProvider()
 	{
 		return [

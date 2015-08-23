@@ -10,11 +10,11 @@ class CsvBuilderTest extends TestCase {
 		$data = [
 			[
 				'user_name' => uniqid(),
-				'user_email' => $this->createRandomEmailAddress(),
+				'user_email' => $this->randomEmailAddress(),
 			],
 			[
 				'user_name' => uniqid(),
-				'user_email' => $this->createRandomEmailAddress(),
+				'user_email' => $this->randomEmailAddress(),
 			]
 		];
 
@@ -45,11 +45,11 @@ class CsvBuilderTest extends TestCase {
 		$data = [];
 		$object1 = new stdClass();
 		$object1->user_name = uniqid();
-		$object1->user_email = $this->createRandomEmailAddress();
+		$object1->user_email = $this->randomEmailAddress();
 		$data[] = $object1;
 		$object2 = new stdClass();
 		$object2->user_name = uniqid();
-		$object2->user_email = $this->createRandomEmailAddress();
+		$object2->user_email = $this->randomEmailAddress();
 		$data[] = $object2;
 
 		$path = CsvBuilder::create()->
@@ -80,7 +80,7 @@ class CsvBuilderTest extends TestCase {
 		$data = [
 			[
 				'user_name' => uniqid(),
-				'user_email' => $this->createRandomEmailAddress(),
+				'user_email' => $this->randomEmailAddress(),
 			]
 		];
 

@@ -2,10 +2,12 @@
 
 class UserTest extends TestCase {
 
+	use DatabaseTestHelper;
+
 	/**
 	 * @test
 	 */
-	public function shouldReturnUserQuestionsCollection()
+	public function shouldDefineUserQuestionsRelation()
 	{
 		$userQuestion = $this->createUserQuestion();
 

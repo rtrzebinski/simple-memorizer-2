@@ -61,7 +61,7 @@ class UserQuestionsControllerTest extends TestCase {
 	public function shouldDeleteUserQuestion()
 	{
 		// mock question, expect delete() to be called on it
-		$question = $this->createMock('Question', ['delete']);
+		$question = $this->getMock('Question', ['delete']);
 		$question->expects($this->once())->method('delete');
 
 		$userQuestion = new UserQuestion();
@@ -100,7 +100,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$newAnswer = uniqid();
 
 		// mock question (question object is updated by controller)
-		$questionMock = $this->createMock('Question', [
+		$questionMock = $this->getMock('Question', [
 			'setAttribute',
 			'save'
 		]);

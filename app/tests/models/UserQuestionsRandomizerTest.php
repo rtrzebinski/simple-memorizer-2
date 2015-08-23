@@ -109,7 +109,7 @@ class UserQuestionsRandomizerTest extends TestCase {
 	public function shouldReturnRandomObject()
 	{
 		// create one user question
-		$userQuestion = $this->createUserQuestion();
+		$userQuestion = new UserQuestion();
 
 		// create user, and relate created user question
 		$user = new User();
