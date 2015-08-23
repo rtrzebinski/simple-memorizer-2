@@ -39,7 +39,7 @@ class LearningPageControllerTest extends TestCase {
 	/**
 	 * @test
 	 */
-	public function shouldIncreaseNumberOfAnswers()
+	public function shouldUpdateAnswers()
 	{
 		$this->be(new User());
 
@@ -51,9 +51,9 @@ class LearningPageControllerTest extends TestCase {
 		// mock user question
 		$userQuestionMock = $this->
 			getMockBuilder('UserQuestion')->
-			setMethods(['increaseNumberOfAnswers'])->
+			setMethods(['updateAnswers'])->
 			getMock();
-		$userQuestionMock->expects($this->once())->method('increaseNumberOfAnswers')->with(true);
+		$userQuestionMock->expects($this->once())->method('updateAnswers')->with(true);
 		$userQuestionMock->id = uniqid();
 		$userQuestionMock->setRelation('question', $question);
 		$this->app->instance('UserQuestion', $userQuestionMock);

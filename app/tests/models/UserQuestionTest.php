@@ -52,54 +52,44 @@ class UserQuestionTest extends TestCase {
 		$this->assertInstanceOf('Question', $userQuestion->question);
 	}
 
-	public function testIncreaseNumberOfGoodAnswers()
+	public function increaseNumberOfAnswersProvider()
 	{
-		$userQuestion = $this->createUserQuestion();
-		$userQuestion->increaseNumberOfGoodAnswers();
-		$this->assertEquals(1, $userQuestion->number_of_good_answers);
-		$this->assertEquals(100, $userQuestion->percent_of_good_answers);
-		$this->refresh($userQuestion);
-		$this->assertEquals(1, $userQuestion->number_of_good_answers);
-		$this->assertEquals(100, $userQuestion->percent_of_good_answers);
-	}
-
-	public function testIncreaseNumberOfBadAnswers()
-	{
-		$userQuestion = $this->createUserQuestion();
-		$userQuestion->number_of_good_answers = 1;
-		$userQuestion->save();
-		$userQuestion->increaseNumberOfBadAnswers();
-		$this->assertEquals(1, $userQuestion->number_of_bad_answers);
-		$this->assertEquals(50, $userQuestion->percent_of_good_answers);
-		$this->refresh($userQuestion);
-		$this->assertEquals(1, $userQuestion->number_of_bad_answers);
-		$this->assertEquals(50, $userQuestion->percent_of_good_answers);
+		return [
+			['number_of_good_answers', true, 100],
+			['number_of_bad_answers', false, 0],
+		];
 	}
 
 	/**
-	 * Test increateNumberOfAnswers(true)
 	 * @test
+	 * @dataProvider increaseNumberOfAnswersProvider
+	 * @param string $field Fields to be increased - number of good or bad points
+	 * @param bool $parameter Parameter passed to UserQuestion::updateAnswers()
+	 * @param int $percentOfGoodAnswers Percent of good answers expected after UserQuestion::updateAnswers() called
 	 */
-	public function shouldIncreaseNumberOfGoodAnswers()
+	public function shouldIncreaseNumberOfAnswers($field, $parameter, $percentOfGoodAnswers)
 	{
-		$userQuestionMock = $this->getMock('UserQuestion', ['increaseNumberOfGoodAnswers']);
-		$userQuestionMock->expects($this->once())->method('increaseNumberOfGoodAnswers');
-		$this->app->instance('UserQuestion', $userQuestionMock);
+		// create user question
+		$userQuestion = $this->createUserQuestion();
 
-		$userQuestionMock->increaseNumberOfAnswers(true);
-	}
+		// ensure number of answers is 0 in both object state and db
+		$this->assertEquals(0, $userQuestion->{$field});
+		$this->assertEquals(0, DB::table('user_questions')->where('id', $userQuestion->id)->first()->{$field});
 
-	/**
-	 * Test increateNumberOfAnswers(false)
-	 * @test
-	 */
-	public function shouldIncreaseNumberOfBadAnswers()
-	{
-		$userQuestionMock = $this->getMock('UserQuestion', ['increaseNumberOfBadAnswers']);
-		$userQuestionMock->expects($this->once())->method('increaseNumberOfBadAnswers');
-		$this->app->instance('UserQuestion', $userQuestionMock);
+		// ensure percent of good answers is 0 in both object state and db
+		$this->assertEquals(0, $userQuestion->percent_of_good_answers);
+		$this->assertEquals(0, DB::table('user_questions')->where('id', $userQuestion->id)->first()->percent_of_good_answers);
 
-		$userQuestionMock->increaseNumberOfAnswers(false);
+		// increase number of answers
+		$userQuestion->updateAnswers($parameter);
+
+		// ensure number of answers was updated in both objects and db
+		$this->assertEquals(1, $userQuestion->{$field});
+		$this->assertEquals(1, DB::table('user_questions')->where('id', $userQuestion->id)->first()->{$field});
+
+		// check percent of good answers was updated in both objects and db
+		$this->assertEquals($percentOfGoodAnswers, $userQuestion->percent_of_good_answers);
+		$this->assertEquals($percentOfGoodAnswers, DB::table('user_questions')->where('id', $userQuestion->id)->first()->percent_of_good_answers);
 	}
 
 }

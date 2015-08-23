@@ -33,7 +33,7 @@ class LearningPageController extends BaseController {
 	public function answer()
 	{
 		$userQuestion = $this->repository->find(Input::get('user_question_id'));
-		$userQuestion->increaseNumberOfAnswers(Input::get('is_answer_correct'));
+		$userQuestion->updateAnswers(Input::get('is_answer_correct'));
 		return $this->index();
 	}
 
