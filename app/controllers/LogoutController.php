@@ -11,7 +11,7 @@ class LogoutController extends BaseController {
 	public function logout()
 	{
 		Auth::logout();
-		return Redirect::route('landing');
+		return Redirect::route('landing_page');
 	}
 
 }

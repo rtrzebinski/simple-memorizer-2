@@ -12,7 +12,7 @@
  */
 
 Route::group(array('before' => 'guest'), function() {
-	Route::get('/', ['as' => 'landing', 'uses' => 'LandingController@index']);
+	Route::get('/', ['as' => 'landing_page', 'uses' => 'LandingPageController@index']);
 	Route::get('/signup', ['as' => 'signup', 'uses' => 'SignupController@index']);
 	Route::post('/signup', ['as' => 'signup', 'uses' => 'SignupController@signup', 'before' => 'csrf']);
 	Route::get('/login', ['as' => 'login', 'uses' => 'LoginController@index']);

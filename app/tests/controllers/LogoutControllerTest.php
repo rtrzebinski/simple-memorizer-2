@@ -14,7 +14,7 @@ class LogoutControllerTest extends TestCase {
 		$this->route('GET', 'logout');
 
 		// check redirection
-		$this->assertRedirectedToRoute('landing');
+		$this->assertRedirectedToRoute('landing_page');
 	}
 
 }
