@@ -57,6 +57,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 		$userQuestion = App::make('UserQuestion');
 		$userQuestion->user_id = $userId ? : $this->createUser()->id;
 		$userQuestion->question_id = $questionId ? : $this->createQuestion()->id;
+		$userQuestion->percent_of_good_answers = 0;
 		$userQuestion->save();
 		return $userQuestion;
 	}

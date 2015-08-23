@@ -9,40 +9,39 @@ class UserQuestionsRandomizerTest extends TestCase {
 	public function answersProvider()
 	{
 		return [
-			[1, 19, 10],
-			[1, 9, 10],
-			[3, 17, 9],
-			[2, 8, 9],
-			[5, 15, 8],
-			[3, 7, 8],
-			[7, 13, 7],
-			[4, 6, 7],
-			[9, 11, 6],
-			[5, 5, 6],
-			[11, 9, 5],
-			[6, 4, 5],
-			[13, 7, 4],
-			[7, 3, 4],
-			[15, 5, 3],
-			[8, 2, 3],
-			[17, 3, 2],
-			[9, 1, 2],
-			[19, 1, 1],
-			[10, 0, 1],
+			[0, 10],
+			[5, 10],
+			[15, 9],
+			[20, 9],
+			[25, 8],
+			[30, 8],
+			[35, 7],
+			[40, 7],
+			[45, 6],
+			[50, 6],
+			[55, 5],
+			[60, 5],
+			[65, 4],
+			[70, 4],
+			[75, 3],
+			[80, 3],
+			[85, 2],
+			[90, 2],
+			[95, 1],
+			[100, 1]
 		];
 	}
 
 	/**
-	 * Test calculation of knowledge points
 	 * @test
+	 * Test calculation of knowledge points
 	 * @dataProvider answersProvider
 	 */
-	public function shouldConvertPercentOfGoodAnswersToPoints($goodAnswers, $badAnswers, $points)
+	public function shouldConvertPercentOfGoodAnswersToPoints($percentOfGoodAnswers, $points)
 	{
 		// create user question
 		$userQuestion = new UserQuestion();
-		$userQuestion->number_of_good_answers = $goodAnswers;
-		$userQuestion->number_of_bad_answers = $badAnswers;
+		$userQuestion->percent_of_good_answers = $percentOfGoodAnswers;
 
 		// instantiate randomizer
 		$randomizer = App::make('UserQuestionsRandomizer');
@@ -60,13 +59,13 @@ class UserQuestionsRandomizerTest extends TestCase {
 	public function shouldMultiplUserQuestionsByNumberOfPoints()
 	{
 		// this user question will have 10 points (0% good answers)
-		$userQuestionWithNoAnswers = $this->getMock('UserQuestion', ['calculatePercentOfGoodAnswers']);
-		$userQuestionWithNoAnswers->method('calculatePercentOfGoodAnswers')->willReturn(0);
+		$userQuestionWithNoAnswers = $this->getMock('UserQuestion', ['getPercentOfGoodAnswersAttribute']);
+		$userQuestionWithNoAnswers->method('getPercentOfGoodAnswersAttribute')->willReturn(0);
 		$userQuestionWithNoAnswers->id = 1;
 
 		// this user question will have 1 point (100% good answers)
-		$userQuestionWithGoodAnswersOnly = $this->getMock('UserQuestion', ['calculatePercentOfGoodAnswers']);
-		$userQuestionWithGoodAnswersOnly->method('calculatePercentOfGoodAnswers')->willReturn(100);
+		$userQuestionWithGoodAnswersOnly = $this->getMock('UserQuestion', ['getPercentOfGoodAnswersAttribute']);
+		$userQuestionWithGoodAnswersOnly->method('getPercentOfGoodAnswersAttribute')->willReturn(100);
 		$userQuestionWithGoodAnswersOnly->id = 2;
 
 		// create user, and relate created user questions
@@ -84,6 +83,7 @@ class UserQuestionsRandomizerTest extends TestCase {
 		$pointsReflectionMethod = $class->getMethod('getUserQuestionsArray');
 		$pointsReflectionMethod->setAccessible(true);
 		$result = $pointsReflectionMethod->invoke($randomizer);
+
 		$this->assertEquals(11, count($result));
 
 		/*

@@ -13,6 +13,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$question->question = uniqid();
 		$question->answer = uniqid();
 		$userQuestion = new UserQuestion();
+		$userQuestion->percent_of_good_answers = 0;
 		$userQuestion->setRelation('question', $question);
 
 		// create user question repository mock

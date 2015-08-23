@@ -30,14 +30,21 @@ class UserQuestionTest extends TestCase {
 	}
 
 	/**
+	 * @test
 	 * @dataProvider answersProvider
 	 */
-	public function testPercentOfGoodAnswers($goodAnswers, $badAnswers, $percentOfGoodAnswers)
+	public function shouldCalculatePercentOfGoodAnswers($goodAnswers, $badAnswers, $percentOfGoodAnswers)
 	{
 		$userQuestion = new UserQuestion();
 		$userQuestion->number_of_good_answers = $goodAnswers;
 		$userQuestion->number_of_bad_answers = $badAnswers;
-		$this->assertEquals($percentOfGoodAnswers, $userQuestion->calculatePercentOfGoodAnswers());
+
+		// call private percentOfGoodAnswers() on $userQuestion object
+		$class = new ReflectionClass('UserQuestion');
+		$reflectionMethod = $class->getMethod('calculatePercentOfGoodAnswers');
+		$reflectionMethod->setAccessible(true);
+
+		$this->assertEquals($percentOfGoodAnswers, $reflectionMethod->invoke($userQuestion));
 	}
 
 	public function testUserRelation()

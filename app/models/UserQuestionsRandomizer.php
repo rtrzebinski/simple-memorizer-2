@@ -75,7 +75,7 @@ class UserQuestionsRandomizer {
 	 */
 	private function getPoints(UserQuestion $userQuestion)
 	{
-		$percentOfGoodAnswers = $userQuestion->calculatePercentOfGoodAnswers();
+		$percentOfGoodAnswers = $userQuestion->percent_of_good_answers;
 
 		if ($percentOfGoodAnswers <= 100 && $percentOfGoodAnswers > 90)
 		{

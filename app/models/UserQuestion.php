@@ -33,29 +33,10 @@ class UserQuestion extends \Illuminate\Database\Eloquent\Model {
 	}
 
 	/**
-	 * Calculate percent of good answers.
-	 * Uses number_of_good_answers and number_of_bad_answers currently set in object.
-	 * @return int
-	 */
-	public function calculatePercentOfGoodAnswers()
-	{
-		$totalNumberOfAnswers = $this->number_of_good_answers + $this->number_of_bad_answers;
-
-		if ($totalNumberOfAnswers)
-		{
-			return round(100 * $this->number_of_good_answers / ($totalNumberOfAnswers));
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	/**
 	 * Update number of answers
 	 * 
 	 * Increase number of good or bad answers in both DB and object
-	 * Recalculate percent of good answers
+	 * Calculate percent of good answers
 	 * 
 	 * @param bool $isAnswerCorrect
 	 * true = number of good answers increased
@@ -94,6 +75,25 @@ class UserQuestion extends \Illuminate\Database\Eloquent\Model {
 			update([
 				'percent_of_good_answers' => $this->percent_of_good_answers
 		]);
+	}
+
+	/**
+	 * Calculate percent of good answers.
+	 * Uses number_of_good_answers and number_of_bad_answers currently set in object.
+	 * @return int
+	 */
+	private function calculatePercentOfGoodAnswers()
+	{
+		$totalNumberOfAnswers = $this->number_of_good_answers + $this->number_of_bad_answers;
+
+		if ($totalNumberOfAnswers)
+		{
+			return round(100 * $this->number_of_good_answers / ($totalNumberOfAnswers));
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 }
