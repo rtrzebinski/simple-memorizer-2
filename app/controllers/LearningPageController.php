@@ -16,24 +16,51 @@ class LearningPageController extends BaseController {
 	}
 
 	/**
-	 * Display learning interface with random question
+	 * HTTP GET request handler
+	 * @param User_Question $userQuestion
+	 * @param bool $displayAnswer
 	 */
-	public function index()
+	public function index($userQuestion = null, $displayAnswer = false)
 	{
-		$userQuestion = $this->repository->randomUserQuestion();
+		if (!$userQuestion)
+		{
+			// obtain random user question if not passed as argument
+			$userQuestion = $this->repository->randomUserQuestion();
+		}
+		// display learning interface
+		$this->viewData['user_question_id'] = $userQuestion->id;
+		$this->viewData['display_answer'] = $displayAnswer;
 		$this->viewData['question'] = $userQuestion->question->question;
 		$this->viewData['answer'] = $userQuestion->question->answer;
 		return View::make('learning_page', $this->viewData);
 	}
 
 	/**
-	 * Increase number of good or bad answers, and display next question
+	 * HTTP POST request handler
 	 */
-	public function answer()
+	public function update()
 	{
+		// instantiate user question
 		$userQuestion = $this->repository->find(Input::get('user_question_id'));
-		$userQuestion->updateAnswers(Input::get('is_answer_correct'));
-		return $this->index();
+
+		// increase number of good or bad answers, and 
+		if (Input::has('answer_correctness'))
+		{
+			$userQuestion->updateAnswers(Input::get('answer_correctness') == 'Good');
+		}
+
+		// update question and/or answer
+		if (Input::has('update'))
+		{
+			$userQuestion->question->question = Input::get('question');
+			$userQuestion->question->answer = Input::get('answer');
+			$userQuestion->question->save();
+			// display updated fields
+			return $this->index($userQuestion, Input::get('display_answer'));
+		}
+
+		// display next user question
+		return Redirect::route('learning_page');
 	}
 
 }

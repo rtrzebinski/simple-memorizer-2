@@ -30,5 +30,5 @@ Route::group(array('before' => 'auth'), function() {
 	Route::post('/questions/create', ['as' => 'create_questions', 'uses' => 'UserQuestionsController@createAction']);
 
 	Route::get('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@index']);
-	Route::post('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@answer', 'before' => 'csrf']);
+	Route::post('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@update', 'before' => 'csrf']);
 });

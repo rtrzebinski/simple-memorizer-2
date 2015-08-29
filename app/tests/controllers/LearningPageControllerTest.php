@@ -7,8 +7,6 @@ class LearningPageControllerTest extends TestCase {
 	 */
 	public function shouldDisplayRandomQuestion()
 	{
-		$this->be(new User());
-
 		// create question
 		$question = new Question();
 		$question->question = uniqid();
@@ -17,6 +15,7 @@ class LearningPageControllerTest extends TestCase {
 		// create user question
 		$userQuestion = new UserQuestion();
 		$userQuestion->setRelation('question', $question);
+		$userQuestion->id = uniqid();
 
 		// mock repository
 		$repositoryMock = $this->
@@ -32,17 +31,26 @@ class LearningPageControllerTest extends TestCase {
 
 		// call route and check view data
 		$this->route('GET', 'learning_page');
+		$this->assertViewHas('user_question_id', $userQuestion->id);
+		$this->assertViewHas('display_answer', false);
 		$this->assertViewHas('question', $question->question);
 		$this->assertViewHas('answer', $question->answer);
 	}
 
+	public function shouldUpdateNumberOfAnswersProvider()
+	{
+		return [
+			[true, 'Good'],
+			[false, 'Bad']
+		];
+	}
+
 	/**
 	 * @test
+	 * @dataProvider shouldUpdateNumberOfAnswersProvider
 	 */
-	public function shouldUpdateAnswers()
+	public function shouldUpdateNumberOfAnswers($updateAnswersParameter, $answerCorrectness)
 	{
-		$this->be(new User());
-
 		// create question
 		$question = new Question();
 		$question->question = uniqid();
@@ -53,7 +61,7 @@ class LearningPageControllerTest extends TestCase {
 			getMockBuilder('UserQuestion')->
 			setMethods(['updateAnswers'])->
 			getMock();
-		$userQuestionMock->expects($this->once())->method('updateAnswers')->with(true);
+		$userQuestionMock->expects($this->once())->method('updateAnswers')->with($updateAnswersParameter);
 		$userQuestionMock->id = uniqid();
 		$userQuestionMock->setRelation('question', $question);
 		$this->app->instance('UserQuestion', $userQuestionMock);
@@ -61,7 +69,7 @@ class LearningPageControllerTest extends TestCase {
 		// mock repository
 		$repositoryMock = $this->
 			getMockBuilder('UserQuestionRepository')->
-			setMethods(['find', 'randomUserQuestion'])->
+			setMethods(['find'])->
 			disableOriginalConstructor()->
 			getMock();
 		$repositoryMock->
@@ -69,17 +77,67 @@ class LearningPageControllerTest extends TestCase {
 			method('find')->
 			with($userQuestionMock->id)->
 			willReturn($userQuestionMock);
-		$repositoryMock->
-			expects($this->once())->
-			method('randomUserQuestion')->
-			willReturn($userQuestionMock);
 		$this->app->instance('UserQuestionRepository', $repositoryMock);
 
 		// call route
 		$this->route('POST', 'learning_page', [
 			'user_question_id' => $userQuestionMock->id,
-			'is_answer_correct' => true
+			'answer_correctness' => $answerCorrectness
 		]);
+
+		$this->assertRedirectedToRoute('learning_page');
+	}
+
+	/**
+	 * @test
+	 */
+	public function shouldUpdateQuestionAndAnswer()
+	{
+		$newQuestion = uniqid();
+		$newAnswer = uniqid();
+
+		// mock question
+		$question = $this->getMock('Question', [
+			'setAttribute',
+			'save'
+		]);
+		call_user_func_array([$question->expects($this->exactly(2))->method('setAttribute'), 'withConsecutive'], [
+			['question', $newQuestion],
+			['answer', $newAnswer]
+		]);
+		$question->expects($this->once())->method('save');
+		App::instance('Question', $question);
+
+		// create user question and set question relation
+		$userQuestion = new UserQuestion();
+		$userQuestion->id = uniqid();
+		$userQuestion->setRelation('question', $question);
+
+		// mock user question repositury
+		$repositoryMock = $this->
+			getMockBuilder('UserQuestionRepository')->
+			setMethods(['find'])->
+			disableOriginalConstructor()->
+			getMock();
+		$repositoryMock->
+			expects($this->once())->
+			method('find')->
+			with($userQuestion->id)->
+			willReturn($userQuestion);
+		$this->app->instance('UserQuestionRepository', $repositoryMock);
+
+		// call route
+		$this->route('POST', 'learning_page', [
+			'user_question_id' => $userQuestion->id,
+			'update' => 'Update question and answer',
+			'question' => $newQuestion,
+			'answer' => $newAnswer,
+			'display_answer' => true
+		]);
+
+		// check view data
+		$this->assertViewHas('user_question_id', $userQuestion->id);
+		$this->assertViewHas('display_answer', true);
 	}
 
 }
