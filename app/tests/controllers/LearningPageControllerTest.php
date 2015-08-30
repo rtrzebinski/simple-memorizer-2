@@ -37,6 +37,32 @@ class LearningPageControllerTest extends TestCase {
 		$this->assertViewHas('answer', $question->answer);
 	}
 
+	/**
+	 * @test
+	 */
+	public function shouldDisplayInfoIfUserHasNoQuestions()
+	{
+		// mock UserQuestionRepository::randomUserQuestion() to return null
+		$repositoryMock = $this->
+			getMockBuilder('UserQuestionRepository')->
+			setMethods(['randomUserQuestion'])->
+			disableOriginalConstructor()->
+			getMock();
+		$repositoryMock->
+			expects($this->once())->
+			method('randomUserQuestion')->
+			willReturn(null);
+		$this->app->instance('UserQuestionRepository', $repositoryMock);
+
+		// expect 'info_page' view, with 'info' variable, to be displayed
+		View::shouldReceive('make')->with('info_page', [
+			'info' => Lang::get('messages.no_questions', ['url' => route('questions')])
+		])->once();
+
+		// call route and check view data
+		$this->route('GET', 'learning_page');
+	}
+
 	public function shouldUpdateNumberOfAnswersProvider()
 	{
 		return [

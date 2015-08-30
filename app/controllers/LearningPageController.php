@@ -26,6 +26,13 @@ class LearningPageController extends BaseController {
 		{
 			// obtain random user question if not passed as argument
 			$userQuestion = $this->repository->randomUserQuestion();
+
+			if (!$userQuestion)
+			{
+				// display info if user has no questions
+				$this->viewData['info'] = Lang::get('messages.no_questions', ['url' => route('questions')]);
+				return View::make('info_page', $this->viewData);
+			}
 		}
 		// display learning interface
 		$this->viewData['user_question_id'] = $userQuestion->id;

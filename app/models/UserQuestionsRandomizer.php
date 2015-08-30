@@ -22,7 +22,8 @@ class UserQuestionsRandomizer {
 	 * Questions that user knows less have more chance to be returned.
 	 * Questions that user knows more have less chance to be returned.
 	 * 
-	 * @return UserQuestion
+	 * @return UserQuestion|NULL
+	 * NULL will be returned if user has no questions
 	 */
 	public function randomUserQuestion()
 	{
