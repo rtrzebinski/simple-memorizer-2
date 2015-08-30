@@ -4,14 +4,7 @@
 
 <div class="container">
 
-	<div class="header clearfix">
-        <nav>
-			<ul class="nav nav-pills pull-right">
-				<li role="presentation"><a href="{{{ route('login') }}}">Login</a></li>
-			</ul>
-        </nav>
-        <h3 class="text-muted">Simple Memorizer 2</h3>
-	</div>
+	@include ('navbar_guest')
 
 	<div class="jumbotron">
         <h2>Memorizing does not have to be hard</h2>
