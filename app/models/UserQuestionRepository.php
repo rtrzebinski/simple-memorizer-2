@@ -53,12 +53,23 @@ class UserQuestionRepository {
 	 * @param int $skip Number of skipped elements
 	 * @param string $orderByField Field by which elements are sorted
 	 * @param string $orderBySort Sort order (ASC|DESC)
-	 * @return array
+	 * @return array Array of stdClass objects, each of which contains the following fields:
+	 * - id
+	 * - percent_of_good_answers
+	 * - question
+	 * - answer
 	 */
 	public function collection($take, $skip = 0, $orderByField = 'id', $orderBySort = 'ASC')
 	{
-		return UserQuestion::with('question')->
-				where('user_id', '=', $this->user->id)->
+		return DB::table('user_questions')->
+				select([
+					'user_questions.id as id',
+					'user_questions.percent_of_good_answers as percent_of_good_answers',
+					'questions.question as question',
+					'questions.answer as answer'
+				])->
+				join('questions', 'questions.id', '=', 'user_questions.question_id')->
+				where('user_questions.user_id', '=', $this->user->id)->
 				skip($skip)->
 				take($take)->
 				orderBy($orderByField, $orderBySort)->

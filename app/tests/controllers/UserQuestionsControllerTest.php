@@ -18,18 +18,21 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldReturnUserQuestionsList()
 	{
-		// fake count
+		// fake data
 		$count = uniqid();
+		$row = new stdClass();
+		$row->id = uniqid();
+		$row->question = uniqid();
+		$row->answer = uniqid();
+		$row->percent_of_good_answers = uniqid();
 
-		// create user question
-		$question = new Question();
-		$question->question = uniqid();
-		$question->answer = uniqid();
-		$userQuestion = new UserQuestion();
-		$userQuestion->percent_of_good_answers = 0;
-		$userQuestion->setRelation('question', $question);
+		// repository parameters
+		$take = uniqid();
+		$skip = uniqid();
+		$orderByField = uniqid();
+		$orderBySort = uniqid();
 
-		// create user question repository mock
+		// create repository mock
 		$repository = $this->createRepositoryMock([
 			'collection',
 			'count'
@@ -39,8 +42,8 @@ class UserQuestionsControllerTest extends TestCase {
 		$repository->
 			expects($this->once())->
 			method('collection')->
-			with(1, 0, 'id', 'ASC')->
-			willReturn([$userQuestion]);
+			with($take, $skip, $orderByField, $orderBySort)->
+			willReturn([$row]);
 
 		// mock count() method
 		$repository->
@@ -53,18 +56,18 @@ class UserQuestionsControllerTest extends TestCase {
 
 		// call route
 		$responseContent = $this->route('POST', 'list_questions', [
-				'jtSorting' => 'id ASC',
-				'jtStartIndex' => '0',
-				'jtPageSize' => 1
+				'jtSorting' => $orderByField . ' ' . $orderBySort,
+				'jtStartIndex' => $skip,
+				'jtPageSize' => $take
 			])->getContent();
 
 		// check http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
-		$this->assertEquals($userQuestion->id, $data->Records[0]->id);
-		$this->assertEquals($question->question, $data->Records[0]->question);
-		$this->assertEquals($question->answer, $data->Records[0]->answer);
-		$this->assertEquals(0, $data->Records[0]->percent_of_good_answers);
+		$this->assertEquals($row->id, $data->Records[0]->id);
+		$this->assertEquals($row->question, $data->Records[0]->question);
+		$this->assertEquals($row->answer, $data->Records[0]->answer);
+		$this->assertEquals($row->percent_of_good_answers, $data->Records[0]->percent_of_good_answers);
 		$this->assertEquals($count, $data->TotalRecordCount);
 	}
 

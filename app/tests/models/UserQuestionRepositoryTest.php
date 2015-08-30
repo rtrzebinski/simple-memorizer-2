@@ -50,8 +50,8 @@ class UserQuestionRepositoryTest extends TestCase {
 		$data = $repository->collection(1);
 
 		$this->assertEquals($userQuestion->id, $data[0]->id);
-		$this->assertEquals($question->question, $data[0]->question->question);
-		$this->assertEquals($question->answer, $data[0]->question->answer);
+		$this->assertEquals($question->question, $data[0]->question);
+		$this->assertEquals($question->answer, $data[0]->answer);
 		$this->assertEquals(0, $data[0]->percent_of_good_answers);
 	}
 

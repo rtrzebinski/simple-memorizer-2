@@ -47,8 +47,8 @@ class UserQuestionsController extends JtableController {
 		{
 			$records[] = [
 				'id' => $row->id,
-				'question' => $row->question->question,
-				'answer' => $row->question->answer,
+				'question' => $row->question,
+				'answer' => $row->answer,
 				'percent_of_good_answers' => $row->percent_of_good_answers
 			];
 		}
