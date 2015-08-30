@@ -18,6 +18,9 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldReturnUserQuestionsList()
 	{
+		// fake count
+		$count = uniqid();
+
 		// create user question
 		$question = new Question();
 		$question->question = uniqid();
@@ -27,7 +30,10 @@ class UserQuestionsControllerTest extends TestCase {
 		$userQuestion->setRelation('question', $question);
 
 		// create user question repository mock
-		$repository = $this->createRepositoryMock(['collection']);
+		$repository = $this->createRepositoryMock([
+			'collection',
+			'count'
+		]);
 
 		// mock collection() method
 		$repository->
@@ -35,6 +41,12 @@ class UserQuestionsControllerTest extends TestCase {
 			method('collection')->
 			with(1, 0, 'id', 'ASC')->
 			willReturn([$userQuestion]);
+
+		// mock count() method
+		$repository->
+			expects($this->once())->
+			method('count')->
+			willReturn($count);
 
 		// bind mock object to UserQuestionRepository
 		App::instance('UserQuestionRepository', $repository);
@@ -53,6 +65,7 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->assertEquals($question->question, $data->Records[0]->question);
 		$this->assertEquals($question->answer, $data->Records[0]->answer);
 		$this->assertEquals(0, $data->Records[0]->percent_of_good_answers);
+		$this->assertEquals($count, $data->TotalRecordCount);
 	}
 
 	/**

@@ -83,4 +83,13 @@ class UserQuestionRepository {
 		return $randomizer->randomUserQuestion();
 	}
 
+	/**
+	 * Count user questions
+	 * @return int
+	 */
+	public function count()
+	{
+		return $this->user->userQuestions()->count();
+	}
+
 }

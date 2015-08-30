@@ -72,4 +72,28 @@ class UserQuestionRepositoryTest extends TestCase {
 		$this->assertEquals($userQuestion->id, $randomUserQuestion->id);
 	}
 
+	/**
+	 * @test
+	 */
+	public function shouldCountUserQuestions()
+	{
+		$count = uniqid();
+
+		// mock relation to return predefined count
+		$relation = $this->
+			getMockBuilder('\Illuminate\Database\Eloquent\Relations\hasMany')->
+			setMethods(['count'])->
+			disableOriginalConstructor()->
+			getMock();
+		$relation->method('count')->willReturn($count);
+
+		// mock user to return userQuestions relation
+		$user = $this->getMock('User', ['userQuestions']);
+		$user->method('userQuestions')->willReturn($relation);
+
+		// assert predefined count is returned by repository
+		$repository = new UserQuestionRepository($user);
+		$this->assertEquals($count, $repository->count());
+	}
+
 }

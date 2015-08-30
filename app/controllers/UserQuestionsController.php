@@ -53,7 +53,11 @@ class UserQuestionsController extends JtableController {
 			];
 		}
 
-		return $this->successReponse(['Records' => $records]);
+		return $this->successReponse([
+				'Records' => $records,
+				// count total number of rows
+				'TotalRecordCount' => $this->repository->count()
+		]);
 	}
 
 	/**
