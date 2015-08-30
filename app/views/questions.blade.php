@@ -25,10 +25,12 @@
 					list: false
 				},
 				question: {
-					title: 'Question'
+					title: 'Question',
+					type: 'textarea'
 				},
 				answer: {
-					title: 'Answer'
+					title: 'Answer',
+					type: 'textarea'
 				},
 				percent_of_good_answers: {
 					title: '% of good answers',
