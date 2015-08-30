@@ -8,7 +8,7 @@
 		$('#QuestionsTable').jtable({
 			title: 'Questions',
 			paging: true, //Enable paging
-			pageSize: 10, //Set page size (default: 10)
+			pageSize: 100, //Set page size (default: 10)
 			sorting: true, //Enable sorting
 			defaultSorting: 'id ASC', //Set default sorting
 			actions: {
