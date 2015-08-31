@@ -27,11 +27,17 @@ class UserQuestionRepositoryTest extends TestCase {
 		$user = $this->createUser();
 		$question = uniqid();
 		$answer = uniqid();
+		$numberOfGoodAnswers = 1;
+		$numberOfBadAnswers = 2;
+		$percentOfGoodAnswers = 3;
 
 		$repository = new UserQuestionRepository($user);
-		$userQuestion = $repository->create($question, $answer);
+		$userQuestion = $repository->create($question, $answer, $numberOfGoodAnswers, $numberOfBadAnswers, $percentOfGoodAnswers);
 
 		$this->assertEquals($user->id, $userQuestion->user_id);
+		$this->assertEquals($numberOfGoodAnswers, $userQuestion->number_of_good_answers);
+		$this->assertEquals($numberOfBadAnswers, $userQuestion->number_of_bad_answers);
+		$this->assertEquals($percentOfGoodAnswers, $userQuestion->percent_of_good_answers);
 		$this->assertEquals($question, $userQuestion->question->question);
 		$this->assertEquals($answer, $userQuestion->question->answer);
 	}

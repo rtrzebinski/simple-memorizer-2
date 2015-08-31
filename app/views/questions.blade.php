@@ -53,6 +53,7 @@
 	<br/>
 	{{ Form::open(['route' => 'questions_export']) }}
 	<input type='submit' name='export' value='Export' class='btn btn-default btn-sm'>
+	<a href='{{ route('questions_import') }}' class='btn btn-default btn-sm'>Import</a>
 	{{ Form::close() }}
 </div>
 @stop

@@ -16,45 +16,6 @@ class UserQuestionsControllerTest extends TestCase {
 	/**
 	 * @test
 	 */
-	public function shouldExportUserQuestionsAsCsvFile()
-	{
-		$collection = uniqid();
-
-		// mock repository to return fake $collection
-		$repository = $this->createRepositoryMock([
-			'all'
-		]);
-		$repository->method('all')->willReturn($collection);
-		App::instance('UserQuestionRepository', $repository);
-
-		// mock CsvBuilder
-		$builder = $this->
-			getMockBuilder('CsvBuilder')->
-			setMethods([
-				'setData',
-				'setHeaderField',
-				'build'
-			])->
-			getMock();
-		$builder->expects($this->once())->method('setData')->with($collection);
-		call_user_func_array([$builder->expects($this->exactly(5))->method('setHeaderField'), 'withConsecutive'], [
-			['question', 'question'],
-			['answer', 'answer'],
-			['number_of_good_answers', 'number_of_good_answers'],
-			['number_of_bad_answers', 'number_of_bad_answers'],
-			['percent_of_good_answers', 'percent_of_good_answers']
-		]);
-		$builder->expects($this->once())->method('build');
-		$this->app->instance('CsvBuilder', $builder);
-
-		// call route
-		$this->route('POST', 'questions_export');
-		$this->assertResponseOk();
-	}
-
-	/**
-	 * @test
-	 */
 	public function shouldReturnUserQuestionsList()
 	{
 		// fake data
@@ -244,6 +205,46 @@ class UserQuestionsControllerTest extends TestCase {
 				setMethods($method)->
 				disableOriginalConstructor()->
 				getMock();
+	}
+
+	/**
+	 * @test
+	 */
+	public function shouldExportUserQuestionsAsCsvFile()
+	{
+		$collection = uniqid();
+
+		// mock repository to return fake $collection
+		$repository = $this->getMockBuilder('UserQuestionRepository')->
+			setMethods(['all'])->
+			disableOriginalConstructor()->
+			getMock();
+		$repository->method('all')->willReturn($collection);
+		App::instance('UserQuestionRepository', $repository);
+
+		// mock CsvBuilder
+		$builder = $this->
+			getMockBuilder('CsvBuilder')->
+			setMethods([
+				'setData',
+				'setHeaderField',
+				'build'
+			])->
+			getMock();
+		$builder->expects($this->once())->method('setData')->with($collection);
+		call_user_func_array([$builder->expects($this->exactly(5))->method('setHeaderField'), 'withConsecutive'], [
+			['question', 'question'],
+			['answer', 'answer'],
+			['number_of_good_answers', 'number_of_good_answers'],
+			['number_of_bad_answers', 'number_of_bad_answers'],
+			['percent_of_good_answers', 'percent_of_good_answers']
+		]);
+		$builder->expects($this->once())->method('build');
+		$this->app->instance('CsvBuilder', $builder);
+
+		// call route
+		$this->route('POST', 'questions_export');
+		$this->assertResponseOk();
 	}
 
 }

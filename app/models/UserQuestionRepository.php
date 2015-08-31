@@ -32,9 +32,12 @@ class UserQuestionRepository {
 	 * Create user question
 	 * @param string $question
 	 * @param string $answer
+	 * @param int $numberOfGoodAnswers
+	 * @param int $numberOfBadAnswers
+	 * @param int $percentOfGoodAnswers
 	 * @return UserQuestion
 	 */
-	public function create($question, $answer)
+	public function create($question, $answer, $numberOfGoodAnswers = 0, $numberOfBadAnswers = 0, $percentOfGoodAnswers = 0)
 	{
 		$oQuestion = App::make('Question');
 		$oQuestion->question = $question;
@@ -43,6 +46,9 @@ class UserQuestionRepository {
 		$userQuestion = App::make('UserQuestion');
 		$userQuestion->user_id = $this->user->id;
 		$userQuestion->question_id = $oQuestion->id;
+		$userQuestion->number_of_good_answers = $numberOfGoodAnswers;
+		$userQuestion->number_of_bad_answers = $numberOfBadAnswers;
+		$userQuestion->percent_of_good_answers = $percentOfGoodAnswers;
 		$userQuestion->save();
 		return $userQuestion;
 	}
