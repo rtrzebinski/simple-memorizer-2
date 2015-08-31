@@ -33,10 +33,10 @@ class UserQuestionsImportController extends BaseController {
 		$fileInfo = Input::file('csv_file');
 
 		// check if file is valid
-		if (!$fileInfo->isValid() || $fileInfo->getClientMimeType() != "text/csv")
+		if (!isset($fileInfo) || !$fileInfo->isValid() || $fileInfo->getClientMimeType() != "text/csv")
 		{
-			// throw exception if file is not valid
-			throw new Exception('Uploaded file is not valid');
+			$this->viewData['errors'] = new Illuminate\Support\MessageBag([Lang::get('messages.import_file_not_valid')]);
+			return View::make('user_questions_import', $this->viewData);
 		}
 
 		// open file, type of $file is SplFileObject

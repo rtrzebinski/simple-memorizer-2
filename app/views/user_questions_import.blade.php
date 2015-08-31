@@ -4,6 +4,7 @@
 
 <div class="container col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
 	@include ('navbar')
+	@include ('blocks.errors')
 
 	<div class="alert alert-info" role="alert">Please select CSV file to import from.</div>
 	<div class="alert alert-warning" role="alert">Number of answers of existing rows will be overriden! Select 'Ignore number of answers' to import / override with zeros.</div>

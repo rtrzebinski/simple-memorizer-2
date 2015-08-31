@@ -94,7 +94,10 @@ class UserQuestionsImportControllerTest extends TestCase {
 			getMock();
 		App::instance('UserQuestionRepository', $repository);
 
-		$this->setExpectedException('Exception', 'Uploaded file is not valid');
+		$messageBag = new Illuminate\Support\MessageBag([Lang::get('messages.import_file_not_valid')]);
+		View::shouldReceive('make')->once()->with('user_questions_import', [
+			'errors' => $messageBag
+		]);
 
 		// call route
 		$this->route('POST', 'questions_import', [], [], ['csv_file' => $file]);
