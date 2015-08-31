@@ -6,7 +6,7 @@
 	@include ('navbar')
 
 	<div class="alert alert-info" role="alert">Please select CSV file to import from.</div>
-	<div class="alert alert-warning" role="alert">Existing rows will duplicated, not overriden!</div>
+	<div class="alert alert-warning" role="alert">Number of answers of existing rows will be overriden! Select 'Ignore number of answers' to import / override with zeros.</div>
 
 	{{ Form::open(['files' => true]) }}
 
@@ -17,7 +17,7 @@
 
 	<div class="checkbox">
 		<label>
-			<input type="checkbox" name="reset_number_of_answers" value="ON" /> Reset number of answers
+			<input type="checkbox" name="reset_number_of_answers" value="ON" /> Ignore number of answers
 			<p class="help-block">Select if you don't want to import number of answers from CSV file</p>
 		</label>
 	</div>

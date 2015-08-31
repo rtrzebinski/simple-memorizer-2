@@ -45,6 +45,32 @@ class UserQuestionRepositoryTest extends TestCase {
 	/**
 	 * @test
 	 */
+	public function shouldUpdateNumberOfAnswersWhenTryingToCreateExistingQuestion()
+	{
+		$user = $this->createUser();
+		$question = uniqid();
+		$answer = uniqid();
+		$numberOfGoodAnswers = 1;
+		$numberOfBadAnswers = 2;
+		$percentOfGoodAnswers = 3;
+
+		$repository = new UserQuestionRepository($user);
+		$repository->create($question, $answer, $numberOfGoodAnswers, $numberOfBadAnswers, $percentOfGoodAnswers);
+
+		// try to create existing user question with different number of answers
+		$userQuestion = $repository->create($question, $answer);
+
+		$this->assertEquals($user->id, $userQuestion->user_id);
+		$this->assertEquals(0, $userQuestion->number_of_good_answers);
+		$this->assertEquals(0, $userQuestion->number_of_bad_answers);
+		$this->assertEquals(0, $userQuestion->percent_of_good_answers);
+		$this->assertEquals($question, $userQuestion->question->question);
+		$this->assertEquals($answer, $userQuestion->question->answer);
+	}
+
+	/**
+	 * @test
+	 */
 	public function shouldReturnCollection()
 	{
 		$user = $this->createUser();
