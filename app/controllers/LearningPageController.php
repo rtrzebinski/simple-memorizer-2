@@ -53,7 +53,7 @@ class LearningPageController extends BaseController {
 		// increase number of good or bad answers, and 
 		if (Input::has('answer_correctness'))
 		{
-			$userQuestion->updateAnswers(Input::get('answer_correctness') == 'Good');
+			$userQuestion->updateAnswers(Input::get('answer_correctness') == 'I know');
 		}
 
 		// update question and/or answer

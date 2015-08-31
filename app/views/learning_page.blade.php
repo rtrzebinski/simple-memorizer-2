@@ -54,8 +54,8 @@
 
 	<label for="actions">Actions</label>
 	<div id="actions">
-		<input id='good_answer_button' class="btn btn-default btn-success btn-lg" type="submit" value="Good" name="answer_correctness">&nbsp;&nbsp;&nbsp;
-		<input id='bad_answer_button' class="btn btn-default btn-danger btn-lg" type="submit" value="Bad" name="answer_correctness">&nbsp;&nbsp;&nbsp;
+		<input id='good_answer_button' class="btn btn-default btn-success btn-lg" type="submit" value="I know" name="answer_correctness">&nbsp;&nbsp;&nbsp;
+		<input id='bad_answer_button' class="btn btn-default btn-danger btn-lg" type="submit" value="I don't know" name="answer_correctness">&nbsp;&nbsp;&nbsp;
 		<input id='next_question_button' class="btn btn-default btn-lg" type="submit" value="Next">&nbsp;&nbsp;&nbsp;
 		<button id='show_answer_button' class="btn btn-default btn-lg @if($display_answer) hidden @endif">Show answer</button>&nbsp;&nbsp;&nbsp;
 		<input type="hidden" name="user_question_id" value="{{{ $user_question_id }}}">

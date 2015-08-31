@@ -66,8 +66,8 @@ class LearningPageControllerTest extends TestCase {
 	public function shouldUpdateNumberOfAnswersProvider()
 	{
 		return [
-			[true, 'Good'],
-			[false, 'Bad']
+			[true, "I know"],
+			[false, "I don't know"]
 		];
 	}
 
