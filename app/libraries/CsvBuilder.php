@@ -32,11 +32,7 @@ class CsvBuilder {
 	 */
 	private $fileHandler;
 
-	/**
-	 * Constructor is private.
-	 * Use create() method to get new instance of this class.
-	 */
-	private function __construct()
+	public function __construct()
 	{
 		// Create temporary file to write to.
 		$tmpName = tempnam(sys_get_temp_dir(), 'data');
@@ -45,15 +41,6 @@ class CsvBuilder {
 		{
 			throw new Exception("Can't create temporary file");
 		}
-	}
-
-	/**
-	 * Create new instance of this class.
-	 * @return \CsvBuilder
-	 */
-	public static function create()
-	{
-		return new CsvBuilder();
 	}
 
 	/**

@@ -48,16 +48,12 @@ class UserQuestionRepository {
 	}
 
 	/**
-	 * List user questions
+	 * Collection of user questions
 	 * @param int $take Number of taken elements
 	 * @param int $skip Number of skipped elements
 	 * @param string $orderByField Field by which elements are sorted
 	 * @param string $orderBySort Sort order (ASC|DESC)
-	 * @return array Array of stdClass objects, each of which contains the following fields:
-	 * - id
-	 * - percent_of_good_answers
-	 * - question
-	 * - answer
+	 * @return array Array of stdClass objects
 	 */
 	public function collection($take, $skip = 0, $orderByField = 'id', $orderBySort = 'ASC')
 	{
@@ -65,6 +61,8 @@ class UserQuestionRepository {
 				select([
 					'user_questions.id as id',
 					'user_questions.percent_of_good_answers as percent_of_good_answers',
+					'user_questions.number_of_good_answers as number_of_good_answers',
+					'user_questions.number_of_bad_answers as number_of_bad_answers',
 					'questions.question as question',
 					'questions.answer as answer'
 				])->
@@ -77,13 +75,21 @@ class UserQuestionRepository {
 	}
 
 	/**
+	 * Collection of all user questions
+	 * @return array Array of stdClass objects
+	 */
+	public function all()
+	{
+		return $this->collection($this->count());
+	}
+
+	/**
 	 * Return random user question
 	 * 
 	 * UserQuestionsRandomizer is used to return less known questions
 	 * more often that better known
 	 * 
 	 * @return UserQuestion
-	 * @throws Exception
 	 */
 	public function randomUserQuestion()
 	{

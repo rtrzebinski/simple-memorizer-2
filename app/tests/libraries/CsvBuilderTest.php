@@ -18,7 +18,7 @@ class CsvBuilderTest extends TestCase {
 			]
 		];
 
-		$path = CsvBuilder::create()->
+		$path = App::make('CsvBuilder')->
 			setHeaderField('name', 'user_name')->
 			setHeaderField('email', 'user_email')->
 			setData($data)->
@@ -52,7 +52,7 @@ class CsvBuilderTest extends TestCase {
 		$object2->user_email = $this->randomEmailAddress();
 		$data[] = $object2;
 
-		$path = CsvBuilder::create()->
+		$path = App::make('CsvBuilder')->
 			setHeaderField('name', 'user_name')->
 			setHeaderField('email', 'user_email')->
 			setData($data)->
@@ -84,7 +84,7 @@ class CsvBuilderTest extends TestCase {
 			]
 		];
 
-		CsvBuilder::create()->
+		App::make('CsvBuilder')->
 			setData($data)->
 			build();
 	}
@@ -95,7 +95,7 @@ class CsvBuilderTest extends TestCase {
 	 */
 	public function shouldFailIfCsvDataIsNotDefined()
 	{
-		CsvBuilder::create()->
+		App::make('CsvBuilder')->
 			setHeaderField('name', 'user_name')->
 			build();
 	}
@@ -106,7 +106,7 @@ class CsvBuilderTest extends TestCase {
 	 */
 	public function shouldFailIfCollectionFieldsAreNotAccessible()
 	{
-		CsvBuilder::create()->
+		App::make('CsvBuilder')->
 			setHeaderField('name', 'user_name')->
 			setData([])->
 			build();

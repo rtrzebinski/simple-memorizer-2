@@ -24,6 +24,7 @@ Route::group(array('before' => 'auth'), function() {
 	Route::get('/logout', ['as' => 'logout', 'uses' => 'LogoutController@logout']);
 
 	Route::get('/questions', ['as' => 'questions', 'uses' => 'UserQuestionsController@index']);
+	Route::post('/questions/export', ['as' => 'questions_export', 'uses' => 'UserQuestionsController@export']);
 	Route::post('/questions/list', ['as' => 'list_questions', 'uses' => 'UserQuestionsController@listAction']);
 	Route::post('/questions/delete', ['as' => 'delete_questions', 'uses' => 'UserQuestionsController@deleteAction']);
 	Route::post('/questions/update', ['as' => 'update_questions', 'uses' => 'UserQuestionsController@updateAction']);

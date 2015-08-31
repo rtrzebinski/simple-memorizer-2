@@ -27,6 +27,25 @@ class UserQuestionsController extends JtableController {
 	}
 
 	/**
+	 * Export user questions as a CSV file
+	 */
+	public function export()
+	{
+		$csv = App::make('CsvBuilder');
+		$csv->setData($this->repository->all());
+		$csv->setHeaderField('question', 'question');
+		$csv->setHeaderField('answer', 'answer');
+		$csv->setHeaderField('number_of_good_answers', 'number_of_good_answers');
+		$csv->setHeaderField('number_of_bad_answers', 'number_of_bad_answers');
+		$csv->setHeaderField('percent_of_good_answers', 'percent_of_good_answers');
+		$csv->build();
+
+		return Response::download($csv->getPath(), 'export.csv', [
+				'Content-Type' => 'text/csv'
+		]);
+	}
+
+	/**
 	 * jTable listAction ajax handler 
 	 */
 	public function listAction()
