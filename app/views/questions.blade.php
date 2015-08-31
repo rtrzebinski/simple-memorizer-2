@@ -11,6 +11,10 @@
 			pageSize: 100, //Set page size (default: 10)
 			sorting: true, //Enable sorting
 			defaultSorting: 'id ASC', //Set default sorting
+			selecting: true, //Enable selecting
+			multiselect: true, //Allow multiple selecting
+			selectingCheckboxes: true, //Show checkboxes on first column
+			selectOnRowClick: false, //Enable this to only select using checkboxes
 			actions: {
 				listAction: '{{ route("list_questions") }}',
 				deleteAction: '{{ route("delete_questions") }}',
@@ -40,7 +44,14 @@
 			}
 		});
 
+		// load jtable user interface
 		$('#QuestionsTable').jtable('load');
+
+		//Delete selected rows
+		$('#DeleteAllButton').button().click(function() {
+			var $selectedRows = $('#QuestionsTable').jtable('selectedRows');
+			$('#QuestionsTable').jtable('deleteRows', $selectedRows);
+		});
 	});
 
 </script>
@@ -51,9 +62,8 @@
 	@include ('navbar')
 	<div id="QuestionsTable"></div>
 	<br/>
-	{{ Form::open(['route' => 'questions_export']) }}
-	<input type='submit' name='export' value='Export' class='btn btn-default btn-sm'>
+	<a href='{{ route('questions_export') }}' class='btn btn-default btn-sm'>Export</a>
 	<a href='{{ route('questions_import') }}' class='btn btn-default btn-sm'>Import</a>
-	{{ Form::close() }}
+	<button class='btn btn-default btn-sm' id='DeleteAllButton'>Delete selected</button>
 </div>
 @stop

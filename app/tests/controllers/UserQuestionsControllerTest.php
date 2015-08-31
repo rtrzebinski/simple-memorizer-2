@@ -216,10 +216,11 @@ class UserQuestionsControllerTest extends TestCase {
 
 		// mock repository to return fake $collection
 		$repository = $this->getMockBuilder('UserQuestionRepository')->
-			setMethods(['all'])->
+			setMethods(['count', 'collection'])->
 			disableOriginalConstructor()->
 			getMock();
-		$repository->method('all')->willReturn($collection);
+		$repository->method('count')->willReturn(1);
+		$repository->method('collection')->willReturn($collection);
 		App::instance('UserQuestionRepository', $repository);
 
 		// mock CsvBuilder
@@ -243,7 +244,32 @@ class UserQuestionsControllerTest extends TestCase {
 		$this->app->instance('CsvBuilder', $builder);
 
 		// call route
-		$this->route('POST', 'questions_export');
+		$this->route('GET', 'questions_export');
+		$this->assertResponseOk();
+	}
+
+	/**
+	 * @test
+	 */
+	public function shouldNotExportUserQuestionsIfUserHasNoQuestions()
+	{
+		$collection = uniqid();
+
+		// mock repository to return fake $collection
+		$repository = $this->getMockBuilder('UserQuestionRepository')->
+			setMethods(['count'])->
+			disableOriginalConstructor()->
+			getMock();
+		$repository->method('count')->willReturn(0);
+		App::instance('UserQuestionRepository', $repository);
+
+		// expect view to display info
+		View::shouldReceive('make')->with('info_page', [
+			'info' => Lang::get('messages.nothing_to_export')
+		]);
+
+		// call route
+		$this->route('GET', 'questions_export');
 		$this->assertResponseOk();
 	}
 

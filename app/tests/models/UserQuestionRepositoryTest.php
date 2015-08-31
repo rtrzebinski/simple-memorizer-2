@@ -128,30 +128,4 @@ class UserQuestionRepositoryTest extends TestCase {
 		$this->assertEquals($count, $repository->count());
 	}
 
-	/**
-	 * @test
-	 */
-	public function shouldReturnAllUserQuestionsCollection()
-	{
-		$user = $this->createUser();
-		$userQuestion = $this->createUserQuestion($user->id);
-		$repository = new UserQuestionRepository($user);
-
-		// create class identical to expected row returned by UserQuestionRepository::all()
-		$row = new stdClass();
-		$row->id = $userQuestion->id;
-		$row->percent_of_good_answers = $userQuestion->percent_of_good_answers;
-		$row->number_of_good_answers = $userQuestion->number_of_good_answers;
-		$row->number_of_bad_answers = $userQuestion->number_of_bad_answers;
-		$row->question = $userQuestion->question->question;
-		$row->answer = $userQuestion->question->answer;
-
-		// call all() metod
-		$result = $repository->all();
-
-		// check returned value
-		$this->assertEquals(1, count($result));
-		$this->assertEquals([$row], $result);
-	}
-
 }

@@ -102,15 +102,6 @@ class UserQuestionRepository {
 	}
 
 	/**
-	 * Collection of all user questions
-	 * @return array Array of stdClass objects
-	 */
-	public function all()
-	{
-		return $this->collection($this->count());
-	}
-
-	/**
 	 * Return random user question
 	 * 
 	 * UserQuestionsRandomizer is used to return less known questions

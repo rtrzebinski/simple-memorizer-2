@@ -120,8 +120,19 @@ class UserQuestionsController extends JtableController {
 	 */
 	public function export()
 	{
+		// check total number of user questions to export
+		$count = $this->repository->count();
+
+		if (!$count)
+		{
+			// display info if nothing to export
+			$this->viewData['info'] = Lang::get('messages.nothing_to_export');
+			return View::make('info_page', $this->viewData);
+		}
+
+		// build csv file
 		$csvBuilder = App::make('CsvBuilder');
-		$csvBuilder->setData($this->repository->all());
+		$csvBuilder->setData($this->repository->collection($count));
 		$csvBuilder->setHeaderField('question', 'question');
 		$csvBuilder->setHeaderField('answer', 'answer');
 		$csvBuilder->setHeaderField('number_of_good_answers', 'number_of_good_answers');
@@ -129,6 +140,7 @@ class UserQuestionsController extends JtableController {
 		$csvBuilder->setHeaderField('percent_of_good_answers', 'percent_of_good_answers');
 		$csvBuilder->build();
 
+		// download file
 		return Response::download($csvBuilder->getPath(), 'export.csv', [
 				'Content-Type' => 'text/csv'
 		]);
