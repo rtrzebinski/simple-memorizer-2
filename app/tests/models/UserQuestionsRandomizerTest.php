@@ -82,8 +82,7 @@ class UserQuestionsRandomizerTest extends TestCase {
 		$class = new ReflectionClass($randomizer);
 		$pointsReflectionMethod = $class->getMethod('getUserQuestionsArray');
 		$pointsReflectionMethod->setAccessible(true);
-		$result = $pointsReflectionMethod->invoke($randomizer);
-
+		$result = $pointsReflectionMethod->invokeArgs($randomizer, [$user]);
 		$this->assertEquals(11, count($result));
 
 		/*
@@ -104,9 +103,9 @@ class UserQuestionsRandomizerTest extends TestCase {
 
 	/**
 	 * @test
-	 * Can't test really much here, so just add one userQuestion and check if it's question is being returned
+	 * Can't test really much here, so just create one userQuestion and check if it's returned
 	 */
-	public function shouldReturnRandomObject()
+	public function shouldReturnRandomUserQuestion()
 	{
 		// create one user question
 		$userQuestion = new UserQuestion();
@@ -117,10 +116,9 @@ class UserQuestionsRandomizerTest extends TestCase {
 		$user->setRelation('userQuestions', $userQuestionsCollection);
 
 		// instantiate randomizer
-		$randomizer = new UserQuestionsRandomizer($user);
+		$randomizer = new UserQuestionsRandomizer();
 
-
-		$this->assertEquals($userQuestion, $randomizer->randomUserQuestion());
+		$this->assertEquals($userQuestion, $randomizer->randomUserQuestion($user));
 	}
 
 	/**
@@ -132,10 +130,10 @@ class UserQuestionsRandomizerTest extends TestCase {
 		$user = new User();
 
 		// instantiate randomizer
-		$randomizer = new UserQuestionsRandomizer($user);
+		$randomizer = new UserQuestionsRandomizer();
 
 		// assert null is returned by randmizer
-		$this->assertNull($randomizer->randomUserQuestion());
+		$this->assertNull($randomizer->randomUserQuestion($user));
 	}
 
 }

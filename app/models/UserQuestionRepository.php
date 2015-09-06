@@ -104,18 +104,14 @@ class UserQuestionRepository {
 	/**
 	 * Return random user question
 	 * 
-	 * UserQuestionsRandomizer is used to return less known questions
-	 * more often that better known
+	 * Return less known questions more often that better known
 	 * 
-	 * @return UserQuestion
+	 * @return UserQuestion|NULL
+	 * NULL will be returned if user has no questions
 	 */
 	public function randomUserQuestion()
 	{
-		// instantiate randomizer
-		$randomizer = new UserQuestionsRandomizer($this->user);
-
-		// return random user question
-		return $randomizer->randomUserQuestion();
+		return $this->user->randomUserQuestion();
 	}
 
 	/**

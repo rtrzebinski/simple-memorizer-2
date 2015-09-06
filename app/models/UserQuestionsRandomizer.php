@@ -9,25 +9,19 @@
  */
 class UserQuestionsRandomizer {
 
-	private $user;
-
-	public function __construct(User $user)
-	{
-		$this->user = $user;
-	}
-
 	/**
 	 * Random user question
 	 * 
 	 * Questions that user knows less have more chance to be returned.
 	 * Questions that user knows more have less chance to be returned.
 	 * 
+	 * @param User $user
 	 * @return UserQuestion|NULL
 	 * NULL will be returned if user has no questions
 	 */
-	public function randomUserQuestion()
+	public function randomUserQuestion(User $user)
 	{
-		$questions = $this->getUserQuestionsArray();
+		$questions = $this->getUserQuestionsArray($user);
 		if (count($questions) > 0)
 		{
 			// do randomization
@@ -39,21 +33,19 @@ class UserQuestionsRandomizer {
 	/**
 	 * Multiply user questions by points
 	 * 
+	 * @param User $user
 	 * @return array
 	 */
-	private function getUserQuestionsArray()
+	private function getUserQuestionsArray(User $user)
 	{
-		// extract user questions from injected user
-		$userQuestions = $this->user->userQuestions;
-
 		// return an empty array if user has no questions attached
-		if (!$userQuestions)
+		if (!$user->userQuestions)
 		{
 			return [];
 		}
 
 		$return = [];
-		foreach ($this->user->userQuestions as $userQuestion)
+		foreach ($user->userQuestions as $userQuestion)
 		{
 			for ($i = $this->getPoints($userQuestion); $i > 0; $i--)
 			{

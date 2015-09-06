@@ -35,4 +35,18 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $this->hasMany('UserQuestion', 'user_id');
 	}
 
+	/**
+	 * Random user question
+	 * 
+	 * Questions that user knows less have more chance to be returned.
+	 * Questions that user knows more have less chance to be returned.
+	 * 
+	 * @return UserQuestion|NULL
+	 * NULL will be returned if user has no questions
+	 */
+	public function randomUserQuestion()
+	{
+		return App::make('UserQuestionsRandomizer')->randomUserQuestion($this);
+	}
+
 }
