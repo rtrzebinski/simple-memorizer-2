@@ -6,53 +6,6 @@
  */
 class UserQuestionsRandomizerTest extends TestCase {
 
-	public function answersProvider()
-	{
-		return [
-			[0, 10],
-			[5, 10],
-			[15, 9],
-			[20, 9],
-			[25, 8],
-			[30, 8],
-			[35, 7],
-			[40, 7],
-			[45, 6],
-			[50, 6],
-			[55, 5],
-			[60, 5],
-			[65, 4],
-			[70, 4],
-			[75, 3],
-			[80, 3],
-			[85, 2],
-			[90, 2],
-			[95, 1],
-			[100, 1]
-		];
-	}
-
-	/**
-	 * @test
-	 * Test calculation of knowledge points
-	 * @dataProvider answersProvider
-	 */
-	public function shouldConvertPercentOfGoodAnswersToPoints($percentOfGoodAnswers, $points)
-	{
-		// create user question
-		$userQuestion = new UserQuestion();
-		$userQuestion->percent_of_good_answers = $percentOfGoodAnswers;
-
-		// instantiate randomizer
-		$randomizer = App::make('UserQuestionsRandomizer');
-
-		// call private getPoints() on $randomizer object
-		$class = new ReflectionClass($randomizer);
-		$pointsReflectionMethod = $class->getMethod('getPoints');
-		$pointsReflectionMethod->setAccessible(true);
-		$this->assertEquals($points, $pointsReflectionMethod->invokeArgs($randomizer, [$userQuestion]));
-	}
-
 	/**
 	 * @test
 	 */
@@ -76,7 +29,7 @@ class UserQuestionsRandomizerTest extends TestCase {
 		]);
 		$user->setRelation('userQuestions', $userQuestionsCollection);
 
-		$randomizer = new UserQuestionsRandomizer($user);
+		$randomizer = App::make('UserQuestionsRandomizer');
 
 		// call private getUserQuestionsArray() method on randomizer
 		$class = new ReflectionClass($randomizer);
@@ -116,7 +69,7 @@ class UserQuestionsRandomizerTest extends TestCase {
 		$user->setRelation('userQuestions', $userQuestionsCollection);
 
 		// instantiate randomizer
-		$randomizer = new UserQuestionsRandomizer();
+		$randomizer = App::make('UserQuestionsRandomizer');
 
 		$this->assertEquals($userQuestion, $randomizer->randomUserQuestion($user));
 	}
@@ -130,7 +83,7 @@ class UserQuestionsRandomizerTest extends TestCase {
 		$user = new User();
 
 		// instantiate randomizer
-		$randomizer = new UserQuestionsRandomizer();
+		$randomizer = App::make('UserQuestionsRandomizer');
 
 		// assert null is returned by randmizer
 		$this->assertNull($randomizer->randomUserQuestion($user));
