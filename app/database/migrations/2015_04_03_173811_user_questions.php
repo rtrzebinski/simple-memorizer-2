@@ -12,7 +12,7 @@ class UserQuestions extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('UserQuestions', function(Blueprint $table) {
+		Schema::create('user_questions', function(Blueprint $table) {
 			$table->increments('id');
 			$table->integer('question_id')->unsigned();
 			$table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
@@ -32,9 +32,7 @@ class UserQuestions extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('UserQuestions', function() {
-			Schema::drop('UserQuestions');
-		});
+		Schema::drop('user_questions');
 	}
 
 }
