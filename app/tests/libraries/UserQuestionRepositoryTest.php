@@ -34,6 +34,9 @@ class UserQuestionRepositoryTest extends TestCase {
 		$repository = new UserQuestionRepository($user);
 		$userQuestion = $repository->create($question, $answer, $numberOfGoodAnswers, $numberOfBadAnswers, $percentOfGoodAnswers);
 
+		// reload to ensure data is stored in db
+		$this->refresh($userQuestion);
+
 		$this->assertEquals($user->id, $userQuestion->user_id);
 		$this->assertEquals($numberOfGoodAnswers, $userQuestion->number_of_good_answers);
 		$this->assertEquals($numberOfBadAnswers, $userQuestion->number_of_bad_answers);
@@ -59,6 +62,9 @@ class UserQuestionRepositoryTest extends TestCase {
 
 		// try to create existing user question with different number of answers
 		$userQuestion = $repository->create($question, $answer);
+
+		// reload to ensure data is stored in db
+		$this->refresh($userQuestion);
 
 		$this->assertEquals($user->id, $userQuestion->user_id);
 		$this->assertEquals(0, $userQuestion->number_of_good_answers);
