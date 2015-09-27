@@ -3,7 +3,7 @@
 /**
  * Question eloquent model
  */
-class Question extends \Illuminate\Database\Eloquent\Model {
+class Question extends Eloquent {
 
 	/**
 	 * The database table used by the model.
@@ -11,5 +11,5 @@ class Question extends \Illuminate\Database\Eloquent\Model {
 	 * @var string
 	 */
 	public $table = 'questions';
-
+	
 }

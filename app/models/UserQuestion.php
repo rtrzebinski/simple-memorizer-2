@@ -5,7 +5,7 @@
  * 
  * Connects User with Question
  */
-class UserQuestion extends \Illuminate\Database\Eloquent\Model {
+class UserQuestion extends Eloquent {
 
 	/**
 	 * The database table used by the model.
