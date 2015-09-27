@@ -7,6 +7,18 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 
 /**
  * User eloquent model
+ * 
+ * Database fields
+ * @property int $id Id
+ * @property string $name Name
+ * @property string $email Email
+ * @property string $password Password
+ * @property string $remember_token Remember token
+ * @property \Carbon\Carbon $created_at Created at
+ * @property \Carbon\Carbon $updated_at Updated at
+ * 
+ * Relations fields
+ * @property \Illuminate\Database\Eloquent\Collection $userQuestions Related UserQuestion[] collection
  */
 class User extends Eloquent implements UserInterface, RemindableInterface {
 

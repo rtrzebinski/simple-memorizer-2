@@ -4,6 +4,20 @@
  * User question eloquent model
  * 
  * Connects User with Question
+ * 
+ * Database fields
+ * @property int $id Id
+ * @property int $question_id Question id
+ * @property int $user_id User id
+ * @property int $number_of_good_answers Number of good answers
+ * @property int $number_of_bad_answers Number of bad answers
+ * @property int $percent_of_good_answers Percent of good answers
+ * @property \Carbon\Carbon $created_at Created at
+ * @property \Carbon\Carbon $updated_at Updated at
+ * 
+ * Relations fields
+ * @property \User $user Related User
+ * @property \Question $question Related Question
  */
 class UserQuestion extends Eloquent {
 
