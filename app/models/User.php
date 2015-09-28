@@ -19,6 +19,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  * 
  * Relations fields
  * @property \Illuminate\Database\Eloquent\Collection $userQuestions Related UserQuestion[] collection
+ * @property \Illuminate\Database\Eloquent\Collection $apiSessions Related ApiSession[] collection
  */
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
@@ -45,6 +46,15 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function userQuestions()
 	{
 		return $this->hasMany('UserQuestion', 'user_id');
+	}
+
+	/**
+	 * Api sessions relation
+	 * @return \Illuminate\Database\Eloquent\Relations\hasMany
+	 */
+	public function apiSessions()
+	{
+		return $this->hasMany('ApiSession', 'user_id');
 	}
 
 	/**

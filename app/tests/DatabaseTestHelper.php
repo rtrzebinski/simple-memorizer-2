@@ -53,4 +53,20 @@ trait DatabaseTestHelper {
 		return $userQuestion;
 	}
 
+	/**
+	 * Create ApiSession instance
+	 * @param int $userId
+	 * @return \ApiSession
+	 */
+	protected function createApiSession($userId = null)
+	{
+		$apiSession = App::make('ApiSession');
+		$apiSession->user_id = $userId ? : $this->createUser()->id;
+		$apiSession->auth_token = uniqid();
+		$apiSession->client_ip = uniqid();
+		$apiSession->client_name = uniqid();
+		$apiSession->save();
+		return $apiSession;
+	}
+
 }

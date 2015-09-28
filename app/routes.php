@@ -1,14 +1,7 @@
 <?php
 
 /*
-  |--------------------------------------------------------------------------
-  | Application Routes
-  |--------------------------------------------------------------------------
-  |
-  | Here is where you can register all of the routes for an application.
-  | It's a breeze. Simply tell Laravel the URIs it should respond to
-  | and give it the Closure to execute when that URI is requested.
-  |
+ * Web interface routes
  */
 
 Route::group(array('before' => 'guest'), function() {
@@ -36,3 +29,10 @@ Route::group(array('before' => 'auth'), function() {
 	Route::get('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@index']);
 	Route::post('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@update', 'before' => 'csrf']);
 });
+
+/*
+ * REST API routes
+ */
+
+Route::post('/api/login', ['as' => 'api_login', 'uses' => 'API_LoginController@login']);
+Route::post('/api/signup', ['as' => 'api_signup', 'uses' => 'API_SignupController@signup']);

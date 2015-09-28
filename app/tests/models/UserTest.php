@@ -20,6 +20,20 @@ class UserTest extends TestCase {
 
 	/**
 	 * @test
+	 */
+	public function shouldDefineApiSessionsRelation()
+	{
+		$apiSession = $this->createApiSession();
+
+		$res = $apiSession->user->apiSessions;
+
+		$this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $res);
+		$this->assertEquals(1, $res->count());
+		$this->assertEquals($apiSession->id, $res[0]->id);
+	}
+
+	/**
+	 * @test
 	 * Can't test really much here, so just create one userQuestion and check if it's returned
 	 */
 	public function shouldReturnRandomUserQuestion()

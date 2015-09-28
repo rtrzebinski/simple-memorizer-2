@@ -1,18 +1,8 @@
 <?php
 
-class SignupControllerTest extends TestCase {
+class API_SignupControllerTest extends TestCase {
 
-	/**
-	 * @test
-	 */
-	public function shouldDisplaySignupForm()
-	{
-		View::shouldReceive('make')->with('user.signup')->once();
-
-		$this->route('GET', 'signup');
-
-		$this->assertResponseOk();
-	}
+	use ApiTestHelper;
 
 	/**
 	 * @test
@@ -21,19 +11,27 @@ class SignupControllerTest extends TestCase {
 	{
 		$data = [
 			'email' => $this->randomEmailAddress(),
-			'password' => uniqid()
+			'password' => uniqid(),
+			'client_name' => uniqid()
 		];
 
-		// empty user
+		//user object
 		$user = new User();
+		$user->id = uniqid();
+
+		// api session object
+		$apiSession = new ApiSession();
+		$apiSession->auth_token = uniqid();
+
+		// mock ApiSessionRepository
+		$apiSessionRepositoryMock = $this->getMock('ApiSessionRepository', ['create']);
+		$apiSessionRepositoryMock->expects($this->once())->method('create')->with($user->id, $data['client_name'], '127.0.0.1')->willReturn($apiSession);
+		$this->app->instance('ApiSessionRepository', $apiSessionRepositoryMock);
 
 		// mock UserRepository
 		$userRepositoryMock = $this->getMock('UserRepository', ['create']);
 		$userRepositoryMock->expects($this->once())->method('create')->with($data['email'], $data['password'])->willReturn($user);
 		App::instance('UserRepository', $userRepositoryMock);
-
-		// mock auth facade
-		Auth::shouldReceive('login')->once()->with($user);
 
 		// mock validator (so it doesn't access database to check if email was already used)
 		$validatorMock = $this->
@@ -46,10 +44,10 @@ class SignupControllerTest extends TestCase {
 		Validator::shouldReceive('make')->once()->andReturn($validatorMock);
 
 		// call route
-		$this->route('POST', 'signup', $data);
+		$this->route('POST', 'api_signup', $data);
 
-		// check redirection to overview
-		$this->assertRedirectedToRoute('overview');
+		// verify response
+		$this->assertSuccessApiResponse(['auth_token' => $apiSession->auth_token]);
 	}
 
 	/**
@@ -57,6 +55,8 @@ class SignupControllerTest extends TestCase {
 	 */
 	public function shouldNotSignupUserWithInvalidCredentials()
 	{
+		$this->setExpectedException('ApiException');
+
 		// mock validator
 		$validatorMock = $this->
 			getMockBuilder('\Illuminate\Validation\Validator')->
@@ -65,16 +65,10 @@ class SignupControllerTest extends TestCase {
 			getMock();
 		// fails() should return true
 		$validatorMock->method('fails')->willReturn(true);
-		// mock error messages
-		$validatorMock->method('getMessageBag')->willReturnCallback(function () {
-			return new Illuminate\Support\MessageBag(['foo']);
-		});
 		Validator::shouldReceive('make')->once()->andReturn($validatorMock);
 
-		$this->route('POST', 'signup');
-
-		$this->assertViewHas('errors');
-		$this->assertFalse(Auth::check());
+		// call route
+		$this->route('POST', 'api_signup');
 	}
 
 }

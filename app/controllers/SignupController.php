@@ -6,6 +6,19 @@
 class SignupController extends BaseController {
 
 	/**
+	 * @var UserRepository 
+	 */
+	private $userRepository;
+
+	/**
+	 * @param UserRepository $userRepository
+	 */
+	public function __construct(UserRepository $userRepository)
+	{
+		$this->userRepository = $userRepository;
+	}
+
+	/**
 	 * Show signup form
 	 */
 	public function index()
@@ -36,10 +49,8 @@ class SignupController extends BaseController {
 			return View::make('user.signup')->withErrors($validator);
 		}
 
-		$user = App::make('User');
-		$user->email = $email;
-		$user->password = Hash::make($password);
-		$user->save();
+		// create user
+		$user = $this->userRepository->create($email, $password);
 
 		Auth::login($user);
 		return Redirect::route('overview');
