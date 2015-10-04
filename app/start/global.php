@@ -79,3 +79,25 @@ App::down(function()
 */
 
 require app_path().'/filters.php';
+
+/**
+ * Success API response
+ * @param mixed $data Data returned with API response
+ */
+Response::macro('apiSuccess', function($data = null)
+{
+	return Response::JSON([
+			'success' => true,
+			'data' => $data
+	]);
+});
+
+/**
+ * Error API response
+ */
+Response::macro('apiError', function()
+{
+	return Response::JSON([
+			'success' => false
+	]);
+});

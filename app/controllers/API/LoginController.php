@@ -15,8 +15,6 @@ class API_LoginController extends API_BaseController {
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 * Auth token
-	 * 
-	 * @throws ApiException
 	 */
 	public function login()
 	{
@@ -33,11 +31,11 @@ class API_LoginController extends API_BaseController {
 			Session::flush();
 
 			// return api session auth token
-			return $this->response(['auth_token' => $apiSession->auth_token]);
+			return Response::apiSuccess(['auth_token' => $apiSession->auth_token]);
 		}
 		else
 		{
-			throw new ApiException('Authentication error');
+			return Response::apiError();
 		}
 	}
 

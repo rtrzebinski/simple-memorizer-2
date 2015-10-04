@@ -30,8 +30,6 @@ class API_SignupController extends API_BaseController {
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 * Auth token
-	 * 
-	 * @throws ApiException
 	 */
 	public function signup()
 	{
@@ -52,7 +50,7 @@ class API_SignupController extends API_BaseController {
 		if ($validator->fails())
 		{
 			// validation error
-			throw new ApiException();
+			return Response::apiError();
 		}
 
 		// create new user
@@ -62,7 +60,7 @@ class API_SignupController extends API_BaseController {
 		$apiSession = $this->apiSessionRepository->create($user->id, Input::get('client_name'), Request::getClientIp());
 
 		// return api session auth token
-		return $this->response(['auth_token' => $apiSession->auth_token]);
+		return Response::apiSuccess(['auth_token' => $apiSession->auth_token]);
 	}
 
 }

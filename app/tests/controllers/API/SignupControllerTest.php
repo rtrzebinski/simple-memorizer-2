@@ -55,8 +55,6 @@ class API_SignupControllerTest extends TestCase {
 	 */
 	public function shouldNotSignupUserWithInvalidCredentials()
 	{
-		$this->setExpectedException('ApiException');
-
 		// mock validator
 		$validatorMock = $this->
 			getMockBuilder('\Illuminate\Validation\Validator')->
@@ -69,6 +67,8 @@ class API_SignupControllerTest extends TestCase {
 
 		// call route
 		$this->route('POST', 'api_signup');
+
+		$this->assertErrorApiResponse();
 	}
 
 }

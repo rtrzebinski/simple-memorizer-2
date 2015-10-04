@@ -44,8 +44,6 @@ class API_LoginControllerTest extends TestCase {
 	 */
 	public function shouldNotLoginUserWithBadCredentials()
 	{
-		$this->setExpectedException('ApiException');
-
 		$data = [
 			'email' => $this->randomEmailAddress(),
 			'password' => uniqid()
@@ -59,6 +57,8 @@ class API_LoginControllerTest extends TestCase {
 
 		// call route
 		$this->route('POST', 'api_login', $data);
+
+		$this->assertErrorApiResponse();
 	}
 
 }
