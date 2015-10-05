@@ -33,7 +33,7 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('web_auth', function()
+Route::filter('auth', function()
 {
 	if (Auth::guest())
 	{
@@ -47,24 +47,6 @@ Route::filter('web_auth', function()
 		}
 	}
 });
-
-/**
- * Authorise REST API call
- */
-Route::filter('api_auth', function()
-{
-		$apiSessionRepository = App::make('ApiSessionRepository');
-		$user = $apiSessionRepository->user(Input::get('auth_token'));
-
-		if (!$user)
-		{
-			return Response::apiError();
-		}
-
-		// login user
-		Auth::login($user);
-});
-
 
 Route::filter('auth.basic', function()
 {
@@ -82,7 +64,7 @@ Route::filter('auth.basic', function()
 |
 */
 
-Route::filter('web_guest', function() {
+Route::filter('guest', function() {
 	if (Auth::check())
 	{
 		return Redirect::route('overview');

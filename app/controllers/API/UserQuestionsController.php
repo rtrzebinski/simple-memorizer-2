@@ -8,38 +8,26 @@
 class API_UserQuestionsController extends API_BaseController {
 
 	/**
-	 * @var UserQuestionRepository 
-	 */
-	private $userQuestionRepository;
-
-	/**
-	 * @param ApiSessionRepository $apiSessionRepository
-	 * @param UserQuestionRepository $userQuestionRepository
-	 */
-	public function __construct(ApiSessionRepository $apiSessionRepository, UserQuestionRepository $userQuestionRepository)
-	{
-		parent::__construct($apiSessionRepository);
-		$this->userQuestionRepository = $userQuestionRepository;
-	}
-
-	/**
 	 * Collection of user questions
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
 	public function collection()
 	{
-		$take = Input::get('take');
-		$skip = Input::get('skip');
-		$orderByField = Input::get('order_by_field');
-		$orderBySort = Input::get('order_by_sort');
+		return $this->apiOutput(function(User $user) {
+				$take = Input::get('take');
+				$skip = Input::get('skip');
+				$orderByField = Input::get('order_by_field');
+				$orderBySort = Input::get('order_by_sort');
 
-		$collection = $this->userQuestionRepository->collection($take, $skip, $orderByField, $orderBySort);
+				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
+				$collection = $userQuestionRepository->collection($take, $skip, $orderByField, $orderBySort);
 
-		return Response::apiSuccess([
-				'records' => $collection,
-				'count' => $this->userQuestionRepository->count()
-		]);
+				return Response::apiSuccess([
+						'records' => $collection,
+						'count' => $userQuestionRepository->count()
+				]);
+			}, true);
 	}
 
 	/**
@@ -49,14 +37,18 @@ class API_UserQuestionsController extends API_BaseController {
 	 */
 	public function create()
 	{
-		$question = Input::get('question');
-		$answer = Input::get('answer');
+		return $this->apiOutput(function(User $user) {
 
-		$userQuestion = $this->userQuestionRepository->create($question, $answer);
+				$question = Input::get('question');
+				$answer = Input::get('answer');
 
-		return Response::apiSuccess([
-				'user_question_id' => $userQuestion->id
-		]);
+				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
+				$userQuestion = $userQuestionRepository->create($question, $answer);
+
+				return Response::apiSuccess([
+						'user_question_id' => $userQuestion->id
+				]);
+			}, true);
 	}
 
 	/**
@@ -66,29 +58,32 @@ class API_UserQuestionsController extends API_BaseController {
 	 */
 	public function update()
 	{
-		$userQuestion = $this->userQuestionRepository->find(Input::get('id'));
+		return $this->apiOutput(function(User $user) {
+				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
+				$userQuestion = $userQuestionRepository->find(Input::get('id'));
 
-		if (!$userQuestion)
-		{
-			return Response::apiError();
-		}
+				if (!$userQuestion)
+				{
+					return Response::apiError();
+				}
 
-		$fields = [
-			'question',
-			'answer'
-		];
+				$fields = [
+					'question',
+					'answer'
+				];
 
-		foreach ($fields as $row)
-		{
-			if (Input::has($row))
-			{
-				$userQuestion->question->{$row} = Input::get($row);
-			}
-		}
+				foreach ($fields as $row)
+				{
+					if (Input::has($row))
+					{
+						$userQuestion->question->{$row} = Input::get($row);
+					}
+				}
 
-		$userQuestion->question->save();
+				$userQuestion->question->save();
 
-		return Response::apiSuccess();
+				return Response::apiSuccess();
+			}, true);
 	}
 
 	/**
@@ -98,17 +93,20 @@ class API_UserQuestionsController extends API_BaseController {
 	 */
 	public function delete()
 	{
-		$userQuestion = $this->userQuestionRepository->find(Input::get('id'));
+		return $this->apiOutput(function(User $user) {
+				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
+				$userQuestion = $userQuestionRepository->find(Input::get('id'));
 
-		if (!$userQuestion)
-		{
-			return Response::apiError();
-		}
+				if (!$userQuestion)
+				{
+					return Response::apiError();
+				}
 
-		// foreing key deletes all UserQuestions when question is deleted
-		$userQuestion->question->delete();
+				// foreing key deletes all UserQuestions when question is deleted
+				$userQuestion->question->delete();
 
-		return Response::apiSuccess();
+				return Response::apiSuccess();
+			}, true);
 	}
 
 	/**
@@ -120,21 +118,24 @@ class API_UserQuestionsController extends API_BaseController {
 	 */
 	public function random()
 	{
-		$userQuestion = $this->userQuestionRepository->randomUserQuestion();
+		return $this->apiOutput(function(User $user) {
+				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
+				$userQuestion = $userQuestionRepository->randomUserQuestion();
 
-		if (!$userQuestion)
-		{
-			return Response::apiError();
-		}
+				if (!$userQuestion)
+				{
+					return Response::apiError();
+				}
 
-		return Response::apiSuccess([
-				'id' => $userQuestion->id,
-				'question' => $userQuestion->question->question,
-				'answer' => $userQuestion->question->answer,
-				'percent_of_good_answers' => $userQuestion->percent_of_good_answers,
-				'number_of_good_answers' => $userQuestion->number_of_good_answers,
-				'number_of_bad_answers' => $userQuestion->number_of_bad_answers
-		]);
+				return Response::apiSuccess([
+						'id' => $userQuestion->id,
+						'question' => $userQuestion->question->question,
+						'answer' => $userQuestion->question->answer,
+						'percent_of_good_answers' => $userQuestion->percent_of_good_answers,
+						'number_of_good_answers' => $userQuestion->number_of_good_answers,
+						'number_of_bad_answers' => $userQuestion->number_of_bad_answers
+				]);
+			}, true);
 	}
 
 	/**
@@ -144,7 +145,9 @@ class API_UserQuestionsController extends API_BaseController {
 	 */
 	public function addGoodAnswer()
 	{
-		return $this->addAnswer(true);
+		return $this->apiOutput(function(User $user) {
+				return $this->addAnswer(true, $user);
+			}, true);
 	}
 
 	/**
@@ -154,12 +157,20 @@ class API_UserQuestionsController extends API_BaseController {
 	 */
 	public function addBadAnswer()
 	{
-		return $this->addAnswer(false);
+		return $this->apiOutput(function(User $user) {
+				return $this->addAnswer(false, $user);
+			}, true);
 	}
 
-	private function addAnswer($isAnswerCorrect)
+	/**
+	 * @param bool $isAnswerCorrect
+	 * @param User $user
+	 * @return Illuminate\Http\Response
+	 */
+	private function addAnswer($isAnswerCorrect, User $user)
 	{
-		$userQuestion = $this->userQuestionRepository->find(Input::get('id'));
+		$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
+		$userQuestion = $userQuestionRepository->find(Input::get('id'));
 
 		$userQuestion->updateAnswers($isAnswerCorrect);
 

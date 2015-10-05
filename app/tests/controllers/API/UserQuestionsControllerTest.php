@@ -4,12 +4,6 @@ class API_UserQuestionsControllerTest extends TestCase {
 
 	use ApiTestHelper;
 
-	public function setUp()
-	{
-		parent::setUp();
-		Route::enableFilters();
-	}
-
 	/**
 	 * Test collection()
 	 * @test

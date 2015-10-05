@@ -31,6 +31,7 @@ class API_LoginControllerTest extends TestCase {
 			'password' => $data['password']
 		])->andReturn(true);
 		Auth::shouldReceive('id')->once()->andReturn($userId);
+		Auth::shouldReceive('logout')->once();
 
 		// call route
 		$this->route('POST', 'api_login', $data);
