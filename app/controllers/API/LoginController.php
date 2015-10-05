@@ -2,6 +2,9 @@
 
 /**
  * REST API login controller
+ * 
+ * Log in existing user with given credentials
+ * Return auth_token which can be used to authenticate other API calls
  */
 class API_LoginController extends API_BaseController {
 
@@ -9,9 +12,9 @@ class API_LoginController extends API_BaseController {
 	 * Create API auth token for existing user
 	 * 
 	 * Parameteres:
-	 * - string email
-	 * - string password
-	 * - string client_name
+	 * - string email User email
+	 * - string password User password
+	 * - string client_name Name of client app
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 * Auth token
@@ -36,6 +39,7 @@ class API_LoginController extends API_BaseController {
 				}
 				else
 				{
+					// bad user login
 					return Response::apiError();
 				}
 			}, false);

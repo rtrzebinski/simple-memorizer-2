@@ -2,6 +2,9 @@
 
 /**
  * REST API signup controller
+ * 
+ * Create new user from given credentials
+ * Return auth_token which can be used to authenticate other API calls
  */
 class API_SignupController extends API_BaseController {
 
@@ -9,9 +12,9 @@ class API_SignupController extends API_BaseController {
 	 * Create new user and related API auth token
 	 * 
 	 * Parameteres:
-	 * - string email
-	 * - string password
-	 * - string client_name
+	 * - string email User email
+	 * - string password User password
+	 * - string client_name Name of client app
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 * Auth token

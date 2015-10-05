@@ -3,12 +3,19 @@
 /**
  * REST API user questions controller
  * 
- * Allows user to manage question/answer pairs
+ * Manage user questions - question/answer pairs
  */
 class API_UserQuestionsController extends API_BaseController {
 
 	/**
 	 * Collection of user questions
+	 * 
+	 * Parameters:
+	 * - string auth_token
+	 * - int take Number of rows to take
+	 * - int skip Number of rows to skip
+	 * - string order_by_field Column to sort by
+	 * - string order_by_sort ASC|DESC
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
@@ -20,6 +27,7 @@ class API_UserQuestionsController extends API_BaseController {
 				$orderByField = Input::get('order_by_field');
 				$orderBySort = Input::get('order_by_sort');
 
+				// Obtain user questions collection from repository
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 				$collection = $userQuestionRepository->collection($take, $skip, $orderByField, $orderBySort);
 
@@ -33,6 +41,11 @@ class API_UserQuestionsController extends API_BaseController {
 	/**
 	 * Create new user question
 	 * 
+	 * Parameters:
+	 * - string auth_token
+	 * - string question
+	 * - string answer
+	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
 	public function create()
@@ -42,6 +55,7 @@ class API_UserQuestionsController extends API_BaseController {
 				$question = Input::get('question');
 				$answer = Input::get('answer');
 
+				// Create user question via repository
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 				$userQuestion = $userQuestionRepository->create($question, $answer);
 
@@ -54,19 +68,28 @@ class API_UserQuestionsController extends API_BaseController {
 	/**
 	 * Update existing user question
 	 * 
+	 * Parameters:
+	 * - string auth_token
+	 * - int id User question id
+	 * - string question
+	 * - string answer
+	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
 	public function update()
 	{
 		return $this->apiOutput(function(User $user) {
+				// Find user question using repository
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 				$userQuestion = $userQuestionRepository->find(Input::get('id'));
 
+				// Retur error if user question does not exist
 				if (!$userQuestion)
 				{
 					return Response::apiError();
 				}
 
+				// Update fields
 				$fields = [
 					'question',
 					'answer'
@@ -89,20 +112,29 @@ class API_UserQuestionsController extends API_BaseController {
 	/**
 	 * Delete existing user question
 	 * 
+	 * Parameters:
+	 * - string auth_token
+	 * - int id User question id
+	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
 	public function delete()
 	{
 		return $this->apiOutput(function(User $user) {
+				// Find user question using repository
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 				$userQuestion = $userQuestionRepository->find(Input::get('id'));
 
+				// Retur error if user question does not exist
 				if (!$userQuestion)
 				{
 					return Response::apiError();
 				}
 
-				// foreing key deletes all UserQuestions when question is deleted
+				/*
+				 * Delete user question
+				 * Foreing key deletes all UserQuestions when question is deleted
+				 */
 				$userQuestion->question->delete();
 
 				return Response::apiSuccess();
@@ -114,14 +146,19 @@ class API_UserQuestionsController extends API_BaseController {
 	 * 
 	 * Return less known questions more often that better known
 	 * 
+	 * Parameters:
+	 * - string auth_token
+	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
 	public function random()
 	{
 		return $this->apiOutput(function(User $user) {
+				// Obtain random user question using repository
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 				$userQuestion = $userQuestionRepository->randomUserQuestion();
 
+				// Retur error if user question does not exist
 				if (!$userQuestion)
 				{
 					return Response::apiError();
@@ -141,6 +178,9 @@ class API_UserQuestionsController extends API_BaseController {
 	/**
 	 * Add good answer to user question
 	 * 
+	 * Parameters:
+	 * - string auth_token
+	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
 	public function addGoodAnswer()
@@ -152,6 +192,9 @@ class API_UserQuestionsController extends API_BaseController {
 
 	/**
 	 * Add bad answer to user question
+	 * 
+	 * Parameters:
+	 * - string auth_token
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
@@ -169,9 +212,11 @@ class API_UserQuestionsController extends API_BaseController {
 	 */
 	private function addAnswer($isAnswerCorrect, User $user)
 	{
+		// Find user question using repository
 		$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 		$userQuestion = $userQuestionRepository->find(Input::get('id'));
 
+		// Update number or good od bad answer depending on passed parameter
 		$userQuestion->updateAnswers($isAnswerCorrect);
 
 		return Response::apiSuccess();
