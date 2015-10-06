@@ -29,6 +29,23 @@ class ApiSessionRepositoryTest extends TestCase {
 	/**
 	 * @test
 	 */
+	public function shouldDeleteApiSession()
+	{
+		$user = $this->createUser();
+		$clientName = uniqid();
+		$clientIp = uniqid();
+
+		$repository = new ApiSessionRepository();
+		$apiSession = $repository->create($user->id, $clientName, $clientIp);
+
+		$repository->delete($apiSession->auth_token);
+
+		$this->assertNull($repository->user($apiSession->auth_token));
+	}
+
+	/**
+	 * @test
+	 */
 	public function shouldReturnUserMatchingAuthToken()
 	{
 		$user = $this->createUser();

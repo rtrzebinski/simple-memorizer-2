@@ -2,6 +2,8 @@
 
 /**
  * ApiSession repository
+ * 
+ * Manage REST API session implemented with auth tokens
  */
 class ApiSessionRepository {
 
@@ -22,6 +24,22 @@ class ApiSessionRepository {
 		$apiSession->save();
 
 		return $apiSession;
+	}
+
+	/**
+	 * Delete ApiSession
+	 * @param string $authToken
+	 */
+	public function delete($authToken)
+	{
+		$apiSession = App::make('ApiSession')->
+			where('auth_token', '=', $authToken)->
+			first();
+
+		if ($apiSession)
+		{
+			$apiSession->delete();
+		}
 	}
 
 	/**

@@ -36,6 +36,7 @@ Route::group(array('before' => 'auth'), function() {
 
 // user methods
 Route::post('/api/login', ['as' => 'api_login', 'uses' => 'API_LoginController@login']);
+Route::post('/api/logout', ['as' => 'api_logout', 'uses' => 'API_LogoutController@logout']);
 Route::post('/api/signup', ['as' => 'api_signup', 'uses' => 'API_SignupController@signup']);
 
 // user question methods
