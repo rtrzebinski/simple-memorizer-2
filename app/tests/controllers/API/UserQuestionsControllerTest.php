@@ -123,7 +123,7 @@ class API_UserQuestionsControllerTest extends TestCase {
 			'auth_token' => $this->getAuthToken()
 		]);
 
-		$this->assertErrorApiResponse();
+		$this->assertErrorApiResponse('user_question_does_not_exist');
 	}
 
 	/**
@@ -197,7 +197,7 @@ class API_UserQuestionsControllerTest extends TestCase {
 			'auth_token' => $this->getAuthToken()
 		]);
 
-		$this->assertErrorApiResponse();
+		$this->assertErrorApiResponse('user_question_does_not_exist');
 	}
 
 	/**
@@ -310,7 +310,7 @@ class API_UserQuestionsControllerTest extends TestCase {
 			'auth_token' => $this->getAuthToken()
 		]);
 
-		$this->assertErrorApiResponse();
+		$this->assertErrorApiResponse('user_has_not_created_any_questions_yet');
 	}
 
 	/**
@@ -356,7 +356,7 @@ class API_UserQuestionsControllerTest extends TestCase {
 	public function shouldReturnErrorIfAuthTokenIsNotCorrect($route)
 	{
 		$this->route('POST', $route);
-		$this->assertErrorApiResponse();
+		$this->assertErrorApiResponse('bad_auth_token');
 	}
 
 	/**

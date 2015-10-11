@@ -39,7 +39,7 @@ class API_SignupController extends API_BaseController {
 				if ($validator->fails())
 				{
 					// validation error
-					return Response::apiError();
+					return $this->errorResponse('unable_to_signup');
 				}
 
 				// create new user
@@ -50,7 +50,7 @@ class API_SignupController extends API_BaseController {
 				$apiSession = $this->apiSessionRepository->create($user->id, Input::get('client_name'), Request::getClientIp());
 
 				// return api session auth token
-				return Response::apiSuccess(['auth_token' => $apiSession->auth_token]);
+				return $this->successResponse(['auth_token' => $apiSession->auth_token]);
 			}, false);
 	}
 

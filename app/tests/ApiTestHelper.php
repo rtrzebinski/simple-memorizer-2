@@ -6,7 +6,7 @@ trait ApiTestHelper {
 	 * Assert success API response
 	 * @param array $data
 	 */
-	protected function assertSuccessApiResponse(array $data = null)
+	protected function assertSuccessApiResponse(array $data = [])
 	{
 		$actual = $this->client->getResponse()->getContent();
 		$expected = Response::JSON([
@@ -19,11 +19,13 @@ trait ApiTestHelper {
 	/**
 	 * Assert error API response
 	 */
-	protected function assertErrorApiResponse()
+	protected function assertErrorApiResponse($error)
 	{
 		$actual = $this->client->getResponse()->getContent();
 		$expected = Response::JSON([
-				'success' => false
+				'success' => false,
+				'error_message' => Config::get("api.$error.error_message"),
+				'error_code' => Config::get("api.$error.error_code"),
 			])->getContent();
 		$this->assertEquals($expected, $actual);
 	}

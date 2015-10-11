@@ -68,7 +68,7 @@ class API_SignupControllerTest extends TestCase {
 		// call route
 		$this->route('POST', 'api_signup');
 
-		$this->assertErrorApiResponse();
+		$this->assertErrorApiResponse('unable_to_signup');
 	}
 
 }

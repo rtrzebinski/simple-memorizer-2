@@ -59,7 +59,7 @@ class API_LoginControllerTest extends TestCase {
 		// call route
 		$this->route('POST', 'api_login', $data);
 
-		$this->assertErrorApiResponse();
+		$this->assertErrorApiResponse('unable_to_login');
 	}
 
 }

@@ -19,7 +19,7 @@ class API_LogoutController extends API_BaseController {
 				// delete api session related to auth_token
 				$this->apiSessionRepository->delete(Input::get('auth_token'));
 
-				return Response::apiSuccess();
+				return $this->successResponse();
 			}, false);
 	}
 

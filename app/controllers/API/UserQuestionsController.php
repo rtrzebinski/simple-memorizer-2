@@ -31,7 +31,7 @@ class API_UserQuestionsController extends API_BaseController {
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 				$collection = $userQuestionRepository->collection($take, $skip, $orderByField, $orderBySort);
 
-				return Response::apiSuccess([
+				return $this->successResponse([
 						'records' => $collection,
 						'count' => $userQuestionRepository->count()
 				]);
@@ -59,7 +59,7 @@ class API_UserQuestionsController extends API_BaseController {
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
 				$userQuestion = $userQuestionRepository->create($question, $answer);
 
-				return Response::apiSuccess([
+				return $this->successResponse([
 						'user_question_id' => $userQuestion->id
 				]);
 			}, true);
@@ -86,7 +86,7 @@ class API_UserQuestionsController extends API_BaseController {
 				// Retur error if user question does not exist
 				if (!$userQuestion)
 				{
-					return Response::apiError();
+					return $this->errorResponse('user_question_does_not_exist');
 				}
 
 				// Update fields
@@ -105,7 +105,7 @@ class API_UserQuestionsController extends API_BaseController {
 
 				$userQuestion->question->save();
 
-				return Response::apiSuccess();
+				return $this->successResponse();
 			}, true);
 	}
 
@@ -128,7 +128,7 @@ class API_UserQuestionsController extends API_BaseController {
 				// Retur error if user question does not exist
 				if (!$userQuestion)
 				{
-					return Response::apiError();
+					return $this->errorResponse('user_question_does_not_exist');
 				}
 
 				/*
@@ -137,7 +137,7 @@ class API_UserQuestionsController extends API_BaseController {
 				 */
 				$userQuestion->question->delete();
 
-				return Response::apiSuccess();
+				return $this->successResponse();
 			}, true);
 	}
 
@@ -161,10 +161,10 @@ class API_UserQuestionsController extends API_BaseController {
 				// Retur error if user question does not exist
 				if (!$userQuestion)
 				{
-					return Response::apiError();
+					return $this->errorResponse('user_has_not_created_any_questions_yet');
 				}
 
-				return Response::apiSuccess([
+				return $this->successResponse([
 						'id' => $userQuestion->id,
 						'question' => $userQuestion->question->question,
 						'answer' => $userQuestion->question->answer,
@@ -219,7 +219,7 @@ class API_UserQuestionsController extends API_BaseController {
 		// Update number or good od bad answer depending on passed parameter
 		$userQuestion->updateAnswers($isAnswerCorrect);
 
-		return Response::apiSuccess();
+		return $this->successResponse();
 	}
 
 }

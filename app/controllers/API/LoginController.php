@@ -35,12 +35,12 @@ class API_LoginController extends API_BaseController {
 					Auth::logout();
 
 					// return api session auth token
-					return Response::apiSuccess(['auth_token' => $apiSession->auth_token]);
+					return $this->successResponse(['auth_token' => $apiSession->auth_token]);
 				}
 				else
 				{
 					// bad user login
-					return Response::apiError();
+					return $this->errorResponse('unable_to_login');
 				}
 			}, false);
 	}

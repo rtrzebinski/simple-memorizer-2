@@ -19,6 +19,33 @@ class API_BaseController extends Controller {
 	}
 
 	/**
+	 * Success API response
+	 * @param array $data
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	protected function successResponse(array $data = [])
+	{
+		return Response::JSON([
+				'success' => true,
+				'data' => $data
+		]);
+	}
+
+	/**
+	 * Error API response
+	 * @param string $error
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	protected function errorResponse($error)
+	{
+		return Response::JSON([
+				'success' => false,
+				'error_message' => Config::get("api.$error.error_message"),
+				'error_code' => Config::get("api.$error.error_code"),
+		]);
+	}
+
+	/**
 	 * API output
 	 * 
 	 * @param Closure $f Closure returning valid API response
@@ -35,7 +62,7 @@ class API_BaseController extends Controller {
 		// Response 'bad auth' API error response if user not found, and authentication check is required
 		if (!$user && $requireAuth)
 		{
-			return Response::apiError();
+			return $this->errorResponse('bad_auth_token');
 		}
 
 		// Return closure result
