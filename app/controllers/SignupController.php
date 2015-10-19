@@ -6,19 +6,6 @@
 class SignupController extends BaseController {
 
 	/**
-	 * @var UserRepository 
-	 */
-	private $userRepository;
-
-	/**
-	 * @param UserRepository $userRepository
-	 */
-	public function __construct(UserRepository $userRepository)
-	{
-		$this->userRepository = $userRepository;
-	}
-
-	/**
 	 * Show signup form
 	 */
 	public function index()
@@ -34,6 +21,7 @@ class SignupController extends BaseController {
 		$email = Input::get('email');
 		$password = Input::get('password');
 
+		// validate input
 		$validator = Validator::make(
 				array(
 				'email' => $email,
@@ -49,11 +37,36 @@ class SignupController extends BaseController {
 			return View::make('user.signup')->withErrors($validator);
 		}
 
-		// create user
-		$user = $this->userRepository->create($email, $password);
+		// call api_signup to create new user and receive new auth_token
+		$apiSignupResponse = $this->apiDispatcher->callApiRoute('api_signup', [
+			'email' => $email,
+			'password' => $password,
+			'client_name' => 'Web',
+		]);
 
-		Auth::login($user);
-		return Redirect::route('overview');
+		// success API response
+		if ($apiSignupResponse->getSuccess())
+		{
+			// use api session repository to obrain user related to auth_token
+			$authToken = $apiSignupResponse->auth_token;
+			$apiSessionRepository = App::make('ApiSessionRepository');
+			$user = $apiSessionRepository->user($authToken);
+
+			// login user (with 'remember me')
+			Auth::login($user, true);
+
+			/*
+			 * store api_auth_token in session
+			 * this will be used for future API calls authentication
+			 */
+			Session::set('api_auth_token', $authToken);
+
+			// redirect to overview page
+			return Redirect::route('overview');
+		}
+
+		// unexpected API resppnse
+		throw new Exception('Unexpected API response');
 	}
 
 }

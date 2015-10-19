@@ -2,6 +2,8 @@
 
 class SignupControllerTest extends TestCase {
 
+	use ControllerTestHelper;
+
 	/**
 	 * @test
 	 */
@@ -19,21 +21,19 @@ class SignupControllerTest extends TestCase {
 	 */
 	public function shouldSignupUser()
 	{
-		$data = [
-			'email' => $this->randomEmailAddress(),
-			'password' => uniqid()
-		];
-
-		// empty user
 		$user = new User();
-
-		// mock UserRepository
-		$userRepositoryMock = $this->getMock('UserRepository', ['create']);
-		$userRepositoryMock->expects($this->once())->method('create')->with($data['email'], $data['password'])->willReturn($user);
-		App::instance('UserRepository', $userRepositoryMock);
-
-		// mock auth facade
-		Auth::shouldReceive('login')->once()->with($user);
+		$email = uniqid();
+		$password = uniqid();
+		$authToken = uniqid();
+		$webRequestData = [
+			'email' => $email,
+			'password' => $password,
+		];
+		$apiRequestData = [
+			'email' => $email,
+			'password' => $password,
+			'client_name' => 'Web',
+		];
 
 		// mock validator (so it doesn't access database to check if email was already used)
 		$validatorMock = $this->
@@ -45,8 +45,26 @@ class SignupControllerTest extends TestCase {
 		$validatorMock->method('fails')->willReturn(false);
 		Validator::shouldReceive('make')->once()->andReturn($validatorMock);
 
+		// mock API dispatcher
+		$this->mockApiDispatcher('api_signup', $this->createSuccessApiResponse(['auth_token' => $authToken]), $apiRequestData);
+
+		// mock ApiSessionRepository
+		$apiSessionRepositoryMock = $this->getMock('ApiSessionRepository');
+		$apiSessionRepositoryMock->
+			expects($this->once())->
+			method('user')->
+			with($authToken)->
+			willReturn($user);
+		$this->app->instance('ApiSessionRepository', $apiSessionRepositoryMock);
+
+		// mock auth facade
+		Auth::shouldReceive('login')->once()->with($user, true)->andReturn(true);
+
 		// call route
-		$this->route('POST', 'signup', $data);
+		$this->route('POST', 'signup', $webRequestData);
+
+		// check session
+		$this->assertSessionHas('api_auth_token', $authToken);
 
 		// check redirection to overview
 		$this->assertRedirectedToRoute('overview');
@@ -75,6 +93,35 @@ class SignupControllerTest extends TestCase {
 
 		$this->assertViewHas('errors');
 		$this->assertFalse(Auth::check());
+	}
+
+	/**
+	 * @test
+	 */
+	public function shouldThrowAnExceptionOnUnexpectedApiResponse()
+	{
+		// expect exception to be thrown
+		$this->setExpectedException('Exception', 'Unexpected API response');
+
+		// mock validator (so it doesn't access database to check if email was already used)
+		$validatorMock = $this->
+			getMockBuilder('\Illuminate\Validation\Validator')->
+			setMethods(['fails'])->
+			disableOriginalConstructor()->
+			getMock();
+		// fails() should return false
+		$validatorMock->method('fails')->willReturn(false);
+		Validator::shouldReceive('make')->once()->andReturn($validatorMock);
+
+		// mock API call
+		$this->mockApiDispatcher('api_signup', $this->createUnexpectedApiResponse(), [
+			'email' => null,
+			'password' => null,
+			'client_name' => 'Web',
+		]);
+
+		// call route
+		$this->route('POST', 'signup');
 	}
 
 }

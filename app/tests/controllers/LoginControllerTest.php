@@ -2,6 +2,8 @@
 
 class LoginControllerTest extends TestCase {
 
+	use ControllerTestHelper;
+
 	/**
 	 * @test
 	 */
@@ -21,48 +23,90 @@ class LoginControllerTest extends TestCase {
 	 */
 	public function shouldLoginUser($rememberMe)
 	{
-		$data = [
-			'email' => $this->randomEmailAddress(),
-			'password' => uniqid(),
-			'remember_me' => $rememberMe
+		$user = new User();
+		$email = uniqid();
+		$password = uniqid();
+		$authToken = uniqid();
+		$webRequestData = [
+			'email' => $email,
+			'password' => $password,
+			'remember_me' => $rememberMe,
+		];
+		$apiRequestData = [
+			'email' => $email,
+			'password' => $password,
+			'client_name' => 'Web',
 		];
 
-		// mock auth facade
-		Auth::shouldReceive('attempt')->once()->with([
-			'email' => $data['email'],
-			'password' => $data['password']
-			], $rememberMe)->andReturn(true);
+		// mock API dispatcher
+		$this->mockApiDispatcher('api_login', $this->createSuccessApiResponse(['auth_token' => $authToken]), $apiRequestData);
 
-		// call route
-		$this->route('POST', 'login', $data);
+		// mock ApiSessionRepository
+		$apiSessionRepositoryMock = $this->getMock('ApiSessionRepository');
+		$apiSessionRepositoryMock->
+			expects($this->once())->
+			method('user')->
+			with($authToken)->
+			willReturn($user);
+		$this->app->instance('ApiSessionRepository', $apiSessionRepositoryMock);
+
+		// mock auth facade
+		Auth::shouldReceive('login')->once()->with($user, $rememberMe)->andReturn(true);
+
+		// call route (include $rememberMe)
+		$this->route('POST', 'login', $webRequestData);
+
+		// check session
+		$this->assertSessionHas('api_auth_token', $authToken);
 
 		// check redirection
 		$this->assertRedirectedToRoute('overview');
 	}
 
 	/**
-	 * @dataProvider trueFalseProvider
 	 * @test
 	 */
-	public function shouldNotLoginUserWithBadCredentials($rememberMe)
+	public function shouldNotLoginUserWithBadCredentials()
 	{
-		$data = [
-			'email' => $this->randomEmailAddress(),
-			'password' => uniqid(),
-			'remember_me' => $rememberMe
+		$email = uniqid();
+		$password = uniqid();
+		$webRequestData = [
+			'email' => $email,
+			'password' => $password,
+		];
+		$apiRequestData = [
+			'email' => $email,
+			'password' => $password,
+			'client_name' => 'Web',
 		];
 
-		// mock auth facade
-		Auth::shouldReceive('attempt')->once()->with([
-			'email' => $data['email'],
-			'password' => $data['password']
-			], $rememberMe)->andReturn(false);
+		// mock API call
+		$this->mockApiDispatcher('api_login', $this->createErrorApiResponse('unable_to_login'), $apiRequestData);
 
 		// call route
-		$this->route('POST', 'login', $data);
+		$this->route('POST', 'login', $webRequestData);
 
 		// check if view has errors
 		$this->assertViewHas('errors');
+	}
+
+	/**
+	 * @test
+	 */
+	public function shouldThrowAnExceptionOnUnexpectedApiResponse()
+	{
+		// expect exception to be thrown
+		$this->setExpectedException('Exception', 'Unexpected API response');
+
+		// mock API call
+		$this->mockApiDispatcher('api_login', $this->createUnexpectedApiResponse(), [
+			'email' => null,
+			'password' => null,
+			'client_name' => 'Web',
+		]);
+
+		// call route
+		$this->route('POST', 'login');
 	}
 
 	public function trueFalseProvider()
