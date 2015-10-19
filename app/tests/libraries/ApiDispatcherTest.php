@@ -7,20 +7,12 @@ class ApiDispatcherTest extends TestCase {
 	 */
 	public function shouldCallApiRoute()
 	{
-		// mock ApiResponse
-		$apiResponseMock = $this->getMock('ApiResponse');
-		$apiResponseMock->
-			expects($this->once())->
-			method('createFromJsonResponse')->
-			willReturn($apiResponseMock);
-		$this->app->instance('ApiResponse', $apiResponseMock);
-
 		// call api via api dispatcher
 		$apiDispatcher = new ApiDispatcher();
-		$response = $apiDispatcher->callApiRoute('api_logout', []);
+		$apiResponse = $apiDispatcher->callApiRoute('api_logout', []);
 
 		// check response
-		$this->assertEquals($apiResponseMock, $response);
+		$this->assertInstanceOf('ApiResponse', $apiResponse);
 	}
 
 	/**

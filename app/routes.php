@@ -41,6 +41,7 @@ Route::post('/api/signup', ['as' => 'api_signup', 'uses' => 'API_SignupControlle
 
 // user question methods
 Route::post('/api/questions-collection', ['as' => 'api_user_questions_collection', 'uses' => 'API_UserQuestionsController@collection']);
+Route::post('/api/find-question', ['as' => 'api_find_user_question', 'uses' => 'API_UserQuestionsController@find']);
 Route::post('/api/random-question', ['as' => 'api_random_user_question', 'uses' => 'API_UserQuestionsController@random']);
 Route::post('/api/create-question', ['as' => 'api_create_user_question', 'uses' => 'API_UserQuestionsController@create']);
 Route::post('/api/update-question', ['as' => 'api_update_user_question', 'uses' => 'API_UserQuestionsController@update']);

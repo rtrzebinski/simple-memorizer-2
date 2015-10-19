@@ -176,6 +176,39 @@ class API_UserQuestionsController extends API_BaseController {
 	}
 
 	/**
+	 * Find user question
+	 * 
+	 * Parameters:
+	 * - string auth_token
+	 * - int id
+	 * 
+	 * @return Illuminate\Http\JsonResponse
+	 */
+	public function find()
+	{
+		return $this->apiOutput(function(User $user) {
+				// Obtain user question using repository
+				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
+				$userQuestion = $userQuestionRepository->find(Input::get('id'));
+
+				// Retur error if user question does not exist
+				if (!$userQuestion)
+				{
+					return $this->errorResponse('user_question_does_not_exist');
+				}
+
+				return $this->successResponse([
+						'id' => $userQuestion->id,
+						'question' => $userQuestion->question->question,
+						'answer' => $userQuestion->question->answer,
+						'percent_of_good_answers' => $userQuestion->percent_of_good_answers,
+						'number_of_good_answers' => $userQuestion->number_of_good_answers,
+						'number_of_bad_answers' => $userQuestion->number_of_bad_answers
+				]);
+			}, true);
+	}
+
+	/**
 	 * Add good answer to user question
 	 * 
 	 * Parameters:

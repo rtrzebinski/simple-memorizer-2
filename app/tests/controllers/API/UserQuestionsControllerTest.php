@@ -314,6 +314,79 @@ class API_UserQuestionsControllerTest extends TestCase {
 	}
 
 	/**
+	 * Test find()
+	 * @test
+	 */
+	public function shouldFindUserQuestion()
+	{
+		$row = new stdClass();
+		$row->id = uniqid();
+		$row->question = new stdClass();
+		$row->question->question = uniqid();
+		$row->question->answer = uniqid();
+		$row->percent_of_good_answers = uniqid();
+		$row->number_of_good_answers = uniqid();
+		$row->number_of_bad_answers = uniqid();
+
+		// create repository mock
+		$userQuestionRepository = $this->createUserQuestionRepositoryMock([
+			'find',
+		]);
+
+		// mock find() method
+		$userQuestionRepository->
+			expects($this->once())->
+			method('find')->
+			willReturn($row);
+
+		// bind mock object to UserQuestionRepository
+		App::instance('UserQuestionRepository', $userQuestionRepository);
+
+		// call route
+		$this->route('POST', 'api_find_user_question', [
+			'auth_token' => $this->getAuthToken()
+		]);
+
+		// check api response
+		$this->assertSuccessApiResponse([
+			'id' => $row->id,
+			'question' => $row->question->question,
+			'answer' => $row->question->answer,
+			'percent_of_good_answers' => $row->percent_of_good_answers,
+			'number_of_good_answers' => $row->number_of_good_answers,
+			'number_of_bad_answers' => $row->number_of_bad_answers
+		]);
+	}
+
+	/**
+	 * Test find()
+	 * @test
+	 */
+	public function shouldNotFindNotExistingUserQuestion()
+	{
+		// create repository mock
+		$userQuestionRepository = $this->createUserQuestionRepositoryMock([
+			'find',
+		]);
+
+		// mock find() method
+		$userQuestionRepository->
+			expects($this->once())->
+			method('find')->
+			willReturn(null);
+
+		// bind mock object to UserQuestionRepository
+		App::instance('UserQuestionRepository', $userQuestionRepository);
+
+		// call route
+		$this->route('POST', 'api_find_user_question', [
+			'auth_token' => $this->getAuthToken()
+		]);
+
+		$this->assertErrorApiResponse('user_question_does_not_exist');
+	}
+
+	/**
 	 * Test addGoodAnswer()
 	 * @test
 	 */

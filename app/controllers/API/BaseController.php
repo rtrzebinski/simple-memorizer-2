@@ -11,11 +11,18 @@ class API_BaseController extends Controller {
 	protected $apiSessionRepository;
 
 	/**
-	 * @param ApiSessionRepository $apiSessionRepository
+	 * @var ApiResponse 
 	 */
-	public function __construct(ApiSessionRepository $apiSessionRepository)
+	protected $apiResponse;
+
+	/**
+	 * @param ApiSessionRepository $apiSessionRepository
+	 * @param ApiResponse $apiResponse
+	 */
+	public function __construct(ApiSessionRepository $apiSessionRepository, ApiResponse $apiResponse)
 	{
 		$this->apiSessionRepository = $apiSessionRepository;
+		$this->apiResponse = $apiResponse;
 	}
 
 	/**
@@ -25,10 +32,8 @@ class API_BaseController extends Controller {
 	 */
 	protected function successResponse(array $data = [])
 	{
-		return Response::JSON([
-				'success' => true,
-				'data' => $data
-		]);
+		$this->apiResponse->createSuccessResponse($data);
+		return $this->apiResponse->toJsonResponse();
 	}
 
 	/**
@@ -38,11 +43,8 @@ class API_BaseController extends Controller {
 	 */
 	protected function errorResponse($error)
 	{
-		return Response::JSON([
-				'success' => false,
-				'error_message' => Config::get("api.$error.error_message"),
-				'error_code' => Config::get("api.$error.error_code"),
-		]);
+		$this->apiResponse->createErrorResponse($error);
+		return $this->apiResponse->toJsonResponse();
 	}
 
 	/**
