@@ -27,7 +27,7 @@ class LearningPageController extends BaseController {
 			 * Obtain conrete question
 			 */
 			$apiResponse = $this->apiDispatcher->callApiRoute('api_find_user_question', [
-				'auth_token' => Session::get('auth_token'),
+				'auth_token' => Session::get('api_auth_token'),
 				'id' => $userQuestionId
 			]);
 		}
@@ -37,7 +37,7 @@ class LearningPageController extends BaseController {
 			 * Obtain random question
 			 */
 			$apiResponse = $this->apiDispatcher->callApiRoute('api_random_user_question', [
-				'auth_token' => Session::get('auth_token')
+				'auth_token' => Session::get('api_auth_token')
 			]);
 		}
 
@@ -77,7 +77,7 @@ class LearningPageController extends BaseController {
 			if (Input::get('answer_correctness') == 'I know')
 			{
 				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_good_answer', [
-					'auth_token' => Session::get('auth_token'),
+					'auth_token' => Session::get('api_auth_token'),
 					'id' => Input::get('user_question_id'),
 				]);
 			}
@@ -86,7 +86,7 @@ class LearningPageController extends BaseController {
 			if (Input::get('answer_correctness') == "I don't know")
 			{
 				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_bad_answer', [
-					'auth_token' => Session::get('auth_token'),
+					'auth_token' => Session::get('api_auth_token'),
 					'id' => Input::get('user_question_id'),
 				]);
 			}
@@ -99,7 +99,7 @@ class LearningPageController extends BaseController {
 		if (Input::has('update'))
 		{
 			$apiResponse = $this->apiDispatcher->callApiRoute('api_update_user_question', [
-				'auth_token' => Session::get('auth_token'),
+				'auth_token' => Session::get('api_auth_token'),
 				'id' => Input::get('user_question_id'),
 				'question' => Input::get('question'),
 				'answer' => Input::get('answer')
