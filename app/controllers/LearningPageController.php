@@ -73,18 +73,18 @@ class LearningPageController extends BaseController {
 		// increase number of good or bad answers
 		if (Input::has('answer_correctness'))
 		{
-			// increase number of good answers
 			if (Input::get('answer_correctness') == 'I know')
 			{
+				// increase number of good answers
 				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_good_answer', [
 					'auth_token' => $this->apiAuthToken,
 					'id' => Input::get('user_question_id'),
 				]);
 			}
 
-			// increase number of bad answers
 			if (Input::get('answer_correctness') == "I don't know")
 			{
+				// increase number of bad answers
 				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_bad_answer', [
 					'auth_token' => $this->apiAuthToken,
 					'id' => Input::get('user_question_id'),
@@ -117,7 +117,7 @@ class LearningPageController extends BaseController {
 			/*
 			 * Store in session for next request only
 			 * This will force learning page to display concrete user question
-			 * instead of random one, answer will not be visible
+			 * instead of random one, and the answer div to be displayed or not
 			 */
 			Session::flash('user_question_id', Input::get('user_question_id'));
 			Session::flash('display_answer', $displayAnswer);
