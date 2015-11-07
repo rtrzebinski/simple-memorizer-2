@@ -37,7 +37,7 @@
 			// show next question on 'b' key click
 			if (ev.which == 78) {
 				// 78 = n
-				$("#next_question_button").click();
+				location.reload();
 			}
 		});
 	});
