@@ -48,11 +48,16 @@ class ApiResponse {
 	 */
 	public function createFromJsonResponse(\Illuminate\Http\JsonResponse $jsonResponse)
 	{
-		$response = json_decode($jsonResponse->getContent());
-		$this->success = $response->success;
-		if (isset($response->data))
+		$response = json_decode($jsonResponse->getContent(), true);
+		$this->success = $response['success'];
+		if (!$this->success)
 		{
-			$this->data = $response->data;
+			$this->errorMessage = $response['error_message'];
+			$this->errorCode = $response['error_code'];
+		}
+		if (isset($response['data']))
+		{
+			$this->data = $response['data'];
 		}
 		return $this;
 	}

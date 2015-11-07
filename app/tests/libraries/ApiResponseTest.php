@@ -21,7 +21,7 @@ class ApiResponseTest extends TestCase {
 
 		// ensure api response returns correct data
 		$this->assertTrue($apiResponse->getSuccess());
-		$this->assertEquals('bar', $apiResponse->getData()->foo);
+		$this->assertEquals('bar', $apiResponse->getData()['foo']);
 	}
 
 }
