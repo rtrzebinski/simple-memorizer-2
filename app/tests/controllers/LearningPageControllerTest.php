@@ -13,7 +13,7 @@ class LearningPageControllerTest extends TestCase {
 		$userQuestionId = uniqid();
 
 		// set session data
-		$this->session(['auth_token' => $authToken]);
+		$this->session(['api_auth_token' => $authToken]);
 
 		$apiResponseData = [
 			'id' => $userQuestionId,
@@ -45,7 +45,7 @@ class LearningPageControllerTest extends TestCase {
 
 		// set session data
 		$this->session([
-			'auth_token' => $authToken,
+			'api_auth_token' => $authToken,
 			'user_question_id' => $userQuestionId,
 			'display_answer' => $displayAnswer,
 		]);
@@ -76,7 +76,7 @@ class LearningPageControllerTest extends TestCase {
 	public function shouldDisplayInfoIfUserHasNoQuestions()
 	{
 		$authToken = uniqid();
-		$this->session(['auth_token' => $authToken]);
+		$this->session(['api_auth_token' => $authToken]);
 
 		$this->mockApiDispatcher('api_random_user_question', $this->createErrorApiResponse('user_has_not_created_any_questions_yet'), [
 			'auth_token' => $authToken
@@ -108,7 +108,7 @@ class LearningPageControllerTest extends TestCase {
 	{
 		$authToken = uniqid();
 		$displayAnswer = false;
-		$this->session(['auth_token' => $authToken]);
+		$this->session(['api_auth_token' => $authToken]);
 		$userQuestionId = uniqid();
 
 		if ($updateAnswersParameter)
@@ -145,7 +145,7 @@ class LearningPageControllerTest extends TestCase {
 	{
 		$authToken = uniqid();
 		$displayAnswer = true;
-		$this->session(['auth_token' => $authToken]);
+		$this->session(['api_auth_token' => $authToken]);
 		$userQuestionId = uniqid();
 		$newQuestion = uniqid();
 		$newAnswer = uniqid();
