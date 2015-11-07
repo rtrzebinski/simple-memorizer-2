@@ -7,6 +7,11 @@ class LearningPageController extends BaseController {
 
 	/**
 	 * Display user question
+	 * 
+	 * Displays either random on concrete user question, depending on session
+	 * variable 'user_question_id' being set or not
+	 * 
+	 * Answer div can be displayed or not depending on 'display_answer' session variable
 	 */
 	public function displayUserQuestion()
 	{
@@ -42,7 +47,7 @@ class LearningPageController extends BaseController {
 		}
 
 		/*
-		 * Success API response
+		 * Success API response - display learning page with obtained user question
 		 */
 		if ($apiResponse->getSuccess())
 		{
@@ -66,38 +71,31 @@ class LearningPageController extends BaseController {
 	}
 
 	/**
-	 * Update user question
+	 * Update user question, redirect to learning page
 	 */
 	public function updateUserQuestion()
 	{
-		// increase number of good or bad answers
-		if (Input::has('answer_correctness'))
+		if (Input::has('add_good_answer'))
 		{
-			if (Input::get('answer_correctness') == 'I know')
-			{
-				// increase number of good answers
-				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_good_answer', [
-					'auth_token' => $this->apiAuthToken,
-					'id' => Input::get('user_question_id'),
-				]);
-			}
-
-			if (Input::get('answer_correctness') == "I don't know")
-			{
-				// increase number of bad answers
-				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_bad_answer', [
-					'auth_token' => $this->apiAuthToken,
-					'id' => Input::get('user_question_id'),
-				]);
-			}
-
-			// display updated answer after page reload
-			$displayAnswer = false;
+			// increase number of good answers
+			$apiResponse = $this->apiDispatcher->callApiRoute('api_add_good_answer', [
+				'auth_token' => $this->apiAuthToken,
+				'id' => Input::get('user_question_id'),
+			]);
 		}
 
-		// update question and/or answer
+		if (Input::has('add_bad_answer'))
+		{
+			// increase number of bad answers
+			$apiResponse = $this->apiDispatcher->callApiRoute('api_add_bad_answer', [
+				'auth_token' => $this->apiAuthToken,
+				'id' => Input::get('user_question_id'),
+			]);
+		}
+
 		if (Input::has('update'))
 		{
+			// update question and/or answer
 			$apiResponse = $this->apiDispatcher->callApiRoute('api_update_user_question', [
 				'auth_token' => $this->apiAuthToken,
 				'id' => Input::get('user_question_id'),
@@ -105,8 +103,13 @@ class LearningPageController extends BaseController {
 				'answer' => Input::get('answer')
 			]);
 
-			// don't display question answer after page reload
-			$displayAnswer = true;
+			/*
+			 * Store in session for next request only
+			 * This will force learning page to display concrete user question instead of random one,
+			 * and the answer div to be displayed so user can see updated fields
+			 */
+			Session::flash('user_question_id', Input::get('user_question_id'));
+			Session::flash('display_answer', true);
 		}
 
 		/*
@@ -114,15 +117,7 @@ class LearningPageController extends BaseController {
 		 */
 		if (isset($apiResponse) && $apiResponse->getSuccess())
 		{
-			/*
-			 * Store in session for next request only
-			 * This will force learning page to display concrete user question
-			 * instead of random one, and the answer div to be displayed or not
-			 */
-			Session::flash('user_question_id', Input::get('user_question_id'));
-			Session::flash('display_answer', $displayAnswer);
-
-			// redirect to learning page
+			// redirect to learning page display user question
 			return Redirect::route('learning_page_display_user_question');
 		}
 

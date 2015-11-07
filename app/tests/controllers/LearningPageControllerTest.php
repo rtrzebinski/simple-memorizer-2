@@ -95,8 +95,8 @@ class LearningPageControllerTest extends TestCase {
 	public function shouldUpdateNumberOfAnswersProvider()
 	{
 		return [
-			[true, "I know"],
-			[false, "I don't know"]
+			["add_good_answer"],
+			["add_bad_answer"]
 		];
 	}
 
@@ -104,14 +104,14 @@ class LearningPageControllerTest extends TestCase {
 	 * @test
 	 * @dataProvider shouldUpdateNumberOfAnswersProvider
 	 */
-	public function shouldUpdateNumberOfAnswers($updateAnswersParameter, $answerCorrectness)
+	public function shouldUpdateNumberOfAnswers($inputName)
 	{
 		$authToken = uniqid();
 		$displayAnswer = false;
 		$this->session(['api_auth_token' => $authToken]);
 		$userQuestionId = uniqid();
 
-		if ($updateAnswersParameter)
+		if ($inputName == 'add_good_answer')
 		{
 			$this->mockApiDispatcher('api_add_good_answer', $this->createSuccessApiResponse(), [
 				'auth_token' => $authToken,
@@ -129,13 +129,13 @@ class LearningPageControllerTest extends TestCase {
 		// call route
 		$this->route('POST', 'learning_page_update_user_question', [
 			'user_question_id' => $userQuestionId,
-			'answer_correctness' => $answerCorrectness,
-			'display_answer' => $displayAnswer,
+			$inputName => uniqid(),
 		]);
 
 		$this->assertRedirectedToRoute('learning_page_display_user_question');
-		$this->assertSessionHas('user_question_id', $userQuestionId);
-		$this->assertSessionHas('display_answer', $displayAnswer);
+		$sessionData = Session::all();
+		$this->assertNotTrue(isset($sessionData['user_question_id']));
+		$this->assertNotTrue(isset($sessionData['display_answer']));
 	}
 
 	/**
@@ -150,7 +150,7 @@ class LearningPageControllerTest extends TestCase {
 		$newQuestion = uniqid();
 		$newAnswer = uniqid();
 
-		// Mock 2 calls of ApiDispatcher::callApiRoute()
+		// Mock ApiDispatcher::callApiRoute()
 		$apiDispatcherMock = $this->getMock('ApiDispatcher');
 		$callApiRouteMethodMock = call_user_func_array([$apiDispatcherMock->expects($this->exactly(1))->method('callApiRoute'), 'withConsecutive'], [
 			['api_update_user_question', [
