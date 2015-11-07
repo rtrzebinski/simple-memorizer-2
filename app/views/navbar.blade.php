@@ -5,7 +5,7 @@
 		</div>
 		<ul class="nav navbar-nav">
 			<li><a href="{{ route('questions') }}">Questions</a></li>
-			<li><a href="{{ route('learning_page') }}">Learn</a></li>
+			<li><a href="{{ route('learning_page_display_user_question') }}">Learn</a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
 			<li><a href="{{ route('logout') }}">Logout</a></li>

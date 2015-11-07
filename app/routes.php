@@ -26,8 +26,8 @@ Route::group(array('before' => 'auth'), function() {
 	Route::get('/questions-import', ['as' => 'questions_import', 'uses' => 'UserQuestionsImportController@index']);
 	Route::post('/questions-import', ['as' => 'questions_import', 'uses' => 'UserQuestionsImportController@import']);
 
-	Route::get('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@index']);
-	Route::post('/learn', ['as' => 'learning_page', 'uses' => 'LearningPageController@update', 'before' => 'csrf']);
+	Route::get('/learn', ['as' => 'learning_page_display_user_question', 'uses' => 'LearningPageController@displayUserQuestion']);
+	Route::post('/learn', ['as' => 'learning_page_update_user_question', 'uses' => 'LearningPageController@updateUserQuestion', 'before' => 'csrf']);
 });
 
 /*

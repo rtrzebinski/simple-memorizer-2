@@ -6,75 +6,69 @@
 class LearningPageController extends BaseController {
 
 	/**
-	 * HTTP GET request handler
-	 * @param User_Question $userQuestionId
-	 * @param bool $displayAnswer
+	 * Display user question
 	 */
-	public function index($userQuestionId = null, $displayAnswer = false)
+	public function displayUserQuestion()
 	{
-		/**
-		 * Display conrete question
+		/*
+		 * Read flash data from session, this may be set for this request only
+		 * by LearningPageController::updateUserQuestion() before redirecting here
+		 * If route is called directly both will be empty
+		 */
+		$userQuestionId = Session::get('user_question_id');
+		$displayAnswer = Session::get('display_answer');
+
+		/*
+		 * Obtain user question to be displayed
 		 */
 		if ($userQuestionId)
 		{
-			$apiFindUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_find_user_question', [
+			/**
+			 * Obtain conrete question
+			 */
+			$apiResponse = $this->apiDispatcher->callApiRoute('api_find_user_question', [
 				'auth_token' => Session::get('auth_token'),
 				'id' => $userQuestionId
 			]);
-
-			if ($apiFindUserQuestionResponse->getSuccess())
-			{
-				// display learning interface
-				$this->viewData['display_answer'] = $displayAnswer;
-				$this->viewData['user_question_id'] = $apiFindUserQuestionResponse->id;
-				$this->viewData['question'] = $apiFindUserQuestionResponse->question;
-				$this->viewData['answer'] = $apiFindUserQuestionResponse->answer;
-				return View::make('learning_page', $this->viewData);
-			}
-
-			// error API response
-			if ($apiFindUserQuestionResponse->getErrorCode() == Config::get('api.user_question_does_not_exist.error_code'))
-			{
-				// display info if user has no questions
-				$this->viewData['info'] = Lang::get('messages.user_question_does_not_exist', ['url' => route('questions')]);
-				return View::make('info_page', $this->viewData);
-			}
+		}
+		else
+		{
+			/*
+			 * Obtain random question
+			 */
+			$apiResponse = $this->apiDispatcher->callApiRoute('api_random_user_question', [
+				'auth_token' => Session::get('auth_token')
+			]);
 		}
 
 		/*
-		 * Display random question
+		 * Success API response
 		 */
-		if (!$userQuestionId)
+		if ($apiResponse->getSuccess())
 		{
-			// obtain random user question if not passed as argument
-			$apiRandomUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_random_user_question', [
-				'auth_token' => Session::get('auth_token')
-			]);
-
-			if ($apiRandomUserQuestionResponse->getSuccess())
-			{
-				// display learning interface
-				$this->viewData['display_answer'] = $displayAnswer;
-				$this->viewData['user_question_id'] = $apiRandomUserQuestionResponse->id;
-				$this->viewData['question'] = $apiRandomUserQuestionResponse->question;
-				$this->viewData['answer'] = $apiRandomUserQuestionResponse->answer;
-				return View::make('learning_page', $this->viewData);
-			}
-
-			// error API response
-			if ($apiRandomUserQuestionResponse->getErrorCode() == Config::get('api.user_has_not_created_any_questions_yet.error_code'))
-			{
-				// display info if user has no questions
-				$this->viewData['info'] = Lang::get('messages.no_questions', ['url' => route('questions')]);
-				return View::make('info_page', $this->viewData);
-			}
+			// display learning interface
+			$this->viewData['display_answer'] = $displayAnswer;
+			$this->viewData['user_question_id'] = $apiResponse->id;
+			$this->viewData['question'] = $apiResponse->question;
+			$this->viewData['answer'] = $apiResponse->answer;
+			return View::make('learning_page', $this->viewData);
 		}
+
+		// error API response
+		if ($apiResponse->getErrorCode() == Config::get('api.user_has_not_created_any_questions_yet.error_code'))
+		{
+			$this->viewData['info'] = Lang::get('messages.no_questions', ['url' => route('questions')]);
+			return View::make('info_page', $this->viewData);
+		}
+
+		// unexpected API resppnse
+		throw new Exception('Unexpected API response');
 	}
 
 	/**
-	 * HTTP POST request handler
+	 * Update user question
 	 */
-	public function update()
+	public function updateUserQuestion()
 	{
 		// increase number of good or bad answers
 		if (Input::has('answer_correctness'))
@@ -82,7 +76,7 @@ class LearningPageController extends BaseController {
 			// increase number of good answers
 			if (Input::get('answer_correctness') == 'I know')
 			{
-				$this->apiDispatcher->callApiRoute('api_add_good_answer', [
+				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_good_answer', [
 					'auth_token' => Session::get('auth_token'),
 					'id' => Input::get('user_question_id'),
 				]);
@@ -91,32 +85,49 @@ class LearningPageController extends BaseController {
 			// increase number of bad answers
 			if (Input::get('answer_correctness') == "I don't know")
 			{
-				$this->apiDispatcher->callApiRoute('api_add_bad_answer', [
+				$apiResponse = $this->apiDispatcher->callApiRoute('api_add_bad_answer', [
 					'auth_token' => Session::get('auth_token'),
 					'id' => Input::get('user_question_id'),
 				]);
 			}
 
-			// display next user question
-			return Redirect::route('learning_page');
+			// display updated answer after page reload
+			$displayAnswer = false;
 		}
 
 		// update question and/or answer
 		if (Input::has('update'))
 		{
-			$apiUpdateUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_update_user_question', [
+			$apiResponse = $this->apiDispatcher->callApiRoute('api_update_user_question', [
 				'auth_token' => Session::get('auth_token'),
 				'id' => Input::get('user_question_id'),
 				'question' => Input::get('question'),
 				'answer' => Input::get('answer')
 			]);
 
-			if ($apiUpdateUserQuestionResponse->getSuccess())
-			{
-				// display updated fields
-				return $this->index(Input::get('user_question_id'), Input::get('display_answer'));
-			}
+			// don't display question answer after page reload
+			$displayAnswer = true;
 		}
+
+		/*
+		 * Success API response
+		 */
+		if ($apiResponse->getSuccess())
+		{
+			/*
+			 * Store in session for next request only
+			 * This will force learning page to display concrete user question
+			 * instead of random one, answer will not be visible
+			 */
+			Session::flash('user_question_id', Input::get('user_question_id'));
+			Session::flash('display_answer', $displayAnswer);
+
+			// redirect to learning page
+			return Redirect::route('learning_page_display_user_question');
+		}
+
+		// unexpected API resppnse
+		throw new Exception('Unexpected API response');
 	}
 
 }

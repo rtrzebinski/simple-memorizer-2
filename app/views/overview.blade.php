@@ -6,7 +6,7 @@
 	<div>
 		<h3>Hello, {{{ $user->name }}}</h3>
 		<p>
-			Go to <a href='{{ route('questions') }}'>questions page</a> to manage your knowledge base, or <a href='{{ route('learning_page') }}'>start learning now</a>.
+			Go to <a href='{{ route('questions') }}'>questions page</a> to manage your knowledge base, or <a href='{{ route('learning_page_display_user_question') }}'>start learning now</a>.
 		</p>
 	</div>
 </div>

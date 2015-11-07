@@ -10,21 +10,62 @@ class LearningPageControllerTest extends TestCase {
 	public function shouldDisplayRandomQuestion()
 	{
 		$authToken = uniqid();
+		$userQuestionId = uniqid();
+
+		// set session data
 		$this->session(['auth_token' => $authToken]);
+
 		$apiResponseData = [
-			'id' => uniqid(),
+			'id' => $userQuestionId,
 			'question' => uniqid(),
 			'answer' => uniqid()
 		];
 
+		// mock api call
 		$this->mockApiDispatcher('api_random_user_question', $this->createSuccessApiResponse($apiResponseData), [
 			'auth_token' => $authToken
 		]);
 
 		// call route and check view data
-		$this->route('GET', 'learning_page');
+		$this->route('GET', 'learning_page_display_user_question');
 		$this->assertViewHas('display_answer', false);
-		$this->assertViewHas('user_question_id', $apiResponseData['id']);
+		$this->assertViewHas('user_question_id', $userQuestionId);
+		$this->assertViewHas('question', $apiResponseData['question']);
+		$this->assertViewHas('answer', $apiResponseData['answer']);
+	}
+
+	/**
+	 * @test
+	 */
+	public function shouldDisplayConcreteUserQuestion()
+	{
+		$authToken = uniqid();
+		$userQuestionId = uniqid();
+		$displayAnswer = uniqid();
+
+		// set session data
+		$this->session([
+			'auth_token' => $authToken,
+			'user_question_id' => $userQuestionId,
+			'display_answer' => $displayAnswer,
+		]);
+
+		$apiResponseData = [
+			'id' => $userQuestionId,
+			'question' => uniqid(),
+			'answer' => uniqid(),
+		];
+
+		// mock api call
+		$this->mockApiDispatcher('api_find_user_question', $this->createSuccessApiResponse($apiResponseData), [
+			'auth_token' => $authToken,
+			'id' => $userQuestionId,
+		]);
+
+		// call route and check view data
+		$this->route('GET', 'learning_page_display_user_question');
+		$this->assertViewHas('display_answer', $displayAnswer);
+		$this->assertViewHas('user_question_id', $userQuestionId);
 		$this->assertViewHas('question', $apiResponseData['question']);
 		$this->assertViewHas('answer', $apiResponseData['answer']);
 	}
@@ -48,7 +89,7 @@ class LearningPageControllerTest extends TestCase {
 		])->once();
 
 		// call route and check view data
-		$this->route('GET', 'learning_page');
+		$this->route('GET', 'learning_page_display_user_question');
 	}
 
 	public function shouldUpdateNumberOfAnswersProvider()
@@ -66,6 +107,7 @@ class LearningPageControllerTest extends TestCase {
 	public function shouldUpdateNumberOfAnswers($updateAnswersParameter, $answerCorrectness)
 	{
 		$authToken = uniqid();
+		$displayAnswer = false;
 		$this->session(['auth_token' => $authToken]);
 		$userQuestionId = uniqid();
 
@@ -85,12 +127,15 @@ class LearningPageControllerTest extends TestCase {
 		}
 
 		// call route
-		$this->route('POST', 'learning_page', [
+		$this->route('POST', 'learning_page_update_user_question', [
 			'user_question_id' => $userQuestionId,
-			'answer_correctness' => $answerCorrectness
+			'answer_correctness' => $answerCorrectness,
+			'display_answer' => $displayAnswer,
 		]);
 
-		$this->assertRedirectedToRoute('learning_page');
+		$this->assertRedirectedToRoute('learning_page_display_user_question');
+		$this->assertSessionHas('user_question_id', $userQuestionId);
+		$this->assertSessionHas('display_answer', $displayAnswer);
 	}
 
 	/**
@@ -99,6 +144,7 @@ class LearningPageControllerTest extends TestCase {
 	public function shouldUpdateQuestionAndAnswer()
 	{
 		$authToken = uniqid();
+		$displayAnswer = true;
 		$this->session(['auth_token' => $authToken]);
 		$userQuestionId = uniqid();
 		$newQuestion = uniqid();
@@ -106,17 +152,13 @@ class LearningPageControllerTest extends TestCase {
 
 		// Mock 2 calls of ApiDispatcher::callApiRoute()
 		$apiDispatcherMock = $this->getMock('ApiDispatcher');
-		$callApiRouteMethodMock = call_user_func_array([$apiDispatcherMock->expects($this->exactly(2))->method('callApiRoute'), 'withConsecutive'], [
+		$callApiRouteMethodMock = call_user_func_array([$apiDispatcherMock->expects($this->exactly(1))->method('callApiRoute'), 'withConsecutive'], [
 			['api_update_user_question', [
 					'auth_token' => $authToken,
 					'id' => $userQuestionId,
 					'question' => $newQuestion,
 					'answer' => $newAnswer
 				]],
-			['api_find_user_question', [
-					'auth_token' => $authToken,
-					'id' => $userQuestionId,
-				]]
 		]);
 		$callApiRouteMethodMock->will($this->onConsecutiveCalls($this->createSuccessApiResponse(), $this->createSuccessApiResponse([
 					'id' => $userQuestionId,
@@ -126,17 +168,17 @@ class LearningPageControllerTest extends TestCase {
 		$this->app->instance('ApiDispatcher', $apiDispatcherMock);
 
 		// call route
-		$this->route('POST', 'learning_page', [
+		$this->route('POST', 'learning_page_update_user_question', [
 			'user_question_id' => $userQuestionId,
 			'update' => 'Update question and answer',
 			'question' => $newQuestion,
 			'answer' => $newAnswer,
-			'display_answer' => true
+			'display_answer' => $displayAnswer
 		]);
 
-		// check view data
-		$this->assertViewHas('user_question_id', $userQuestionId);
-		$this->assertViewHas('display_answer', true);
+		$this->assertSessionHas('user_question_id', $userQuestionId);
+		$this->assertSessionHas('display_answer', $displayAnswer);
+		$this->assertRedirectedToRoute('learning_page_display_user_question');
 	}
 
 }
