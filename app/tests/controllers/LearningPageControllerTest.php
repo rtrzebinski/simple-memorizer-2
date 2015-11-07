@@ -2,39 +2,31 @@
 
 class LearningPageControllerTest extends TestCase {
 
+	use ControllerTestHelper;
+
 	/**
 	 * @test
 	 */
 	public function shouldDisplayRandomQuestion()
 	{
-		// create question
-		$question = new Question();
-		$question->question = uniqid();
-		$question->answer = uniqid();
+		$authToken = uniqid();
+		$this->session(['auth_token' => $authToken]);
+		$apiResponseData = [
+			'id' => uniqid(),
+			'question' => uniqid(),
+			'answer' => uniqid()
+		];
 
-		// create user question
-		$userQuestion = new UserQuestion();
-		$userQuestion->setRelation('question', $question);
-		$userQuestion->id = uniqid();
-
-		// mock repository
-		$repositoryMock = $this->
-			getMockBuilder('UserQuestionRepository')->
-			setMethods(['randomUserQuestion'])->
-			disableOriginalConstructor()->
-			getMock();
-		$repositoryMock->
-			expects($this->once())->
-			method('randomUserQuestion')->
-			willReturn($userQuestion);
-		$this->app->instance('UserQuestionRepository', $repositoryMock);
+		$this->mockApiDispatcher('api_random_user_question', $this->createSuccessApiResponse($apiResponseData), [
+			'auth_token' => $authToken
+		]);
 
 		// call route and check view data
 		$this->route('GET', 'learning_page');
-		$this->assertViewHas('user_question_id', $userQuestion->id);
 		$this->assertViewHas('display_answer', false);
-		$this->assertViewHas('question', $question->question);
-		$this->assertViewHas('answer', $question->answer);
+		$this->assertViewHas('user_question_id', $apiResponseData['id']);
+		$this->assertViewHas('question', $apiResponseData['question']);
+		$this->assertViewHas('answer', $apiResponseData['answer']);
 	}
 
 	/**
@@ -42,18 +34,14 @@ class LearningPageControllerTest extends TestCase {
 	 */
 	public function shouldDisplayInfoIfUserHasNoQuestions()
 	{
-		// mock UserQuestionRepository::randomUserQuestion() to return null
-		$repositoryMock = $this->
-			getMockBuilder('UserQuestionRepository')->
-			setMethods(['randomUserQuestion'])->
-			disableOriginalConstructor()->
-			getMock();
-		$repositoryMock->
-			expects($this->once())->
-			method('randomUserQuestion')->
-			willReturn(null);
-		$this->app->instance('UserQuestionRepository', $repositoryMock);
+		$authToken = uniqid();
+		$this->session(['auth_token' => $authToken]);
 
+		$this->mockApiDispatcher('api_random_user_question', $this->createErrorApiResponse('user_has_not_created_any_questions_yet'), [
+			'auth_token' => $authToken
+		]);
+
+		// user_has_not_created_any_questions_yet
 		// expect 'info_page' view, with 'info' variable, to be displayed
 		View::shouldReceive('make')->with('info_page', [
 			'info' => Lang::get('messages.no_questions', ['url' => route('questions')])
@@ -77,37 +65,28 @@ class LearningPageControllerTest extends TestCase {
 	 */
 	public function shouldUpdateNumberOfAnswers($updateAnswersParameter, $answerCorrectness)
 	{
-		// create question
-		$question = new Question();
-		$question->question = uniqid();
-		$question->answer = uniqid();
+		$authToken = uniqid();
+		$this->session(['auth_token' => $authToken]);
+		$userQuestionId = uniqid();
 
-		// mock user question
-		$userQuestionMock = $this->
-			getMockBuilder('UserQuestion')->
-			setMethods(['updateAnswers'])->
-			getMock();
-		$userQuestionMock->expects($this->once())->method('updateAnswers')->with($updateAnswersParameter);
-		$userQuestionMock->id = uniqid();
-		$userQuestionMock->setRelation('question', $question);
-		$this->app->instance('UserQuestion', $userQuestionMock);
-
-		// mock repository
-		$repositoryMock = $this->
-			getMockBuilder('UserQuestionRepository')->
-			setMethods(['find'])->
-			disableOriginalConstructor()->
-			getMock();
-		$repositoryMock->
-			expects($this->once())->
-			method('find')->
-			with($userQuestionMock->id)->
-			willReturn($userQuestionMock);
-		$this->app->instance('UserQuestionRepository', $repositoryMock);
+		if ($updateAnswersParameter)
+		{
+			$this->mockApiDispatcher('api_add_good_answer', $this->createSuccessApiResponse(), [
+				'auth_token' => $authToken,
+				'id' => $userQuestionId
+			]);
+		}
+		else
+		{
+			$this->mockApiDispatcher('api_add_bad_answer', $this->createSuccessApiResponse(), [
+				'auth_token' => $authToken,
+				'id' => $userQuestionId
+			]);
+		}
 
 		// call route
 		$this->route('POST', 'learning_page', [
-			'user_question_id' => $userQuestionMock->id,
+			'user_question_id' => $userQuestionId,
 			'answer_correctness' => $answerCorrectness
 		]);
 
@@ -119,42 +98,36 @@ class LearningPageControllerTest extends TestCase {
 	 */
 	public function shouldUpdateQuestionAndAnswer()
 	{
+		$authToken = uniqid();
+		$this->session(['auth_token' => $authToken]);
+		$userQuestionId = uniqid();
 		$newQuestion = uniqid();
 		$newAnswer = uniqid();
 
-		// mock question
-		$question = $this->getMock('Question', [
-			'setAttribute',
-			'save'
+		// Mock 2 calls of ApiDispatcher::callApiRoute()
+		$apiDispatcherMock = $this->getMock('ApiDispatcher');
+		$callApiRouteMethodMock = call_user_func_array([$apiDispatcherMock->expects($this->exactly(2))->method('callApiRoute'), 'withConsecutive'], [
+			['api_update_user_question', [
+					'auth_token' => $authToken,
+					'id' => $userQuestionId,
+					'question' => $newQuestion,
+					'answer' => $newAnswer
+				]],
+			['api_find_user_question', [
+					'auth_token' => $authToken,
+					'id' => $userQuestionId,
+				]]
 		]);
-		call_user_func_array([$question->expects($this->exactly(2))->method('setAttribute'), 'withConsecutive'], [
-			['question', $newQuestion],
-			['answer', $newAnswer]
-		]);
-		$question->expects($this->once())->method('save');
-		App::instance('Question', $question);
-
-		// create user question and set question relation
-		$userQuestion = new UserQuestion();
-		$userQuestion->id = uniqid();
-		$userQuestion->setRelation('question', $question);
-
-		// mock user question repositury
-		$repositoryMock = $this->
-			getMockBuilder('UserQuestionRepository')->
-			setMethods(['find'])->
-			disableOriginalConstructor()->
-			getMock();
-		$repositoryMock->
-			expects($this->once())->
-			method('find')->
-			with($userQuestion->id)->
-			willReturn($userQuestion);
-		$this->app->instance('UserQuestionRepository', $repositoryMock);
+		$callApiRouteMethodMock->will($this->onConsecutiveCalls($this->createSuccessApiResponse(), $this->createSuccessApiResponse([
+					'id' => $userQuestionId,
+					'question' => $newQuestion,
+					'answer' => $newAnswer
+		])));
+		$this->app->instance('ApiDispatcher', $apiDispatcherMock);
 
 		// call route
 		$this->route('POST', 'learning_page', [
-			'user_question_id' => $userQuestion->id,
+			'user_question_id' => $userQuestionId,
 			'update' => 'Update question and answer',
 			'question' => $newQuestion,
 			'answer' => $newAnswer,
@@ -162,7 +135,7 @@ class LearningPageControllerTest extends TestCase {
 		]);
 
 		// check view data
-		$this->assertViewHas('user_question_id', $userQuestion->id);
+		$this->assertViewHas('user_question_id', $userQuestionId);
 		$this->assertViewHas('display_answer', true);
 	}
 

@@ -6,40 +6,69 @@
 class LearningPageController extends BaseController {
 
 	/**
-	 * @var UserQuestionRepository
-	 */
-	private $repository;
-
-	public function __construct(UserQuestionRepository $repository)
-	{
-		$this->repository = $repository;
-	}
-
-	/**
 	 * HTTP GET request handler
-	 * @param User_Question $userQuestion
+	 * @param User_Question $userQuestionId
 	 * @param bool $displayAnswer
 	 */
-	public function index($userQuestion = null, $displayAnswer = false)
+	public function index($userQuestionId = null, $displayAnswer = false)
 	{
-		if (!$userQuestion)
+		/**
+		 * Display conrete question
+		 */
+		if ($userQuestionId)
+		{
+			$apiFindUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_find_user_question', [
+				'auth_token' => Session::get('auth_token'),
+				'id' => $userQuestionId
+			]);
+
+			if ($apiFindUserQuestionResponse->getSuccess())
+			{
+				// display learning interface
+				$this->viewData['display_answer'] = $displayAnswer;
+				$this->viewData['user_question_id'] = $apiFindUserQuestionResponse->id;
+				$this->viewData['question'] = $apiFindUserQuestionResponse->question;
+				$this->viewData['answer'] = $apiFindUserQuestionResponse->answer;
+				return View::make('learning_page', $this->viewData);
+			}
+
+			// error API response
+			if ($apiFindUserQuestionResponse->getErrorCode() == Config::get('api.user_question_does_not_exist.error_code'))
+			{
+				// display info if user has no questions
+				$this->viewData['info'] = Lang::get('messages.user_question_does_not_exist', ['url' => route('questions')]);
+				return View::make('info_page', $this->viewData);
+			}
+		}
+
+		/*
+		 * Display random question
+		 */
+		if (!$userQuestionId)
 		{
 			// obtain random user question if not passed as argument
-			$userQuestion = $this->repository->randomUserQuestion();
+			$apiRandomUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_random_user_question', [
+				'auth_token' => Session::get('auth_token')
+			]);
 
-			if (!$userQuestion)
+			if ($apiRandomUserQuestionResponse->getSuccess())
+			{
+				// display learning interface
+				$this->viewData['display_answer'] = $displayAnswer;
+				$this->viewData['user_question_id'] = $apiRandomUserQuestionResponse->id;
+				$this->viewData['question'] = $apiRandomUserQuestionResponse->question;
+				$this->viewData['answer'] = $apiRandomUserQuestionResponse->answer;
+				return View::make('learning_page', $this->viewData);
+			}
+
+			// error API response
+			if ($apiRandomUserQuestionResponse->getErrorCode() == Config::get('api.user_has_not_created_any_questions_yet.error_code'))
 			{
 				// display info if user has no questions
 				$this->viewData['info'] = Lang::get('messages.no_questions', ['url' => route('questions')]);
 				return View::make('info_page', $this->viewData);
 			}
 		}
-		// display learning interface
-		$this->viewData['user_question_id'] = $userQuestion->id;
-		$this->viewData['display_answer'] = $displayAnswer;
-		$this->viewData['question'] = $userQuestion->question->question;
-		$this->viewData['answer'] = $userQuestion->question->answer;
-		return View::make('learning_page', $this->viewData);
 	}
 
 	/**
@@ -47,27 +76,47 @@ class LearningPageController extends BaseController {
 	 */
 	public function update()
 	{
-		// instantiate user question
-		$userQuestion = $this->repository->find(Input::get('user_question_id'));
-
-		// increase number of good or bad answers, and 
+		// increase number of good or bad answers
 		if (Input::has('answer_correctness'))
 		{
-			$userQuestion->updateAnswers(Input::get('answer_correctness') == 'I know');
+			// increase number of good answers
+			if (Input::get('answer_correctness') == 'I know')
+			{
+				$this->apiDispatcher->callApiRoute('api_add_good_answer', [
+					'auth_token' => Session::get('auth_token'),
+					'id' => Input::get('user_question_id'),
+				]);
+			}
+
+			// increase number of bad answers
+			if (Input::get('answer_correctness') == "I don't know")
+			{
+				$this->apiDispatcher->callApiRoute('api_add_bad_answer', [
+					'auth_token' => Session::get('auth_token'),
+					'id' => Input::get('user_question_id'),
+				]);
+			}
+
+			// display next user question
+			return Redirect::route('learning_page');
 		}
 
 		// update question and/or answer
 		if (Input::has('update'))
 		{
-			$userQuestion->question->question = Input::get('question');
-			$userQuestion->question->answer = Input::get('answer');
-			$userQuestion->question->save();
-			// display updated fields
-			return $this->index($userQuestion, Input::get('display_answer'));
-		}
+			$apiUpdateUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_update_user_question', [
+				'auth_token' => Session::get('auth_token'),
+				'id' => Input::get('user_question_id'),
+				'question' => Input::get('question'),
+				'answer' => Input::get('answer')
+			]);
 
-		// display next user question
-		return Redirect::route('learning_page');
+			if ($apiUpdateUserQuestionResponse->getSuccess())
+			{
+				// display updated fields
+				return $this->index(Input::get('user_question_id'), Input::get('display_answer'));
+			}
+		}
 	}
 
 }
