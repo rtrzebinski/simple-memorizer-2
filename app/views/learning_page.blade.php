@@ -40,7 +40,6 @@
 				$("#next_question_button").click();
 			}
 		});
-		F
 	});
 </script>
 @stop
