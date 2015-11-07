@@ -112,7 +112,7 @@ class LearningPageController extends BaseController {
 		/*
 		 * Success API response
 		 */
-		if ($apiResponse->getSuccess())
+		if (isset($apiResponse) && $apiResponse->getSuccess())
 		{
 			/*
 			 * Store in session for next request only
