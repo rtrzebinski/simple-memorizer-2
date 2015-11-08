@@ -2,39 +2,54 @@
 
 class UserQuestionsImportControllerTest extends TestCase {
 
+	use ControllerTestHelper;
+
 	/**
 	 * @test
 	 */
 	public function shouldImportUserQuestionsWithNumberOfAnswers()
 	{
+		$userQuestionId = uniqid();
+		$question = uniqid();
+		$answer = uniqid();
+		$numberOfGoodAnswers = uniqid();
+		$numberOfBadAnswers = uniqid();
+		$percentOfGoodAnswers = uniqid();
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
+
 		// data to build csv file
-		$data = [];
 		$row = new stdClass();
-		$row->question = uniqid();
-		$row->answer = uniqid();
-		$row->number_of_good_answers = uniqid();
-		$row->number_of_bad_answers = uniqid();
-		$row->percent_of_good_answers = uniqid();
+		$row->question = $question;
+		$row->answer = $answer;
+		$row->number_of_good_answers = $numberOfGoodAnswers;
+		$row->number_of_bad_answers = $numberOfBadAnswers;
+		$row->percent_of_good_answers = $percentOfGoodAnswers;
+		$data = [];
 		$data[] = $row;
 
 		// create file to be uploaded
 		$file = new Symfony\Component\HttpFoundation\File\UploadedFile($this->getUploadedCsvFilePath($data), 'csv_file', 'text/csv');
 
-		// mock user questions repository
-		$repository = $this->getMockBuilder('UserQuestionRepository')->
-			disableOriginalConstructor()->
-			setMethods(['create'])->
-			getMock();
-		$repository->expects($this->once())->method('create')->with(
-			$row->question, $row->answer, $row->number_of_good_answers, $row->number_of_bad_answers, $row->percent_of_good_answers
-		);
-		App::instance('UserQuestionRepository', $repository);
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+			'question' => $question,
+			'answer' => $answer,
+			'number_of_good_answers' => $numberOfGoodAnswers,
+			'number_of_bad_answers' => $numberOfBadAnswers,
+			'percent_of_good_answers' => $percentOfGoodAnswers,
+		];
+		$apiResponse = $this->createSuccessApiResponse([
+			'user_question_id' => $userQuestionId
+		]);
+		$this->mockApiDispatcher('api_create_user_question', $apiResponse, $apiRequestParameters);
 
 		// call route
-		$this->route('POST', 'questions_import', [], [], ['csv_file' => $file]);
+		$this->route('POST', 'import_user_questions_from_csv', [], [], ['csv_file' => $file]);
 
 		// check redirection to questions interface
-		$this->assertRedirectedToRoute('questions');
+		$this->assertRedirectedToRoute('display_user_questions');
 	}
 
 	/**
@@ -42,11 +57,16 @@ class UserQuestionsImportControllerTest extends TestCase {
 	 */
 	public function shouldImportUserQuestionsWithoutNumberOfAnswers()
 	{
+		$userQuestionId = uniqid();
+		$question = uniqid();
+		$answer = uniqid();
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
+
 		// data to build csv file
-		$data = [];
 		$row = new stdClass();
-		$row->question = uniqid();
-		$row->answer = uniqid();
+		$row->question = $question;
+		$row->answer = $answer;
 		$row->number_of_good_answers = uniqid();
 		$row->number_of_bad_answers = uniqid();
 		$row->percent_of_good_answers = uniqid();
@@ -55,19 +75,22 @@ class UserQuestionsImportControllerTest extends TestCase {
 		// create file to be uploaded
 		$file = new Symfony\Component\HttpFoundation\File\UploadedFile($this->getUploadedCsvFilePath($data), 'csv_file', 'text/csv');
 
-		// mock user questions repository
-		$repository = $this->getMockBuilder('UserQuestionRepository')->
-			disableOriginalConstructor()->
-			setMethods(['create'])->
-			getMock();
-		$repository->expects($this->once())->method('create')->with($row->question, $row->answer);
-		App::instance('UserQuestionRepository', $repository);
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+			'question' => $question,
+			'answer' => $answer,
+		];
+		$apiResponse = $this->createSuccessApiResponse([
+			'user_question_id' => $userQuestionId
+		]);
+		$this->mockApiDispatcher('api_create_user_question', $apiResponse, $apiRequestParameters);
 
 		// call route
-		$this->route('POST', 'questions_import', ['reset_number_of_answers' => 1], [], ['csv_file' => $file]);
+		$this->route('POST', 'import_user_questions_from_csv', ['reset_number_of_answers' => 1], [], ['csv_file' => $file]);
 
 		// check redirection to questions interface
-		$this->assertRedirectedToRoute('questions');
+		$this->assertRedirectedToRoute('display_user_questions');
 	}
 
 	/**
@@ -100,7 +123,7 @@ class UserQuestionsImportControllerTest extends TestCase {
 		]);
 
 		// call route
-		$this->route('POST', 'questions_import', [], [], ['csv_file' => $file]);
+		$this->route('POST', 'import_user_questions_from_csv', [], [], ['csv_file' => $file]);
 	}
 
 	private function getUploadedCsvFilePath($data)

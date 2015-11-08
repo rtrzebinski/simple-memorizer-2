@@ -85,23 +85,32 @@ class UserQuestionRepository {
 	 * @param string $orderBySort Sort order (ASC|DESC)
 	 * @return array Array of stdClass objects
 	 */
-	public function collection($take, $skip = 0, $orderByField = 'id', $orderBySort = 'ASC')
+	public function collection($take = null, $skip = 0, $orderByField = 'id', $orderBySort = 'ASC')
 	{
-		return DB::table('user_questions')->
-				select([
-					'user_questions.id as id',
-					'user_questions.percent_of_good_answers as percent_of_good_answers',
-					'user_questions.number_of_good_answers as number_of_good_answers',
-					'user_questions.number_of_bad_answers as number_of_bad_answers',
-					'questions.question as question',
-					'questions.answer as answer'
-				])->
-				join('questions', 'questions.id', '=', 'user_questions.question_id')->
-				where('user_questions.user_id', '=', $this->user->id)->
-				skip($skip)->
-				take($take)->
-				orderBy($orderByField, $orderBySort)->
-				get();
+		$query = DB::table('user_questions')->
+			select([
+				'user_questions.id as id',
+				'user_questions.percent_of_good_answers as percent_of_good_answers',
+				'user_questions.number_of_good_answers as number_of_good_answers',
+				'user_questions.number_of_bad_answers as number_of_bad_answers',
+				'questions.question as question',
+				'questions.answer as answer'
+			])->
+			join('questions', 'questions.id', '=', 'user_questions.question_id')->
+			where('user_questions.user_id', '=', $this->user->id);
+
+		if ($take && $skip)
+		{
+			$query->take($take);
+			$query->skip($skip);
+		}
+
+		if ($orderByField && $orderBySort)
+		{
+			$query->orderBy($orderByField, $orderBySort);
+		}
+
+		return $query->get();
 	}
 
 	/**

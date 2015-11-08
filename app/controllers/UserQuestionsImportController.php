@@ -6,19 +6,9 @@
 class UserQuestionsImportController extends BaseController {
 
 	/**
-	 * @var UserQuestionRepository 
-	 */
-	private $repository;
-
-	public function __construct(UserQuestionRepository $repository)
-	{
-		$this->repository = $repository;
-	}
-
-	/**
 	 * Display user questions import web interface
 	 */
-	public function index()
+	public function displayUserQuestionsImportPage()
 	{
 		return View::make('user_questions_import');
 	}
@@ -27,7 +17,7 @@ class UserQuestionsImportController extends BaseController {
 	 * Import user questions from CSV file, and redirect to questions user interface
 	 * @throws Exception
 	 */
-	public function import()
+	public function importUserQuestionsFromCsv()
 	{
 		// Symfony\Component\HttpFoundation\File\UploadedFile
 		$fileInfo = Input::file('csv_file');
@@ -64,17 +54,34 @@ class UserQuestionsImportController extends BaseController {
 			if (Input::has('reset_number_of_answers'))
 			{
 				// don't include number of answers from CSV file
-				$this->repository->create($value[0], $value[1]);
+				$apiCreateUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_create_user_question', [
+					'auth_token' => $this->apiAuthToken,
+					'question' => $value[0],
+					'answer' => $value[1],
+				]);
 			}
 			else
 			{
 				// include number of answers from CSV file
-				$this->repository->create($value[0], $value[1], $value[2], $value[3], $value[4]);
+				$apiCreateUserQuestionResponse = $this->apiDispatcher->callApiRoute('api_create_user_question', [
+					'auth_token' => $this->apiAuthToken,
+					'question' => $value[0],
+					'answer' => $value[1],
+					'number_of_good_answers' => $value[2],
+					'number_of_bad_answers' => $value[3],
+					'percent_of_good_answers' => $value[4],
+				]);
+			}
+
+			if (!$apiCreateUserQuestionResponse->getSuccess())
+			{
+				// unexpected API resppnse
+				throw new Exception('Unexpected API response');
 			}
 		}
 
 		// redirect to questions interface
-		return Redirect::route('questions');
+		return Redirect::route('display_user_questions');
 	}
 
 }

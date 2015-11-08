@@ -62,7 +62,7 @@ class LearningPageController extends BaseController {
 		// error API response
 		if ($apiResponse->getErrorCode() == Config::get('api.user_has_not_created_any_questions_yet.error_code'))
 		{
-			$this->viewData['info'] = Lang::get('messages.no_questions', ['url' => route('questions')]);
+			$this->viewData['info'] = Lang::get('messages.no_questions', ['url' => route('display_user_questions')]);
 			return View::make('info_page', $this->viewData);
 		}
 

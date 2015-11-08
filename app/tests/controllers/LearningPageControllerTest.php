@@ -85,7 +85,7 @@ class LearningPageControllerTest extends TestCase {
 		// user_has_not_created_any_questions_yet
 		// expect 'info_page' view, with 'info' variable, to be displayed
 		View::shouldReceive('make')->with('info_page', [
-			'info' => Lang::get('messages.no_questions', ['url' => route('questions')])
+			'info' => Lang::get('messages.no_questions', ['url' => route('display_user_questions')])
 		])->once();
 
 		// call route and check view data

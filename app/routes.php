@@ -16,15 +16,15 @@ Route::group(array('before' => 'auth'), function() {
 	Route::get('/overview', ['as' => 'overview', 'uses' => 'OverviewController@index']);
 	Route::get('/logout', ['as' => 'logout', 'uses' => 'LogoutController@logout']);
 
-	Route::get('/questions', ['as' => 'questions', 'uses' => 'UserQuestionsController@index']);
-	Route::get('/questions-export', ['as' => 'questions_export', 'uses' => 'UserQuestionsController@export']);
-	Route::post('/questions-list', ['as' => 'list_questions', 'uses' => 'UserQuestionsController@listAction']);
-	Route::post('/questions-delete', ['as' => 'delete_questions', 'uses' => 'UserQuestionsController@deleteAction']);
-	Route::post('/questions-update', ['as' => 'update_questions', 'uses' => 'UserQuestionsController@updateAction']);
-	Route::post('/questions-create', ['as' => 'create_questions', 'uses' => 'UserQuestionsController@createAction']);
+	Route::get('/questions', ['as' => 'display_user_questions', 'uses' => 'UserQuestionsController@displayUserQuestions']);
+	Route::post('/questions-list', ['as' => 'list_user_questions', 'uses' => 'UserQuestionsController@listUserQuestions']);
+	Route::post('/questions-delete', ['as' => 'delete_user_question', 'uses' => 'UserQuestionsController@deleteUserQuestion']);
+	Route::post('/questions-update', ['as' => 'update_user_question', 'uses' => 'UserQuestionsController@updateUserQuestion']);
+	Route::post('/questions-create', ['as' => 'create_user_question', 'uses' => 'UserQuestionsController@createUserQuestion']);
+	Route::get('/questions-export', ['as' => 'export_user_questions_to_csv', 'uses' => 'UserQuestionsController@exportUserQuestionsToCsv']);
 
-	Route::get('/questions-import', ['as' => 'questions_import', 'uses' => 'UserQuestionsImportController@index']);
-	Route::post('/questions-import', ['as' => 'questions_import', 'uses' => 'UserQuestionsImportController@import']);
+	Route::get('/questions-import', ['as' => 'import_user_questions_from_csv', 'uses' => 'UserQuestionsImportController@displayUserQuestionsImportPage']);
+	Route::post('/questions-import', ['as' => 'import_user_questions_from_csv', 'uses' => 'UserQuestionsImportController@importUserQuestionsFromCsv']);
 
 	Route::get('/learn', ['as' => 'learning_page_display_user_question', 'uses' => 'LearningPageController@displayUserQuestion']);
 	Route::post('/learn', ['as' => 'learning_page_update_user_question', 'uses' => 'LearningPageController@updateUserQuestion', 'before' => 'csrf']);

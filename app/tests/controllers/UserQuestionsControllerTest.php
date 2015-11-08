@@ -2,14 +2,15 @@
 
 class UserQuestionsControllerTest extends TestCase {
 
+	use ControllerTestHelper;
+
 	/**
 	 * @test
 	 */
 	public function shouldDisplayIndexPage()
 	{
 		$this->be(new User());
-		App::instance('UserQuestionRepository', $this->createRepositoryMock());
-		$this->route('GET', 'questions');
+		$this->route('GET', 'display_user_questions');
 		$this->assertResponseOk();
 	}
 
@@ -18,44 +19,36 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldReturnUserQuestionsList()
 	{
-		// fake data
 		$count = uniqid();
-		$row = new stdClass();
-		$row->id = uniqid();
-		$row->question = uniqid();
-		$row->answer = uniqid();
-		$row->percent_of_good_answers = uniqid();
-
-		// repository parameters
+		$row = [
+			'id' => uniqid(),
+			'question' => uniqid(),
+			'answer' => uniqid(),
+			'percent_of_good_answers' => uniqid(),
+		];
 		$take = uniqid();
 		$skip = uniqid();
 		$orderByField = uniqid();
 		$orderBySort = uniqid();
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
 
-		// create repository mock
-		$repository = $this->createRepositoryMock([
-			'collection',
-			'count'
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+			'take' => $take,
+			'skip' => $skip,
+			'order_by_field' => $orderByField,
+			'order_by_sort' => $orderBySort,
+		];
+		$apiResponse = $this->createSuccessApiResponse([
+			'records' => [$row],
+			'count' => $count
 		]);
-
-		// mock collection() method
-		$repository->
-			expects($this->once())->
-			method('collection')->
-			with($take, $skip, $orderByField, $orderBySort)->
-			willReturn([$row]);
-
-		// mock count() method
-		$repository->
-			expects($this->once())->
-			method('count')->
-			willReturn($count);
-
-		// bind mock object to UserQuestionRepository
-		App::instance('UserQuestionRepository', $repository);
+		$this->mockApiDispatcher('api_user_questions_collection', $apiResponse, $apiRequestParameters);
 
 		// call route
-		$responseContent = $this->route('POST', 'list_questions', [
+		$responseContent = $this->route('POST', 'list_user_questions', [
 				'jtSorting' => $orderByField . ' ' . $orderBySort,
 				'jtStartIndex' => $skip,
 				'jtPageSize' => $take
@@ -64,10 +57,10 @@ class UserQuestionsControllerTest extends TestCase {
 		// check http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
-		$this->assertEquals($row->id, $data->Records[0]->id);
-		$this->assertEquals($row->question, $data->Records[0]->question);
-		$this->assertEquals($row->answer, $data->Records[0]->answer);
-		$this->assertEquals($row->percent_of_good_answers, $data->Records[0]->percent_of_good_answers);
+		$this->assertEquals($row['id'], $data->Records[0]->id);
+		$this->assertEquals($row['question'], $data->Records[0]->question);
+		$this->assertEquals($row['answer'], $data->Records[0]->answer);
+		$this->assertEquals($row['percent_of_good_answers'], $data->Records[0]->percent_of_good_answers);
 		$this->assertEquals($count, $data->TotalRecordCount);
 	}
 
@@ -76,29 +69,21 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldDeleteUserQuestion()
 	{
-		// mock question, expect delete() to be called on it
-		$question = $this->getMock('Question', ['delete']);
-		$question->expects($this->once())->method('delete');
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
+		$userQuestionId = uniqid();
 
-		$userQuestion = new UserQuestion();
-		$userQuestion->setRelation('question', $question);
-
-		// create user question repository mock
-		$repository = $this->createRepositoryMock(['find']);
-
-		// mock find() method
-		$repository->
-			expects($this->once())->
-			method('find')->
-			with(1)->
-			willReturn($userQuestion);
-
-		// bind mock object to UserQuestionRepository
-		App::instance('UserQuestionRepository', $repository);
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+			'id' => $userQuestionId,
+		];
+		$apiResponse = $this->createSuccessApiResponse([]);
+		$this->mockApiDispatcher('api_delete_user_question', $apiResponse, $apiRequestParameters);
 
 		// call route
-		$responseContent = $this->route('POST', 'delete_questions', [
-				'id' => 1
+		$responseContent = $this->route('POST', 'delete_user_question', [
+				'id' => $userQuestionId
 			])->getContent();
 
 		// checkj http response
@@ -111,47 +96,28 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldUpdateUserQuestion()
 	{
-		// new question is anser - to be updated
-		$newQuestion = uniqid();
-		$newAnswer = uniqid();
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
+		$userQuestionId = uniqid();
+		$question = uniqid();
+		$answer = uniqid();
 
-		// mock question (question object is updated by controller)
-		$questionMock = $this->getMock('Question', [
-			'setAttribute',
-			'save'
-		]);
-		call_user_func_array([$questionMock->expects($this->exactly(2))->method('setAttribute'), 'withConsecutive'], [
-			['question', $newQuestion],
-			['answer', $newAnswer]
-		]);
-		$questionMock->expects($this->once())->method('save');
-
-		// create user question and set question mock as related question
-		$userQuestion = new UserQuestion();
-		$userQuestion->setRelation('question', $questionMock);
-
-		// prepare route input
-		$input = [
-			'id' => $userQuestion->id,
-			'question' => $newQuestion,
-			'answer' => $newAnswer
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+			'id' => $userQuestionId,
+			'question' => $question,
+			'answer' => $answer,
 		];
-
-		// create user question repository mock
-		$repository = $this->createRepositoryMock(['find']);
-
-		// mock find() method
-		$repository->
-			expects($this->once())->
-			method('find')->
-			with($userQuestion->id)->
-			willReturn($userQuestion);
-
-		// bind mock object to UserQuestionRepository
-		App::instance('UserQuestionRepository', $repository);
+		$apiResponse = $this->createSuccessApiResponse([]);
+		$this->mockApiDispatcher('api_update_user_question', $apiResponse, $apiRequestParameters);
 
 		// call route
-		$responseContent = $this->route('POST', 'update_questions', $input)->getContent();
+		$responseContent = $this->route('POST', 'update_user_question', [
+				'id' => $userQuestionId,
+				'question' => $question,
+				'answer' => $answer,
+			])->getContent();
 
 		// check http response
 		$data = json_decode($responseContent);
@@ -163,29 +129,25 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldCreateUserQuestion()
 	{
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
+		$userQuestionId = uniqid();
 		$question = uniqid();
 		$answer = uniqid();
 
-		// create user question repository mock
-		$repository = $this->createRepositoryMock(['create']);
-
-		// mock create() method
-		$repository->
-			expects($this->once())->
-			method('create')->
-			with($question, $answer)->
-			willReturnCallback(function() {
-				$userQuestion = new UserQuestion();
-				$userQuestion->id = 1;
-				$userQuestion->percent_of_good_answers = 0;
-				return $userQuestion;
-			});
-
-		// bind mock object to UserQuestionRepository
-		App::instance('UserQuestionRepository', $repository);
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+			'question' => $question,
+			'answer' => $answer,
+		];
+		$apiResponse = $this->createSuccessApiResponse([
+			'user_question_id' => $userQuestionId
+		]);
+		$this->mockApiDispatcher('api_create_user_question', $apiResponse, $apiRequestParameters);
 
 		// call route
-		$responseContent = $this->route('POST', 'create_questions', [
+		$responseContent = $this->route('POST', 'create_user_question', [
 				'question' => $question,
 				'answer' => $answer
 			])->getContent();
@@ -193,18 +155,10 @@ class UserQuestionsControllerTest extends TestCase {
 		// check http response
 		$data = json_decode($responseContent);
 		$this->assertEquals('OK', $data->Result);
-		$this->assertEquals(1, $data->Record->id);
+		$this->assertEquals($userQuestionId, $data->Record->id);
 		$this->assertEquals(0, $data->Record->percent_of_good_answers);
 		$this->assertEquals($question, $data->Record->question);
 		$this->assertEquals($answer, $data->Record->answer);
-	}
-
-	private function createRepositoryMock($method = [])
-	{
-		return $this->getMockBuilder('UserQuestionRepository')->
-				setMethods($method)->
-				disableOriginalConstructor()->
-				getMock();
 	}
 
 	/**
@@ -212,16 +166,17 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldExportUserQuestionsAsCsvFile()
 	{
-		$collection = uniqid();
-
-		// mock repository to return fake $collection
-		$repository = $this->getMockBuilder('UserQuestionRepository')->
-			setMethods(['count', 'collection'])->
-			disableOriginalConstructor()->
-			getMock();
-		$repository->method('count')->willReturn(1);
-		$repository->method('collection')->willReturn($collection);
-		App::instance('UserQuestionRepository', $repository);
+		$count = uniqid();
+		$row = [
+			'id' => uniqid(),
+			'question' => uniqid(),
+			'answer' => uniqid(),
+			'percent_of_good_answers' => uniqid(),
+			'number_of_good_answers' => uniqid(),
+			'number_of_bad_answers' => uniqid(),
+		];
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
 
 		// mock CsvBuilder
 		$builder = $this->
@@ -232,7 +187,7 @@ class UserQuestionsControllerTest extends TestCase {
 				'build'
 			])->
 			getMock();
-		$builder->expects($this->once())->method('setData')->with($collection);
+		$builder->expects($this->once())->method('setData')->with([$row]);
 		call_user_func_array([$builder->expects($this->exactly(5))->method('setHeaderField'), 'withConsecutive'], [
 			['question', 'question'],
 			['answer', 'answer'],
@@ -243,8 +198,20 @@ class UserQuestionsControllerTest extends TestCase {
 		$builder->expects($this->once())->method('build');
 		$this->app->instance('CsvBuilder', $builder);
 
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+		];
+		$apiResponse = $this->createSuccessApiResponse([
+			'records' => [$row],
+			'count' => $count
+		]);
+		$this->mockApiDispatcher('api_user_questions_collection', $apiResponse, $apiRequestParameters);
+
 		// call route
-		$this->route('GET', 'questions_export');
+		$this->route('GET', 'export_user_questions_to_csv');
+
+		// check response
 		$this->assertResponseOk();
 	}
 
@@ -253,23 +220,29 @@ class UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldNotExportUserQuestionsIfUserHasNoQuestions()
 	{
-		$collection = uniqid();
+		$count = 0;
+		$authToken = uniqid();
+		$this->session(['api_auth_token' => $authToken]);
 
-		// mock repository to return fake $collection
-		$repository = $this->getMockBuilder('UserQuestionRepository')->
-			setMethods(['count'])->
-			disableOriginalConstructor()->
-			getMock();
-		$repository->method('count')->willReturn(0);
-		App::instance('UserQuestionRepository', $repository);
+		// mock API dispatcher
+		$apiRequestParameters = [
+			'auth_token' => $authToken,
+		];
+		$apiResponse = $this->createSuccessApiResponse([
+			'records' => [],
+			'count' => $count
+		]);
+		$this->mockApiDispatcher('api_user_questions_collection', $apiResponse, $apiRequestParameters);
 
-		// expect view to display info
+		// set expected view
 		View::shouldReceive('make')->with('info_page', [
 			'info' => Lang::get('messages.nothing_to_export')
 		]);
 
 		// call route
-		$this->route('GET', 'questions_export');
+		$this->route('GET', 'export_user_questions_to_csv');
+
+		// check response
 		$this->assertResponseOk();
 	}
 

@@ -3,7 +3,7 @@
 @section('head')
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
 
 		$('#QuestionsTable').jtable({
 			title: 'Questions',
@@ -16,10 +16,10 @@
 			selectingCheckboxes: true, //Show checkboxes on first column
 			selectOnRowClick: false, //Enable this to only select using checkboxes
 			actions: {
-				listAction: '{{ route("list_questions") }}',
-				deleteAction: '{{ route("delete_questions") }}',
-				updateAction: '{{ route("update_questions") }}',
-				createAction: '{{ route("create_questions") }}'
+				listAction: '{{ route("list_user_questions") }}',
+				deleteAction: '{{ route("delete_user_question") }}',
+				updateAction: '{{ route("update_user_question") }}',
+				createAction: '{{ route("create_user_question") }}'
 			},
 			fields: {
 				id: {
@@ -48,7 +48,7 @@
 		$('#QuestionsTable').jtable('load');
 
 		//Delete selected rows
-		$('#DeleteAllButton').button().click(function() {
+		$('#DeleteAllButton').button().click(function () {
 			var $selectedRows = $('#QuestionsTable').jtable('selectedRows');
 			$('#QuestionsTable').jtable('deleteRows', $selectedRows);
 		});
@@ -62,8 +62,8 @@
 	@include ('navbar')
 	<div id="QuestionsTable"></div>
 	<br/>
-	<a href='{{ route('questions_export') }}' class='btn btn-default btn-sm'>Export</a>
-	<a href='{{ route('questions_import') }}' class='btn btn-default btn-sm'>Import</a>
+	<a href='{{ route('export_user_questions_to_csv') }}' class='btn btn-default btn-sm'>Export</a>
+	<a href='{{ route('import_user_questions_from_csv') }}' class='btn btn-default btn-sm'>Import</a>
 	<button class='btn btn-default btn-sm' id='DeleteAllButton'>Delete selected</button>
 </div>
 @stop

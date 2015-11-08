@@ -33,7 +33,8 @@ class API_UserQuestionsController extends API_BaseController {
 
 				return $this->successResponse([
 						'records' => $collection,
-						'count' => $userQuestionRepository->count()
+						// count of all items in the entire collection (not of returned collection part)
+						'count' => $userQuestionRepository->count(),
 				]);
 			}, true);
 	}
@@ -45,6 +46,9 @@ class API_UserQuestionsController extends API_BaseController {
 	 * - string auth_token
 	 * - string question
 	 * - string answer
+	 * - int number_of_good_answers (default 0)
+	 * - int number_of_bad_answers (default 0)
+	 * - int percent_of_good_answers (default 0)
 	 * 
 	 * @return Illuminate\Http\JsonResponse
 	 */
@@ -54,10 +58,13 @@ class API_UserQuestionsController extends API_BaseController {
 
 				$question = Input::get('question');
 				$answer = Input::get('answer');
+				$numberOfGoodAnswers = Input::get('number_of_good_answers', 0);
+				$numberOfBadAnswers = Input::get('number_of_bad_answers', 0);
+				$percentOfGoodAnswers = Input::get('percent_of_good_answers', 0);
 
 				// Create user question via repository
 				$userQuestionRepository = App::make('UserQuestionRepository', [$user]);
-				$userQuestion = $userQuestionRepository->create($question, $answer);
+				$userQuestion = $userQuestionRepository->create($question, $answer, $numberOfGoodAnswers, $numberOfBadAnswers, $percentOfGoodAnswers);
 
 				return $this->successResponse([
 						'user_question_id' => $userQuestion->id

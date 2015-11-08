@@ -206,32 +206,34 @@ class API_UserQuestionsControllerTest extends TestCase {
 	 */
 	public function shouldCreateUserQuestion()
 	{
+		$userQuestionId = uniqid();
 		$question = uniqid();
 		$answer = uniqid();
+		$numberOfGoodAnswers = uniqid();
+		$numberOfBadAnswers = uniqid();
+		$percentOfGoodAnswers = uniqid();
 
-		// create user question repository mock
-		$repository = $this->createUserQuestionRepositoryMock(['create']);
-
-		// create user question
+		// create user question to be returned by repository
 		$userQuestion = new UserQuestion();
-		$userQuestion->id = 1;
-		$userQuestion->percent_of_good_answers = 0;
+		$userQuestion->id = $userQuestionId;
 
-		// mock create() method
+		// mock UserQuestionRepository
+		$repository = $this->createUserQuestionRepositoryMock(['create']);
 		$repository->
 			expects($this->once())->
 			method('create')->
-			with($question, $answer)->
+			with($question, $answer, $numberOfGoodAnswers, $numberOfBadAnswers, $percentOfGoodAnswers)->
 			willReturn($userQuestion);
-
-		// bind mock object to UserQuestionRepository
 		App::instance('UserQuestionRepository', $repository);
 
 		// call route
 		$this->route('POST', 'api_create_user_question', [
+			'auth_token' => $this->getAuthToken(),
 			'question' => $question,
 			'answer' => $answer,
-			'auth_token' => $this->getAuthToken()
+			'number_of_good_answers' => $numberOfGoodAnswers,
+			'number_of_bad_answers' => $numberOfBadAnswers,
+			'percent_of_good_answers' => $percentOfGoodAnswers,
 		]);
 
 		// check api response
