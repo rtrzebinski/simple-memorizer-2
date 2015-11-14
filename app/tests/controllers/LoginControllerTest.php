@@ -45,7 +45,7 @@ class LoginControllerTest extends TestCase {
 		$apiSessionRepositoryMock = $this->getMock('ApiSessionRepository');
 		$apiSessionRepositoryMock->
 			expects($this->once())->
-			method('user')->
+			method('getUserByAuthToken')->
 			with($authToken)->
 			willReturn($user);
 		$this->app->instance('ApiSessionRepository', $apiSessionRepositoryMock);

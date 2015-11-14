@@ -43,14 +43,14 @@ class ApiSessionRepository {
 	}
 
 	/**
-	 * User related to provided auth token
+	 * Get user related to provided auth token
 	 * 
 	 * Null will be returned if provided auth token does not match any user
 	 * 
 	 * @param string $authToken
 	 * @return User
 	 */
-	public function user($authToken)
+	public function getUserByAuthToken($authToken)
 	{
 		$apiSession = App::make('ApiSession')->where('auth_token', $authToken)->first();
 

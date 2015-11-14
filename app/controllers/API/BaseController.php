@@ -59,7 +59,7 @@ class API_BaseController extends Controller {
 	public function apiOutput(Closure $f, $requireAuth)
 	{
 		// Obtain authenticated user
-		$user = $this->apiSessionRepository->user(Input::get('auth_token'));
+		$user = $this->apiSessionRepository->getUserByAuthToken(Input::get('auth_token'));
 
 		// Response 'bad auth' API error response if user not found, and authentication check is required
 		if (!$user && $requireAuth)

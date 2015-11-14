@@ -42,7 +42,7 @@ trait ApiTestHelper {
 		$apiSessionRepository = $this->getMock('ApiSessionRepository');
 		$apiSessionRepository->
 			expects($this->once())->
-			method('user')->
+			method('getUserByAuthToken')->
 			with($authToken)->
 			willReturn($user);
 		$this->app->instance('ApiSessionRepository', $apiSessionRepository);

@@ -31,7 +31,7 @@ class LoginController extends BaseController {
 			// use api session repository to obtain user related to auth_token
 			$authToken = $apiLoginResponse->auth_token;
 			$apiSessionRepository = App::make('ApiSessionRepository');
-			$user = $apiSessionRepository->user($authToken);
+			$user = $apiSessionRepository->getUserByAuthToken($authToken);
 
 			// login user
 			Auth::login($user, Input::get('remember_me'));

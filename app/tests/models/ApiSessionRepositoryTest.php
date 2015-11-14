@@ -40,7 +40,7 @@ class ApiSessionRepositoryTest extends TestCase {
 
 		$repository->delete($apiSession->auth_token);
 
-		$this->assertNull($repository->user($apiSession->auth_token));
+		$this->assertNull($repository->getUserByAuthToken($apiSession->auth_token));
 	}
 
 	/**
@@ -51,7 +51,7 @@ class ApiSessionRepositoryTest extends TestCase {
 		$user = $this->createUser();
 		$repository = new ApiSessionRepository();
 		$apiSession = $repository->create($user->id, uniqid(), uniqid());
-		$this->assertEquals($user->id, $repository->user($apiSession->auth_token)->id);
+		$this->assertEquals($user->id, $repository->getUserByAuthToken($apiSession->auth_token)->id);
 	}
 
 }

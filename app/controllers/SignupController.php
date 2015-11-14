@@ -50,7 +50,7 @@ class SignupController extends BaseController {
 			// use api session repository to obrain user related to auth_token
 			$authToken = $apiSignupResponse->auth_token;
 			$apiSessionRepository = App::make('ApiSessionRepository');
-			$user = $apiSessionRepository->user($authToken);
+			$user = $apiSessionRepository->getUserByAuthToken($authToken);
 
 			// login user (with 'remember me')
 			Auth::login($user, true);
