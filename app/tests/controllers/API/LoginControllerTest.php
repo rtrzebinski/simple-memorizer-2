@@ -26,7 +26,7 @@ class API_LoginControllerTest extends TestCase {
 		$this->app->instance('ApiSessionRepository', $apiSessionRepositoryMock);
 
 		// mock auth facade
-		Auth::shouldReceive('attempt')->once()->with([
+		Auth::shouldReceive('once')->once()->with([
 			'email' => $data['email'],
 			'password' => $data['password']
 		])->andReturn(true);
@@ -51,7 +51,7 @@ class API_LoginControllerTest extends TestCase {
 		];
 
 		// mock auth facade
-		Auth::shouldReceive('attempt')->once()->with([
+		Auth::shouldReceive('once')->once()->with([
 			'email' => $data['email'],
 			'password' => $data['password']
 		])->andReturn(false);

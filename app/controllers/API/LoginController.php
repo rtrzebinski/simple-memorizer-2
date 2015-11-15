@@ -22,17 +22,19 @@ class API_LoginController extends API_BaseController {
 	public function login()
 	{
 		return $this->apiOutput(function() {
-				// check credentials and log user in
-				if (Auth::attempt([
-						'email' => Input::get('email'),
-						'password' => Input::get('password')
-					]))
+				$credentials = [
+					'email' => Input::get('email'),
+					'password' => Input::get('password')
+				];
+
+				/*
+				 * check credentials using Auth::once()
+				 * this will log user in just for current request
+				 */
+				if (Auth::once($credentials))
 				{
 					// create new api session, using logged user id
 					$apiSession = $this->apiSessionRepository->create(Auth::id(), Input::get('client_name'), Request::getClientIp());
-
-					// log user out, we don't want to keep user logged in (with cookies/session)
-					Auth::logout();
 
 					// return api session auth token
 					return $this->successResponse(['auth_token' => $apiSession->auth_token]);
