@@ -49,6 +49,7 @@ Repositories encapsulates common operations on the data. Eloquent ORM models are
 - LAMP stack (webserver + PHP + MySQL)
 - PHP >= 5.5
 - MySQL >= 5.5
+- [Composer](https://getcomposer.org)
 
 ## Setup
 
