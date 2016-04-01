@@ -16,7 +16,8 @@ class Questions extends Migration {
 			$table->increments('id');
 			$table->string('question')->default('');
 			$table->string('answer')->default('');
-			$table->timestamps();
+			$table->timestamp('created_at')->nullable()->default(null);
+			$table->timestamp('updated_at')->nullable()->default(null);
 		});
 	}
 

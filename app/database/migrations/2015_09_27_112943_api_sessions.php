@@ -19,7 +19,8 @@ class ApiSessions extends Migration {
 			$table->index('auth_token');
 			$table->string('client_name');
 			$table->string('client_ip');
-			$table->timestamps();
+			$table->timestamp('created_at')->nullable()->default(null);
+			$table->timestamp('updated_at')->nullable()->default(null);
 		});
 	}
 

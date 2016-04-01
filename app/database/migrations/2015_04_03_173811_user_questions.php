@@ -21,7 +21,8 @@ class UserQuestions extends Migration {
 			$table->integer('number_of_good_answers')->default('0');
 			$table->integer('number_of_bad_answers')->default('0');
 			$table->integer('percent_of_good_answers')->default('0');
-			$table->timestamps();
+			$table->timestamp('created_at')->nullable()->default(null);
+			$table->timestamp('updated_at')->nullable()->default(null);
 		});
 	}
 
